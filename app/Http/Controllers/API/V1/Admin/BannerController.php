@@ -5,12 +5,15 @@ namespace App\Http\Controllers\API\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BannerResource;
 use App\Models\Banner;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class BannerController extends Controller
 {
+    use ApiResponse;
+
     public function index(): JsonResponse
     {
         $banners = Banner::orderBy('position')->orderBy('sort_order')->get();

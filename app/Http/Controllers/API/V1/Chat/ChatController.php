@@ -5,11 +5,14 @@ namespace App\Http\Controllers\API\V1\Chat;
 use App\Http\Controllers\Controller;
 use App\Models\ChatRoom;
 use App\Services\ChatService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private ChatService $chatService) {}
 
     /**

@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductListResource;
 use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(private ProductService $productService) {}
 
     /**

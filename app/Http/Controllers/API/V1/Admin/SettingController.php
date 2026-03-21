@@ -4,12 +4,15 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class SettingController extends Controller
 {
+    use ApiResponse;
+    
     public function index(): JsonResponse
     {
         $settings = Setting::orderBy('group')->orderBy('key')->get()

@@ -5,11 +5,14 @@ namespace App\Http\Controllers\API\V1\Wishlist;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductListResource;
 use App\Services\WishlistService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WishlistController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private WishlistService $wishlistService) {}
 
     public function index(Request $request): JsonResponse

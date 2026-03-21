@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
+    use ApiResponse;
+    
     public function index(Request $request): JsonResponse
     {
         $coupons = Coupon::withCount('usages')

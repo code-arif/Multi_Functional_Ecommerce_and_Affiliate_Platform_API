@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CmsPageController extends Controller
 {
+    use ApiResponse;
+    
     public function index(): JsonResponse
     {
         $pages = CmsPage::withTrashed()->orderBy('sort_order')->get();

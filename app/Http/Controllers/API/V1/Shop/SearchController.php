@@ -5,11 +5,14 @@ namespace App\Http\Controllers\API\V1\Shop;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductListResource;
 use App\Services\SearchService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private SearchService $searchService) {}
 
     public function search(Request $request): JsonResponse

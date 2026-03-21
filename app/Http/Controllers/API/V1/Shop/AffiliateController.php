@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\AffiliateProductResource;
 use App\Models\AffiliateProduct;
 use App\Services\AffiliateService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AffiliateController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private AffiliateService $affiliateService) {}
 
     public function index(Request $request): JsonResponse

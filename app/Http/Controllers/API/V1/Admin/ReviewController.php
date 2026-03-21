@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ReviewResource;
 use App\Models\Review;
 use App\Services\ReviewService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private ReviewService $reviewService) {}
 
     public function index(Request $request): JsonResponse

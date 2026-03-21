@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+    use ApiResponse;
+    
     public function index(): JsonResponse
     {
         $brands = Brand::withCount('products')->orderBy('name')->get();

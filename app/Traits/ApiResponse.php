@@ -64,4 +64,15 @@ trait ApiResponse
             'message' => $message,
         ], 200);
     }
+
+    protected function forbiddenResponse(
+        string $message = 'Forbidden',
+        mixed $errors = null
+    ): JsonResponse {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'errors'  => $errors,
+        ], 403);
+    }
 }

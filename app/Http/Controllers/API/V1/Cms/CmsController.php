@@ -7,11 +7,14 @@ use App\Http\Resources\BannerResource;
 use App\Models\Banner;
 use App\Models\CmsPage;
 use App\Models\Setting;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
 class CmsController extends Controller
 {
+    use ApiResponse;
+    
     /**
      * GET /api/v1/cms/pages
      */

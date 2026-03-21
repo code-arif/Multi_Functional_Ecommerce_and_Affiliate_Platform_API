@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\CheckoutService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CheckoutController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private CheckoutService $checkoutService) {}
 
     /**

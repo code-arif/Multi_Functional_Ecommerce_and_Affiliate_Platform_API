@@ -7,11 +7,14 @@ use App\Http\Requests\AddToCartRequest;
 use App\Http\Resources\CartResource;
 use App\Models\CartItem;
 use App\Services\CartService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
+    use ApiResponse;
+    
     public function __construct(private CartService $cartService) {}
 
     /**
