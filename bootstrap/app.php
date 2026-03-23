@@ -1,12 +1,26 @@
 <?php
 
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\BannedUserMiddleware;
+use App\Http\Middleware\ForceJsonResponse;
+use App\Http\Middleware\MaintenanceModeMiddleware;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\RoleMiddleware;
+use App\Http\Middleware\SanitizeInput;
+use App\Http\Middleware\SecurityHeaders;
 use App\Jobs\CleanExpiredCarts;
 use App\Jobs\GenerateDailyReport;
 use App\Jobs\WarmCacheJob;
+use App\Providers\AppServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\RepositoryServiceProvider;
+use Illuminate\Auth\Middleware\Authenticate;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 use Illuminate\Support\Facades\Log;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -17,12 +31,45 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__ . '/../routes/channels.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-        //
+    ->withMiddleware(function (Middleware $middleware) {
+
+        // ─── Global Middleware (every request) ───────────────────
+        $middleware->append(SecurityHeaders::class);
+        $middleware->append(SanitizeInput::class);
+
+        // ─── API Middleware Group ─────────────────────────────────
+        $middleware->api(append: [
+            ForceJsonResponse::class,
+            ThrottleRequests::class . ':api',
+            // ApiRequestLogger::class,
+            MaintenanceModeMiddleware::class,
+        ]);
+
+        // ─── Authenticated Routes ─────────────────────────────────
+        $middleware->alias([
+            'auth'       => Authenticate::class,
+            'admin'      => AdminMiddleware::class,
+            'role'       => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'banned'     => BannedUserMiddleware::class,
+            'throttle'   => ThrottleRequests::class,
+            'verified'   => EnsureEmailIsVerified::class,
+        ]);
+
+        // ─── CORS ─────────────────────────────────────────────────
+        $middleware->validateCsrfTokens(except: ['api/*']);
+
+        // ─── Sanctum Token Auth ───────────────────────────────────
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->withSchedule(function (Schedule $schedule) {
+    })->withProviders([
+        AppServiceProvider::class,
+        RepositoryServiceProvider::class,
+        EventServiceProvider::class,
+    ])
+    ->withSchedule(function (Schedule $schedule) {
         // ─── Reports ─────────────────────────────────────────────
         $schedule->job(new GenerateDailyReport(), 'reports')
             ->dailyAt('00:05')
