@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\API\V1\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\V1\BaseController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
-use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
-    use ApiResponse;
-    
     public function __construct(private AuthService $authService) {}
 
     /**
@@ -37,7 +34,8 @@ class AuthController extends Controller
     {
         $result = $this->authService->login(
             $request->only('email', 'password'),
-            $request->device_name ?? 'api'
+            $request->device_name ?? 'api',
+            $request->ip()
         );
 
         return $this->successResponse([
@@ -51,7 +49,10 @@ class AuthController extends Controller
      */
     public function adminLogin(LoginRequest $request): JsonResponse
     {
-        $result = $this->authService->adminLogin($request->only('email', 'password'));
+        $result = $this->authService->adminLogin(
+            $request->only('email', 'password'),
+            $request->ip()
+        );
 
         return $this->successResponse([
             'user'        => new UserResource($result['user']),
@@ -74,6 +75,15 @@ class AuthController extends Controller
     }
 
     /**
+     * POST /api/v1/auth/logout-all — Revoke all devices
+     */
+    public function logoutAll(Request $request): JsonResponse
+    {
+        $this->authService->logoutAll($request->user());
+        return $this->noContentResponse('Logged out from all devices.');
+    }
+
+    /**
      * GET /api/v1/auth/me
      */
     public function me(Request $request): JsonResponse
@@ -88,24 +98,24 @@ class AuthController extends Controller
     public function updateProfile(Request $request): JsonResponse
     {
         $request->validate([
-            'name'         => 'sometimes|string|max:100',
-            'phone'        => "sometimes|string|max:20|unique:users,phone,{$request->user()->id}",
+            'name'             => 'sometimes|string|max:100',
+            'phone'            => "sometimes|string|max:20|unique:users,phone,{$request->user()->id}",
             'current_password' => 'required_with:password|string',
             'password'         => 'sometimes|string|min:8|confirmed',
         ]);
 
-        // Verify current password if changing password
         if ($request->has('password')) {
             if (!password_verify($request->current_password, $request->user()->password)) {
                 return $this->errorResponse('Current password is incorrect.', null, 422);
             }
         }
 
-        $user = $this->authService->updateProfile($request->user(), $request->only([
-            'name', 'phone', 'password',
-        ]));
+        $user = $this->authService->updateProfile(
+            $request->user(),
+            $request->only(['name', 'phone', 'password'])
+        );
 
-        return $this->successResponse(new UserResource($user), 'Profile updated successfully.');
+        return $this->successResponse(new UserResource($user), 'Profile updated.');
     }
 
     /**
@@ -120,8 +130,6 @@ class AuthController extends Controller
         $path = $request->file('avatar')->store('avatars', 'public');
         $user = $this->authService->updateAvatar($request->user(), $path);
 
-        return $this->successResponse([
-            'avatar_url' => $user->avatar_url,
-        ], 'Avatar updated successfully.');
+        return $this->successResponse(['avatar_url' => $user->avatar_url], 'Avatar updated.');
     }
 }
