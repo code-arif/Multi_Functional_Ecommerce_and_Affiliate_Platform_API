@@ -119,11 +119,31 @@ return [
     | Supported drivers: "database-uuids", "dynamodb", "file", "null"
     |
     */
-
     'failed' => [
-        'driver' => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
-        'database' => env('DB_CONNECTION', 'sqlite'),
-        'table' => 'failed_jobs',
+        'driver'   => env('QUEUE_FAILED_DRIVER', 'database-uuids'),
+        'database' => env('DB_CONNECTION', 'mysql'),
+        'table'    => 'failed_jobs',
+    ],
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Named Queues
+    |--------------------------------------------------------------------------
+    | Priority order (highest to lowest):
+    |   high        → order processing, payment
+    |   emails      → transactional emails
+    |   notifications → push / DB notifications
+    |   default     → general jobs
+    |   reports     → heavy analytics jobs (low priority)
+    */
+
+    'queues' => [
+        'high',
+        'emails',
+        'notifications',
+        'default',
+        'reports',
     ],
 
 ];
