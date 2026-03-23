@@ -1,5 +1,6 @@
 <?php
 
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -89,7 +90,7 @@ return [
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
-                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://' . env('PAPERTRAIL_URL') . ':' . env('PAPERTRAIL_PORT'),
             ],
             'processors' => [PsrLogMessageProcessor::class],
         ],
@@ -125,6 +126,59 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        // ─── Order Events ─────────────────────────────────────────
+        'orders' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/orders.log'),
+            'level'  => 'info',
+            'days'   => 60,
+            'formatter' => JsonFormatter::class,
+        ],
+
+        // ─── Payment Events ───────────────────────────────────────
+        'payments' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/payments.log'),
+            'level'  => 'info',
+            'days'   => 90,
+            'formatter' => JsonFormatter::class,
+        ],
+
+        // ─── Admin Actions ────────────────────────────────────────
+        'admin_actions' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/admin_actions.log'),
+            'level'  => 'info',
+            'days'   => 90,
+            'formatter' => JsonFormatter::class,
+        ],
+
+        // ─── Security Events ──────────────────────────────────────
+        // Login attempts, unauthorized access, IP bans
+        'security' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/security.log'),
+            'level'  => 'warning',
+            'days'   => 90,
+            'formatter' => \Monolog\Formatter\JsonFormatter::class,
+        ],
+
+        // ─── API Requests (optional, high volume) ─────────────────
+        'api' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/api.log'),
+            'level'  => 'info',
+            'days'   => 7,
+        ],
+
+        // ─── Queue Jobs ───────────────────────────────────────────
+        'queue' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/queue.log'),
+            'level'  => 'info',
+            'days'   => 14,
         ],
 
     ],
