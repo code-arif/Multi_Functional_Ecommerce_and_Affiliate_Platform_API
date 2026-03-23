@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 return [
@@ -8,19 +9,20 @@ return [
     |--------------------------------------------------------------------------
     | Stateful Domains
     |--------------------------------------------------------------------------
-    |
-    | Requests from the following domains / hosts will receive stateful API
-    | authentication cookies. Typically, these should include your local
-    | and production domains which access your API via a frontend SPA.
-    |
+    | These domains receive Sanctum's CSRF-protected authentication cookies
+    | when requests are made from the SPA frontend. Any other domain hitting
+    | the API must use Bearer tokens.
     */
-
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
-        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
-        Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
-    ))),
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', implode(',', [
+        'localhost',
+        'localhost:3000',
+        'localhost:3001',
+        '127.0.0.1',
+        '127.0.0.1:8000',
+        '::1',
+        Str::replaceFirst('https://', '', env('FRONTEND_URL', '')),
+        Str::replaceFirst('https://', '', env('ADMIN_URL', '')),
+    ]))),
 
     /*
     |--------------------------------------------------------------------------
