@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Product extends Model
 {
@@ -147,7 +148,7 @@ class Product extends Model
             : asset('storage/' . $this->thumbnail);
     }
 
-    public function getCurrentPriceAttribute(): float
+    public function getCurrentPriceAttribute()
     {
         return $this->sale_price ?? $this->price;
     }
@@ -193,5 +194,26 @@ class Product extends Model
             'average_rating' => round($avg, 2),
             'total_reviews'  => $total,
         ]);
+    }
+
+    /**
+     * Generate new slug for product
+     */
+    public static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $slug = Str::slug($name); // base slug
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (
+            static::where('slug', $slug)
+            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
+            ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
 }

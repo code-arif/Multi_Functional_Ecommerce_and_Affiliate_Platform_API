@@ -117,7 +117,7 @@ class ProductService
         return DB::transaction(function () use ($product, $data) {
             // If name changed and slug is being reset
             if (isset($data['name']) && empty($data['slug'])) {
-                $data['slug'] = \App\Models\Product::generateUniqueSlug($data['name'], $product->id);
+                $data['slug'] = Product::generateUniqueSlug($data['name'], $product->id);
             }
 
             $product->update($data);

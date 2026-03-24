@@ -170,7 +170,7 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::get('products/{product}', [Admin\ProductController::class, 'show'])->middleware('permission:products.view');
         Route::post('products', [Admin\ProductController::class, 'store'])->middleware('permission:products.create');
         Route::put('products/{product}',[Admin\ProductController::class, 'update'])->middleware('permission:products.edit');
-        Route::delete('products/{product}',[Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete');
+        Route::delete('products/{product}',[Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete'); // DONE:Product delete
         Route::post('products/upload-image', [Admin\ProductController::class, 'uploadImage'])->middleware('permission:products.create');
 
         // Categories
