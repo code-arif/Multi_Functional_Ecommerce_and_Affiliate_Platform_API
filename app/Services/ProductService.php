@@ -79,6 +79,9 @@ class ProductService
                       ->get();
     }
 
+    /**
+     * Create product
+     */
     public function createProduct(array $data): Product
     {
         return DB::transaction(function () use ($data) {

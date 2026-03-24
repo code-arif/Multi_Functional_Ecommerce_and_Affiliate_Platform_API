@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     use ApiResponse;
-    
+
     public function __construct(private ProductService $productService) {}
 
     public function index(Request $request): JsonResponse
@@ -36,6 +36,9 @@ class ProductController extends Controller
         );
     }
 
+    /**
+     * Store product form admin dashboard
+     */
     public function store(StoreProductRequest $request): JsonResponse
     {
         $data = $request->validated();
