@@ -23,8 +23,8 @@ class ProductController extends Controller
     {
         $products = Product::with(['category', 'brand'])
             ->when($request->search, fn($q) =>
-                $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('sku', 'like', "%{$request->search}%"))
+            $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('sku', 'like', "%{$request->search}%"))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
             ->withCount('reviews')
@@ -79,14 +79,31 @@ class ProductController extends Controller
 
     /**
      * POST /api/v1/admin/products/upload-image
+     * Handles both gallery images AND thumbnail uploads
      */
     public function uploadImage(Request $request): JsonResponse
     {
-        $request->validate(['image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120']);
-        $path = $this->productService->uploadImage($request->file('image'));
-        return $this->successResponse([
-            'path' => $path,
-            'url'  => asset('storage/' . $path),
-        ], 'Image uploaded.');
+        $request->validate([
+            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $this->productService->uploadThumbnail($request->file('thumbnail'));
+            return $this->successResponse([
+                'path' => $path,
+                'url'  => asset('storage/' . $path),
+            ], 'Thumbnail uploaded.');
+        }
+
+        if ($request->hasFile('image')) {
+            $path = $this->productService->uploadImage($request->file('image'));
+            return $this->successResponse([
+                'path' => $path,
+                'url'  => asset('storage/' . $path),
+            ], 'Image uploaded.');
+        }
+
+        return response()->json(['message' => 'No file provided.'], 422);
     }
 }

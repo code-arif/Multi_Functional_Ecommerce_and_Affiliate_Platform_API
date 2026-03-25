@@ -39,10 +39,10 @@ class ProductService
     {
         return Cache::remember("products_featured_{$limit}", now()->addMinutes(30), function () use ($limit) {
             return Product::with(['images', 'category', 'brand'])
-                          ->featured()
-                          ->orderBy('created_at', 'desc')
-                          ->limit($limit)
-                          ->get();
+                ->featured()
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
         });
     }
 
@@ -50,10 +50,10 @@ class ProductService
     {
         return Cache::remember("products_new_{$limit}", now()->addMinutes(30), function () use ($limit) {
             return Product::with(['images', 'category', 'brand'])
-                          ->new()
-                          ->orderBy('created_at', 'desc')
-                          ->limit($limit)
-                          ->get();
+                ->new()
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
         });
     }
 
@@ -61,22 +61,22 @@ class ProductService
     {
         return Cache::remember("products_bestsellers_{$limit}", now()->addMinutes(30), function () use ($limit) {
             return Product::with(['images', 'category', 'brand'])
-                          ->bestseller()
-                          ->orderBy('total_sold', 'desc')
-                          ->limit($limit)
-                          ->get();
+                ->bestseller()
+                ->orderBy('total_sold', 'desc')
+                ->limit($limit)
+                ->get();
         });
     }
 
     public function getRelated(Product $product, int $limit = 8)
     {
         return Product::with(['images'])
-                      ->where('category_id', $product->category_id)
-                      ->where('id', '!=', $product->id)
-                      ->active()
-                      ->inRandomOrder()
-                      ->limit($limit)
-                      ->get();
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->active()
+            ->inRandomOrder()
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -160,31 +160,97 @@ class ProductService
 
     // ─── Private Helpers ──────────────────────────────────────────
 
+    // private function syncImages(Product $product, array $images): void
+    // {
+    //     // Delete removed images
+    //     // $keepIds = collect($images)->pluck('id')->filter()->toArray();
+
+    //     $keepIds = collect($images)
+    //         ->pluck('id')
+    //         ->filter()
+    //         ->values()
+    //         ->toArray();
+
+    //     $product->images()->whereNotIn('id', $keepIds)->each(function ($img) {
+    //         Storage::disk('public')->delete($img->image_path);
+    //         $img->delete();
+    //     });
+
+    //     foreach ($images as $index => $imageData) {
+    //         if (isset($imageData['id'])) {
+    //             ProductImage::where('id', $imageData['id'])->update([
+    //                 'is_primary'  => $imageData['is_primary'] ?? false,
+    //                 'sort_order'  => $index,
+    //                 'alt_text'    => $imageData['alt_text'] ?? null,
+    //             ]);
+    //         } else {
+    //             ProductImage::create([
+    //                 'product_id'  => $product->id,
+    //                 'image_path'  => $imageData['path'],
+    //                 'alt_text'    => $imageData['alt_text'] ?? null,
+    //                 'is_primary'  => $imageData['is_primary'] ?? ($index === 0),
+    //                 'sort_order'  => $index,
+    //             ]);
+    //         }
+    //     }
+    // }
+
     private function syncImages(Product $product, array $images): void
     {
-        // Delete removed images
-        $keepIds = collect($images)->pluck('id')->filter()->toArray();
-        $product->images()->whereNotIn('id', $keepIds)->each(function ($img) {
-            Storage::disk('public')->delete($img->image_path);
-            $img->delete();
-        });
+        // Keep images with id
+        $keepIds = collect($images)
+            ->pluck('id')
+            ->filter()
+            ->values()
+            ->toArray();
 
+        $existingIds = $product->images()->pluck('id')->toArray();
+
+        $hasExistingInPayload = collect($images)->contains(fn($img) => !empty($img['id']));
+
+        if ($hasExistingInPayload || !empty($keepIds)) {
+            $toDelete = $product->images()
+                ->whereNotIn('id', $keepIds)
+                ->get();
+
+            foreach ($toDelete as $img) {
+                Storage::disk('public')->delete($img->image_path);
+                $img->delete();
+            }
+        }
+
+        // Insert/Update
         foreach ($images as $index => $imageData) {
-            if (isset($imageData['id'])) {
-                ProductImage::where('id', $imageData['id'])->update([
-                    'is_primary'  => $imageData['is_primary'] ?? false,
-                    'sort_order'  => $index,
-                    'alt_text'    => $imageData['alt_text'] ?? null,
-                ]);
+            if (!empty($imageData['id'])) {
+                // Existing image — update metadata only
+                ProductImage::where('id', $imageData['id'])
+                    ->where('product_id', $product->id) // security check
+                    ->update([
+                        'is_primary' => $imageData['is_primary'] ?? false,
+                        'sort_order' => $index,
+                        'alt_text'   => $imageData['alt_text'] ?? null,
+                    ]);
             } else {
+                // New image — create
+                if (empty($imageData['path'])) continue; // safety check
+
                 ProductImage::create([
-                    'product_id'  => $product->id,
-                    'image_path'  => $imageData['path'],
-                    'alt_text'    => $imageData['alt_text'] ?? null,
-                    'is_primary'  => $imageData['is_primary'] ?? ($index === 0),
-                    'sort_order'  => $index,
+                    'product_id' => $product->id,
+                    'image_path' => $imageData['path'],
+                    'alt_text'   => $imageData['alt_text'] ?? null,
+                    'is_primary' => $imageData['is_primary'] ?? ($index === 0),
+                    'sort_order' => $index,
                 ]);
             }
+        }
+
+        // There will be only one primary image — ensure
+        $primaryCount = $product->images()->where('is_primary', true)->count();
+        if ($primaryCount === 0 && $product->images()->exists()) {
+            $product->images()->orderBy('sort_order')->first()->update(['is_primary' => true]);
+        } elseif ($primaryCount > 1) {
+            $firstPrimary = $product->images()->where('is_primary', true)->orderBy('sort_order')->first();
+            $product->images()->where('id', '!=', $firstPrimary->id)->update(['is_primary' => false]);
         }
     }
 

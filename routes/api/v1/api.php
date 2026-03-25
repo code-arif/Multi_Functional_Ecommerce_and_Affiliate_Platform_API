@@ -24,9 +24,10 @@ use App\Http\Controllers\API\V1\Admin;
 
 // Auth — rate-limited to prevent brute force
 Route::prefix('auth')->middleware('throttle:auth')->group(function () {
-    Route::post('register',[AuthController::class, 'register']);
-    Route::post('login',[AuthController::class, 'login']);
-    Route::post('admin/login',[AuthController::class, 'adminLogin']); // DONE: Admin login
+    Route::post('register', [AuthController::class, 'register']);
+    Route::post('login', [AuthController::class, 'login']);
+
+    Route::post('admin/login', [AuthController::class, 'adminLogin']); // DONE: Admin login
 });
 
 // Products — public browsing
@@ -166,12 +167,13 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::get('dashboard',             [Admin\DashboardController::class, 'index']);
 
         // Products — permission-gated
+        Route::post('products/upload-image', [Admin\ProductController::class, 'uploadImage'])->middleware('permission:products.create'); // DONE: upload image
+
         Route::get('products', [Admin\ProductController::class, 'index'])->middleware('permission:products.view');
+        Route::post('products', [Admin\ProductController::class, 'store'])->middleware('permission:products.create'); // DONE: product store
         Route::get('products/{product}', [Admin\ProductController::class, 'show'])->middleware('permission:products.view');
-        Route::post('products', [Admin\ProductController::class, 'store'])->middleware('permission:products.create');
-        Route::put('products/{product}',[Admin\ProductController::class, 'update'])->middleware('permission:products.edit');
-        Route::delete('products/{product}',[Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete'); // DONE:Product delete
-        Route::post('products/upload-image', [Admin\ProductController::class, 'uploadImage'])->middleware('permission:products.create');
+        Route::put('products/{product}', [Admin\ProductController::class, 'update'])->middleware('permission:products.edit'); // DONE: update product
+        Route::delete('products/{product}', [Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete');
 
         // Categories
         Route::apiResource('categories',    Admin\CategoryController::class)
