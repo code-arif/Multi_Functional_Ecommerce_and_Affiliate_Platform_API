@@ -11,13 +11,19 @@ use Illuminate\Http\Request;
 class BrandController extends Controller
 {
     use ApiResponse;
-    
+
+    /**
+     * Brand list
+     */
     public function index(): JsonResponse
     {
         $brands = Brand::withCount('products')->orderBy('name')->get();
         return $this->successResponse($brands);
     }
 
+    /**
+     * Brand store
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -35,6 +41,9 @@ class BrandController extends Controller
         return $this->createdResponse($brand, 'Brand created.');
     }
 
+    /**
+     * Brand update
+     */
     public function update(Request $request, Brand $brand): JsonResponse
     {
         $data = $request->except('logo');
@@ -45,6 +54,9 @@ class BrandController extends Controller
         return $this->successResponse($brand, 'Brand updated.');
     }
 
+    /**
+     * Brand delete
+     */
     public function destroy(Brand $brand): JsonResponse
     {
         $brand->delete();

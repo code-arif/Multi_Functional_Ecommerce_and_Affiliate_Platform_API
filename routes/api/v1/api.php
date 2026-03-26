@@ -176,12 +176,16 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::delete('products/{product}', [Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete'); // DONE: product delete
 
         // Categories
-        Route::apiResource('categories',    Admin\CategoryController::class)
-            ->middleware('permission:categories.manage');
+        Route::get('categories', [Admin\CategoryController::class, 'index'])->middleware('permission:categories.view'); // DONE: Category list
+        Route::post('categories/store', [Admin\CategoryController::class, 'store'])->middleware('permission:categories.manage'); // DONE: Category store
+        Route::put('categories/{category}/update', [Admin\CategoryController::class, 'update'])->middleware('permission:categories.manage'); // DONE: Category update
+        Route::delete('categories/{category}/delete', [Admin\CategoryController::class, 'destroy'])->middleware('permission:categories.manage'); // DONE: Category delete
 
         // Brands
-        Route::apiResource('brands',        Admin\BrandController::class)
-            ->middleware('permission:brands.manage');
+        Route::get('brands', [Admin\BrandController::class, 'index'])->middleware('permission:brands.view');
+        Route::post('brands/store', [Admin\BrandController::class, 'store'])->middleware('permission:brands.manage');
+        Route::put('brands/{brand}/update', [Admin\BrandController::class, 'update'])->middleware('permission:brands.manage');
+        Route::delete('brands/{brand}/delete', [Admin\BrandController::class, 'destroy'])->middleware('permission:brands.manage');
 
         // Orders
         Route::get('orders',                [Admin\OrderController::class, 'index'])->middleware('permission:orders.view');

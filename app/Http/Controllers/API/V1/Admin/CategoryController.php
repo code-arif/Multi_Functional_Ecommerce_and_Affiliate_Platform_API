@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Cache;
 class CategoryController extends Controller
 {
     use ApiResponse;
-    
+
+    /**
+     * Categories list
+     */
     public function index(): JsonResponse
     {
         $categories = Category::withTrashed()
@@ -24,6 +27,9 @@ class CategoryController extends Controller
         return $this->successResponse(CategoryResource::collection($categories));
     }
 
+    /**
+     * Store category
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -49,6 +55,9 @@ class CategoryController extends Controller
         return $this->createdResponse(new CategoryResource($category), 'Category created.');
     }
 
+    /**
+     * Update category
+     */
     public function update(Request $request, Category $category): JsonResponse
     {
         $data = $request->except('image');
@@ -61,6 +70,9 @@ class CategoryController extends Controller
         return $this->successResponse(new CategoryResource($category), 'Category updated.');
     }
 
+    /**
+     * Delete category
+     */
     public function destroy(Category $category): JsonResponse
     {
         $category->delete();
