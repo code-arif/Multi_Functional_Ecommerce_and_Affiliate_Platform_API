@@ -18,10 +18,10 @@ use Laravel\Sanctum\PersonalAccessToken;
  */
 class SecurityService
 {
-    private const MAX_LOGIN_ATTEMPTS    = 5;
-    private const LOCKOUT_DURATION      = 900;  // 15 minutes in seconds
-    private const ATTEMPT_WINDOW        = 300;  // Track attempts over 5 minutes
-    private const IP_BLOCK_THRESHOLD    = 20;   // Requests from same IP in 1 min
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOCKOUT_DURATION = 900;  // 15 minutes in seconds
+    private const ATTEMPT_WINDOW = 300;  // Track attempts over 5 minutes
+    private const IP_BLOCK_THRESHOLD = 20;   // Requests from same IP in 1 min
 
     // ─── Login Brute Force ────────────────────────────────────────
 
@@ -30,20 +30,18 @@ class SecurityService
         $emailKey = "login_attempts:email:{$email}";
         $ipKey    = "login_attempts:ip:{$ip}";
 
-        Cache::increment($emailKey);
-        Cache::expire($emailKey, self::ATTEMPT_WINDOW);
+        $emailAttempts = Cache::get($emailKey, 0) + 1;
+        Cache::put($emailKey, $emailAttempts, self::ATTEMPT_WINDOW);
 
-        Cache::increment($ipKey);
-        Cache::expire($ipKey, self::ATTEMPT_WINDOW);
+        $ipAttempts = Cache::get($ipKey, 0) + 1;
+        Cache::put($ipKey, $ipAttempts, self::ATTEMPT_WINDOW);
 
-        $attempts = Cache::get($emailKey, 0);
-
-        if ($attempts >= self::MAX_LOGIN_ATTEMPTS) {
+        if ($emailAttempts >= self::MAX_LOGIN_ATTEMPTS) {
             $this->lockAccount($email);
             Log::channel('security')->warning('Account locked after failed attempts', [
                 'email'    => $email,
                 'ip'       => $ip,
-                'attempts' => $attempts,
+                'attempts' => $emailAttempts,
             ]);
         }
     }
@@ -124,9 +122,13 @@ class SecurityService
     public function pruneExpiredTokens(int $days = 30): int
     {
         $count = PersonalAccessToken::where(
-            'last_used_at', '<', now()->subDays($days)
+            'last_used_at',
+            '<',
+            now()->subDays($days)
         )->orWhereNull('last_used_at')->where(
-            'created_at', '<', now()->subDays($days)
+            'created_at',
+            '<',
+            now()->subDays($days)
         )->delete();
 
         Log::channel('security')->info("Pruned {$count} expired tokens");

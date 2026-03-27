@@ -32,13 +32,13 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
 
 // Products — public browsing
 Route::prefix('products')->middleware('throttle:api')->group(function () {
-    Route::get('/',               [ProductController::class, 'index']);
+    Route::get('/', [ProductController::class, 'index']); // DONE: product list
     Route::get('featured',        [ProductController::class, 'featured']);
     Route::get('new-arrivals',    [ProductController::class, 'newArrivals']);
     Route::get('bestsellers',     [ProductController::class, 'bestsellers']);
     Route::get('{slug}/reviews',  [ReviewController::class, 'index']);
     Route::get('{slug}/related',  [ProductController::class, 'related']);
-    Route::get('{slug}',          [ProductController::class, 'show']);
+    Route::get('{slug}', [ProductController::class, 'show']);
 });
 
 // Categories
@@ -118,8 +118,8 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::apiResource('addresses',    AddressController::class);
 
     // Orders
-    Route::get('orders',               [OrderController::class, 'index']);
-    Route::get('orders/{number}',      [OrderController::class, 'show']);
+    Route::get('orders', [OrderController::class, 'index']); // DONE: user order list
+    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE: 
     Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
 
     // Wishlist

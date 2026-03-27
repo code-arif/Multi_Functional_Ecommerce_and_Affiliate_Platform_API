@@ -9,11 +9,12 @@ use App\Services\OrderService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     use ApiResponse;
-    
+
     public function __construct(private OrderService $orderService) {}
 
     /**
@@ -22,9 +23,9 @@ class OrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $orders = Order::forUser($request->user()->id)
-                       ->with(['items', 'payment'])
-                       ->orderBy('created_at', 'desc')
-                       ->paginate(15);
+            ->with(['items', 'payment'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return $this->paginatedResponse(
             OrderResource::collection($orders),
@@ -37,10 +38,17 @@ class OrderController extends Controller
      */
     public function show(Request $request, string $orderNumber): JsonResponse
     {
+        $userId = Auth::id(); // logged in user ID
+        // dd($userId);
+
         $order = Order::where('order_number', $orderNumber)
-                      ->where('user_id', $request->user()->id)
-                      ->with(['items', 'payment', 'statusHistories'])
-                      ->firstOrFail();
+            ->where('user_id', $userId)
+            ->with(['items', 'payment', 'statusHistories'])
+            ->first(); // find() na, first() use korte hobe
+
+        if (!$order) {
+            return $this->errorResponse('No order found');
+        }
 
         return $this->successResponse(new OrderResource($order));
     }
@@ -51,8 +59,8 @@ class OrderController extends Controller
     public function trackGuest(string $token): JsonResponse
     {
         $order = Order::where('guest_token', $token)
-                      ->with(['items', 'payment', 'statusHistories'])
-                      ->firstOrFail();
+            ->with(['items', 'payment', 'statusHistories'])
+            ->firstOrFail();
 
         return $this->successResponse(new OrderResource($order));
     }
@@ -63,8 +71,8 @@ class OrderController extends Controller
     public function cancel(Request $request, string $orderNumber): JsonResponse
     {
         $order = Order::where('order_number', $orderNumber)
-                      ->where('user_id', $request->user()->id)
-                      ->firstOrFail();
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
 
         $order = $this->orderService->cancelOrder($order, $request->user()->id);
 
