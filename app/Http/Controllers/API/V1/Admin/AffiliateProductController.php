@@ -13,6 +13,9 @@ class AffiliateProductController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * Affiliate product list
+     */
     public function index(Request $request): JsonResponse
     {
         $products = AffiliateProduct::with('category')
@@ -22,6 +25,9 @@ class AffiliateProductController extends Controller
         return $this->paginatedResponse(AffiliateProductResource::collection($products));
     }
 
+    /**
+     * Affiliate product store
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -42,6 +48,9 @@ class AffiliateProductController extends Controller
         return $this->createdResponse(new AffiliateProductResource($product), 'Affiliate product created.');
     }
 
+    /**
+     * Affiliate product update
+     */
     public function update(Request $request, AffiliateProduct $affiliateProduct): JsonResponse
     {
         $data = $request->except('thumbnail');
@@ -52,6 +61,9 @@ class AffiliateProductController extends Controller
         return $this->successResponse(new AffiliateProductResource($affiliateProduct), 'Updated.');
     }
 
+    /**
+     * Affiliate product delete
+     */
     public function destroy(AffiliateProduct $affiliateProduct): JsonResponse
     {
         $affiliateProduct->delete();

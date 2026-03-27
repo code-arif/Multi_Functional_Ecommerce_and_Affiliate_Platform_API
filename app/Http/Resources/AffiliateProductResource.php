@@ -23,6 +23,7 @@ class AffiliateProductResource extends JsonResource
             'source_platform' => $this->source_platform,
             'click_count'     => $this->click_count,
             'meta_title'      => $this->meta_title,
+            'is_active'        => $this->is_active,
             'meta_description'=> $this->meta_description,
             'category'        => $this->whenLoaded('category', fn() => [
                 'name' => $this->category?->name,

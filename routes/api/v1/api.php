@@ -208,8 +208,10 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
             ->middleware('permission:banners.manage');
 
         // Affiliate Products
-        Route::apiResource('affiliate-products', Admin\AffiliateProductController::class)
-            ->middleware('permission:affiliate.manage');
+        Route::get('affiliate-products', [Admin\AffiliateProductController::class, 'index'])->middleware('permission:affiliate.manage'); // DONE: affiliate product list
+        Route::post('affiliate-products/store', [Admin\AffiliateProductController::class, 'store'])->middleware('permission:affiliate.manage'); // DONE: affiliate product store
+        Route::put('affiliate-products/{affiliate-product}/update', [Admin\AffiliateProductController::class, 'update'])->middleware('permission:affiliate.manage'); // DONE: affiliate product update
+        Route::delete('affiliate-products/{affiliate-product}/delete', [Admin\AffiliateProductController::class, 'destroy'])->middleware('permission:affiliate.manage'); // DONE: affiliate product delete
 
         // CMS Pages
         Route::apiResource('pages',         Admin\CmsPageController::class)
