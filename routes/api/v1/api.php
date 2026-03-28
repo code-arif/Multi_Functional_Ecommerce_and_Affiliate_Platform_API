@@ -66,7 +66,7 @@ Route::prefix('affiliate')->middleware('throttle:api')->group(function () {
 Route::prefix('cms')->middleware('throttle:api')->group(function () {
     Route::get('pages',           [CmsController::class, 'pages']);
     Route::get('pages/{slug}',    [CmsController::class, 'page']);
-    Route::get('banners/{pos}',   [CmsController::class, 'banners']);
+    Route::get('banners/{pos}',[CmsController::class, 'banners']);
     Route::get('homepage',        [CmsController::class, 'homepage']);
     Route::get('settings',        [CmsController::class, 'settings']);
 });
@@ -78,6 +78,7 @@ Route::prefix('seo')->middleware('throttle:api')->group(function () {
     Route::get('category/{slug}', [SeoController::class, 'category']);
     Route::get('page/{slug}',     [SeoController::class, 'page']);
 });
+
 Route::get('sitemap.xml',         [SeoController::class, 'sitemap']);
 
 // Cart — accessible to guests via X-Session-ID header
@@ -119,7 +120,7 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
 
     // Orders
     Route::get('orders', [OrderController::class, 'index']); // DONE: user order list
-    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE: 
+    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE:
     Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
 
     // Wishlist

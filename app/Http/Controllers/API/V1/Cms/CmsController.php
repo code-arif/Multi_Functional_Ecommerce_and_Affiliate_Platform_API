@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Cache;
 class CmsController extends Controller
 {
     use ApiResponse;
-    
+
     /**
      * GET /api/v1/cms/pages
      */
