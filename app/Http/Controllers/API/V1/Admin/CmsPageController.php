@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CMS\StoreCmsPageRequest;
 use App\Models\CmsPage;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -11,33 +12,38 @@ use Illuminate\Http\Request;
 class CmsPageController extends Controller
 {
     use ApiResponse;
-    
+
+    /**
+     * Display a listing of the resource.
+     */
     public function index(): JsonResponse
     {
         $pages = CmsPage::withTrashed()->orderBy('sort_order')->get();
         return $this->successResponse($pages);
     }
 
-    public function store(Request $request): JsonResponse
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreCmsPageRequest $request): JsonResponse
     {
-        $request->validate([
-            'title'            => 'required|string|max:255',
-            'content'          => 'nullable|string',
-            'template'         => 'nullable|string|max:50',
-            'meta_title'       => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'is_active'        => 'boolean',
-        ]);
-        $page = CmsPage::create(array_merge($request->validated(), ['created_by' => auth()->id()]));
+        $page = CmsPage::create($request->validatedWithExtras());
+
         return $this->createdResponse($page, 'Page created.');
     }
 
+    /**
+     * Display the specified resource.
+     */
     public function update(Request $request, CmsPage $cmsPage): JsonResponse
     {
         $cmsPage->update($request->except('slug'));
         return $this->successResponse($cmsPage, 'Page updated.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(CmsPage $cmsPage): JsonResponse
     {
         $cmsPage->delete();

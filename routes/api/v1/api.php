@@ -215,7 +215,7 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::delete('affiliate-products/{affiliate-product}/delete', [Admin\AffiliateProductController::class, 'destroy'])->middleware('permission:affiliate.manage'); // DONE: affiliate product delete
 
         // CMS Pages
-        Route::apiResource('pages',         Admin\CmsPageController::class)
+        Route::apiResource('pages', Admin\CmsPageController::class)
             ->middleware('permission:cms.manage');
 
         // Settings
