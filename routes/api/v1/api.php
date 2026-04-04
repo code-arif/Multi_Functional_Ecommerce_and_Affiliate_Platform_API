@@ -94,8 +94,8 @@ Route::prefix('cart')->middleware('throttle:api')->group(function () {
 
 // Checkout — stricter throttle to prevent order flooding
 Route::prefix('checkout')->middleware('throttle:checkout')->group(function () {
-    Route::post('/',               [CheckoutController::class, 'process']);
-    Route::get('shipping-cost',    [CheckoutController::class, 'shippingCost']);
+    Route::post('/', [CheckoutController::class, 'process']);
+    Route::get('shipping-cost', [CheckoutController::class, 'shippingCost']);
 });
 
 // Guest order tracking (no auth — uses token)
@@ -189,10 +189,10 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::delete('brands/{brand}/delete', [Admin\BrandController::class, 'destroy'])->middleware('permission:brands.manage'); // DONE: Brand list
 
         // Orders
-        Route::get('orders',                [Admin\OrderController::class, 'index'])->middleware('permission:orders.view');
-        Route::get('orders/{order}',        [Admin\OrderController::class, 'show'])->middleware('permission:orders.view');
-        Route::patch('orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->middleware('permission:orders.manage');
-        Route::patch('orders/{order}/note', [Admin\OrderController::class, 'updateAdminNote'])->middleware('permission:orders.manage');
+        Route::get('orders',[Admin\OrderController::class, 'index'])->middleware('permission:orders.view');
+        Route::get('orders/{order}',[Admin\OrderController::class, 'show'])->middleware('permission:orders.view');
+        Route::patch('orders/{order}/status',[Admin\OrderController::class, 'updateStatus'])->middleware('permission:orders.manage');
+        Route::patch('orders/{order}/note',[Admin\OrderController::class, 'updateAdminNote'])->middleware('permission:orders.manage');
 
         // Coupons
         Route::apiResource('coupons',       Admin\CouponController::class)
@@ -205,8 +205,10 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::delete('reviews/{review}',   [Admin\ReviewController::class, 'destroy'])->middleware('permission:reviews.moderate');
 
         // Banners
-        Route::apiResource('banners',       Admin\BannerController::class)
-            ->middleware('permission:banners.manage');
+        Route::get('banners', [Admin\BannerController::class, 'index'])->middleware('permission:banners.view');
+        Route::post('banners', [Admin\BannerController::class, 'store'])->middleware('permission:banners.manage');
+        Route::put('banners/{banner}', [Admin\BannerController::class, 'update'])->middleware('permission:banners.manage');
+        Route::delete('banners/{banner}', [Admin\BannerController::class, 'destroy'])->middleware('permission:banners.manage');
 
         // Affiliate Products
         Route::get('affiliate-products', [Admin\AffiliateProductController::class, 'index'])->middleware('permission:affiliate.manage'); // DONE: affiliate product list

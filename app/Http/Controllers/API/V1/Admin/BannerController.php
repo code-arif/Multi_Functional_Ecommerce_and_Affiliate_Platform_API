@@ -14,12 +14,18 @@ class BannerController extends Controller
 {
     use ApiResponse;
 
+    /**
+     * Display a listing of the banners.
+     */
     public function index(): JsonResponse
     {
         $banners = Banner::orderBy('position')->orderBy('sort_order')->get();
         return $this->successResponse(BannerResource::collection($banners));
     }
 
+    /**
+     * Store a newly created banner in storage.
+     */
     public function store(Request $request): JsonResponse
     {
         $request->validate([
@@ -48,6 +54,9 @@ class BannerController extends Controller
         return $this->createdResponse(new BannerResource($banner), 'Banner created.');
     }
 
+    /**
+     * Update the specified banner in storage.
+     */
     public function update(Request $request, Banner $banner): JsonResponse
     {
         $data = $request->except(['image', 'mobile_image']);
@@ -62,6 +71,9 @@ class BannerController extends Controller
         return $this->successResponse(new BannerResource($banner), 'Banner updated.');
     }
 
+    /**
+     * Remove the specified banner from storage.
+     */
     public function destroy(Banner $banner): JsonResponse
     {
         $banner->delete();

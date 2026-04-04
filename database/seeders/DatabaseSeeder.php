@@ -22,7 +22,10 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             BrandSeeder::class,
             SettingSeeder::class,
-            AffiliateProductSeeder::class
+            AffiliateProductSeeder::class,
+            CategorySeeder::class,
+            BannerSeeder::class,
+
         ]);
     }
 }

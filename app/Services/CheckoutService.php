@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Events\OrderPlaced;
+use App\Events\OrderStatusUpdated;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\Payment;
-use App\Events\OrderPlaced;
-use App\Events\OrderStatusUpdated;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -30,7 +31,7 @@ class CheckoutService
                         ->first();
 
             if (!$cart || $cart->items->isEmpty()) {
-                throw new \Exception('Your cart is empty.');
+                throw new Exception('Your cart is empty.');
             }
 
             // Validate stock for all items
@@ -40,7 +41,7 @@ class CheckoutService
                     : $item->product->stock_quantity;
 
                 if ($item->product->manage_stock && $stock < $item->quantity) {
-                    throw new \Exception(
+                    throw new Exception(
                         "'{$item->product->name}' has insufficient stock."
                     );
                 }
