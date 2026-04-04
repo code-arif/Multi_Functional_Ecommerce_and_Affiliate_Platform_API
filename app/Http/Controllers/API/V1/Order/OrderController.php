@@ -39,12 +39,11 @@ class OrderController extends Controller
     public function show(Request $request, string $orderNumber): JsonResponse
     {
         $userId = Auth::id(); // logged in user ID
-        // dd($userId);
 
         $order = Order::where('order_number', $orderNumber)
             ->where('user_id', $userId)
             ->with(['items', 'payment', 'statusHistories'])
-            ->first(); // find() na, first() use korte hobe
+            ->first();
 
         if (!$order) {
             return $this->errorResponse('No order found');

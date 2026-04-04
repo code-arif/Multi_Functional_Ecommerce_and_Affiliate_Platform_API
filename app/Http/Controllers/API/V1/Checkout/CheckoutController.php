@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Checkout;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CheckoutRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\Setting;
 use App\Services\CheckoutService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,7 @@ use Illuminate\Http\Request;
 class CheckoutController extends Controller
 {
     use ApiResponse;
-    
+
     public function __construct(private CheckoutService $checkoutService) {}
 
     /**
@@ -40,8 +41,8 @@ class CheckoutController extends Controller
     {
         $request->validate(['subtotal' => 'required|numeric|min:0']);
 
-        $freeShippingOver = (float) \App\Models\Setting::get('free_shipping_over', 1000);
-        $shippingCharge   = (float) \App\Models\Setting::get('shipping_charge', 60);
+        $freeShippingOver = (float) Setting::get('free_shipping_over', 1000);
+        $shippingCharge   = (float) Setting::get('shipping_charge', 60);
 
         $charge  = $request->subtotal >= $freeShippingOver ? 0 : $shippingCharge;
 
