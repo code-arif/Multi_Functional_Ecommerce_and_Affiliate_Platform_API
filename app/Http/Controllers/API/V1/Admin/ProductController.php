@@ -21,7 +21,7 @@ class ProductController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $products = Product::with(['category', 'brand'])
+        $products = Product::with(['category', 'brand', 'variants'])
             ->when($request->search, fn($q) =>
             $q->where('name', 'like', "%{$request->search}%")
                 ->orWhere('sku', 'like', "%{$request->search}%"))

@@ -6,6 +6,7 @@ use App\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -76,7 +77,7 @@ class Product extends Model
         return $this->hasMany(ProductImage::class)->orderBy('sort_order');
     }
 
-    public function primaryImage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function primaryImage(): HasOne
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
     }
@@ -172,6 +173,66 @@ class Product extends Model
     public function getIsLowStockAttribute(): bool
     {
         return $this->stock_quantity <= $this->low_stock_threshold && $this->stock_quantity > 0;
+    }
+
+    // ─── Variable Product Accessors ───────────────────────────────
+
+    public function getMinVariantPriceAttribute(): ?float
+    {
+        if ($this->type !== 'variable') return null;
+
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->get();
+
+        if ($variants->isEmpty()) return null;
+
+        $prices = $variants->map(
+            fn($v) =>
+            $v->sale_price ?? $v->price
+        );
+
+        return (float) $prices->min();
+    }
+
+    public function getMaxVariantPriceAttribute(): ?float
+    {
+        if ($this->type !== 'variable') return null;
+
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->get();
+
+        if ($variants->isEmpty()) return null;
+
+        $prices = $variants->map(
+            fn($v) =>
+            $v->sale_price ?? $v->price
+        );
+
+        return (float) $prices->max();
+    }
+
+    public function getTotalVariantStockAttribute(): int
+    {
+        if ($this->type !== 'variable') return $this->stock_quantity;
+
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->get();
+
+        return (int) $variants->sum('stock_quantity');
+    }
+
+    public function getVariantIsInStockAttribute(): bool
+    {
+        if ($this->type !== 'variable') return $this->is_in_stock;
+
+        $variants = $this->relationLoaded('variants')
+            ? $this->variants
+            : $this->variants()->get();
+
+        return $variants->contains(fn($v) => $v->stock_quantity > 0);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────

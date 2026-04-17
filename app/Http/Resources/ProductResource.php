@@ -15,11 +15,15 @@ class ProductResource extends JsonResource
             'slug'                 => $this->slug,
             'sku'                  => $this->sku,
             'type'                 => $this->type,
-            'price'                => (float) $this->price,
-            'sale_price'           => $this->sale_price ? (float) $this->sale_price : null,
-            'current_price'        => (float) $this->current_price,
-            'is_on_sale'           => $this->is_on_sale,
-            'discount_percentage'  => $this->discount_percentage,
+            'price'               => $this->type === 'variable' ? null : (float) $this->price,
+            'sale_price'          => $this->type === 'variable' ? null : ($this->sale_price ? (float) $this->sale_price : null),
+            'current_price'       => $this->type === 'variable' ? $this->min_variant_price : (float) $this->current_price,
+            'is_on_sale'          => $this->type === 'variable' ? false : $this->is_on_sale,
+            'discount_percentage' => $this->type === 'variable' ? 0 : $this->discount_percentage,
+            'price_range'         => $this->type === 'variable' ? [
+                'min' => $this->min_variant_price,
+                'max' => $this->max_variant_price,
+            ] : null,
             'thumbnail_url'        => $this->thumbnail_url,
             'short_description'    => $this->short_description,
             'description'          => $this->description,
@@ -55,7 +59,9 @@ class ProductResource extends JsonResource
                 'slug'     => $this->brand->slug,
                 'logo_url' => $this->brand->logo_url,
             ]),
-            'images'    => $this->whenLoaded('images', fn() =>
+            'images'    => $this->whenLoaded(
+                'images',
+                fn() =>
                 $this->images->map(fn($img) => [
                     'id'         => $img->id,
                     'url'        => $img->image_url,
@@ -64,7 +70,9 @@ class ProductResource extends JsonResource
                     'sort_order' => $img->sort_order,
                 ])
             ),
-            'attributes' => $this->whenLoaded('attributes', fn() =>
+            'attributes' => $this->whenLoaded(
+                'attributes',
+                fn() =>
                 $this->attributes->map(fn($attr) => [
                     'id'     => $attr->id,
                     'name'   => $attr->name,
@@ -75,7 +83,9 @@ class ProductResource extends JsonResource
                     ]),
                 ])
             ),
-            'variants'   => $this->whenLoaded('variants', fn() =>
+            'variants'   => $this->whenLoaded(
+                'variants',
+                fn() =>
                 $this->variants->map(fn($v) => [
                     'id'             => $v->id,
                     'sku'            => $v->sku,
@@ -88,7 +98,9 @@ class ProductResource extends JsonResource
                     'image_url'      => $v->image_url,
                 ])
             ),
-            'reviews'    => $this->whenLoaded('reviews', fn() =>
+            'reviews'    => $this->whenLoaded(
+                'reviews',
+                fn() =>
                 ReviewResource::collection($this->reviews)
             ),
         ];

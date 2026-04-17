@@ -120,7 +120,7 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
 
     // Orders
     Route::get('orders', [OrderController::class, 'index']); // DONE: user order list
-    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE:
+    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE: 
     Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
 
     // Wishlist
