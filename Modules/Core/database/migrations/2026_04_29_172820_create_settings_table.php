@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('group')->default('general'); // general, seo, payment, social
             $table->string('label')->nullable();
             $table->text('description')->nullable();
+            $table->boolean('autoload')->default(false);
+            $table->boolean('is_public')->default(false);
             $table->timestamps();
 
             $table->index('key');
