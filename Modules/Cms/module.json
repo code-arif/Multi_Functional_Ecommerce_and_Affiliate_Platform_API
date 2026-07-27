@@ -1,0 +1,11 @@
+{
+    "name": "Cms",
+    "alias": "cms",
+    "description": "Content Management: CMS pages, SEO metadata, sitemap generation, banners",
+    "keywords": ["cms", "page", "seo", "content", "banner"],
+    "priority": 190,
+    "providers": [
+        "Modules\\Cms\\Providers\\CmsServiceProvider"
+    ],
+    "files": []
+}

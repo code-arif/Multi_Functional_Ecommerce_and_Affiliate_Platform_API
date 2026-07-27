@@ -1,0 +1,11 @@
+{
+    "name": "Notifications",
+    "alias": "notifications",
+    "description": "Email, SMS, push, in-app notifications; notification preferences per user",
+    "keywords": ["notification", "email", "sms", "push", "alert"],
+    "priority": 150,
+    "providers": [
+        "Modules\\Notifications\\Providers\\NotificationsServiceProvider"
+    ],
+    "files": []
+}

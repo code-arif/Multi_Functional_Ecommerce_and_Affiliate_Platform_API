@@ -1,0 +1,11 @@
+{
+    "name": "Checkout",
+    "alias": "checkout",
+    "description": "Address selection, shipping method, coupon application, order preview, tax computation, split checkout",
+    "keywords": ["checkout", "shipping", "tax", "coupon"],
+    "priority": 70,
+    "providers": [
+        "Modules\\Checkout\\Providers\\CheckoutServiceProvider"
+    ],
+    "files": []
+}

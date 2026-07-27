@@ -1,0 +1,11 @@
+{
+    "name": "AdminPanel",
+    "alias": "adminpanel",
+    "description": "Admin dashboard, vendor approval queue, dispute resolution, CMS, global settings UI",
+    "keywords": ["admin", "dashboard", "cms", "settings", "management"],
+    "priority": 170,
+    "providers": [
+        "Modules\\AdminPanel\\Providers\\AdminPanelServiceProvider"
+    ],
+    "files": []
+}

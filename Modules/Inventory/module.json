@@ -1,0 +1,11 @@
+{
+    "name": "Inventory",
+    "alias": "inventory",
+    "description": "Stock tracking, stock logs, low-stock alerts, warehouse/pickup locations",
+    "keywords": ["inventory", "stock", "warehouse", "supply"],
+    "priority": 50,
+    "providers": [
+        "Modules\\Inventory\\Providers\\InventoryServiceProvider"
+    ],
+    "files": []
+}

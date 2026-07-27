@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Modules\Core\Http\Controllers\CoreController;
-
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('cores', CoreController::class)->names('core');
-});
+// Core module routes — keeping empty because all API routes
+// are centralized in routes/api/v1/api.php and
+// routes/api/v1/seo_and_extras.php for Phase 0.
+// Future phases may move routes into their respective modules.

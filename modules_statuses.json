@@ -1,3 +1,22 @@
 {
-    "Core": true
+    "AdminPanel": true,
+    "Affiliate": true,
+    "Auth": true,
+    "Cart": true,
+    "Catalog": true,
+    "Checkout": true,
+    "Cms": true,
+    "Core": true,
+    "Finance": true,
+    "Inventory": true,
+    "Notifications": true,
+    "Orders": true,
+    "Payments": true,
+    "Promotions": true,
+    "RBAC": true,
+    "Reviews": true,
+    "Search": true,
+    "Shipping": true,
+    "Support": true,
+    "Vendor": true
 }

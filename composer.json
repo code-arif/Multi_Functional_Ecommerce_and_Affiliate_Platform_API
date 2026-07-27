@@ -10,11 +10,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "elasticsearch/elasticsearch": "*",
         "laravel/framework": "^12.0",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
-        "nwidart/laravel-modules": "*"
+        "nwidart/laravel-modules": "*",
+        "spatie/laravel-permission": "*",
+        "stripe/stripe-php": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -32,7 +35,26 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Modules\\Core\\": "Modules/Core/app/"
+            "Modules\\Core\\": "Modules/Core/app/",
+            "Modules\\Auth\\": "Modules/Auth/app/",
+            "Modules\\RBAC\\": "Modules/RBAC/app/",
+            "Modules\\Vendor\\": "Modules/Vendor/app/",
+            "Modules\\Catalog\\": "Modules/Catalog/app/",
+            "Modules\\Inventory\\": "Modules/Inventory/app/",
+            "Modules\\Cart\\": "Modules/Cart/app/",
+            "Modules\\Checkout\\": "Modules/Checkout/app/",
+            "Modules\\Orders\\": "Modules/Orders/app/",
+            "Modules\\Payments\\": "Modules/Payments/app/",
+            "Modules\\Finance\\": "Modules/Finance/app/",
+            "Modules\\Shipping\\": "Modules/Shipping/app/",
+            "Modules\\Reviews\\": "Modules/Reviews/app/",
+            "Modules\\Promotions\\": "Modules/Promotions/app/",
+            "Modules\\Search\\": "Modules/Search/app/",
+            "Modules\\Notifications\\": "Modules/Notifications/app/",
+            "Modules\\Support\\": "Modules/Support/app/",
+            "Modules\\AdminPanel\\": "Modules/AdminPanel/app/",
+            "Modules\\Affiliate\\": "Modules/Affiliate/app/",
+            "Modules\\Cms\\": "Modules/Cms/app/"
         }
     },
     "autoload-dev": {

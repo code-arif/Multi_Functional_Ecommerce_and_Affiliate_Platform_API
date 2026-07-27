@@ -2,21 +2,34 @@
 
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\Auth\AuthController;
-use App\Http\Controllers\API\V1\Auth\AddressController;
-use App\Http\Controllers\API\V1\Shop\ProductController;
-use App\Http\Controllers\API\V1\Shop\CategoryController;
-use App\Http\Controllers\API\V1\Shop\SearchController;
-use App\Http\Controllers\API\V1\Shop\AffiliateController;
-use App\Http\Controllers\API\V1\Cart\CartController;
-use App\Http\Controllers\API\V1\Checkout\CheckoutController;
-use App\Http\Controllers\API\V1\Order\OrderController;
-use App\Http\Controllers\API\V1\Wishlist\WishlistController;
-use App\Http\Controllers\API\V1\Review\ReviewController;
-use App\Http\Controllers\API\V1\Chat\ChatController;
-use App\Http\Controllers\API\V1\Cms\CmsController;
-use App\Http\Controllers\API\V1\Cms\SeoController;
-use App\Http\Controllers\API\V1\Admin;
+use Modules\Auth\Http\Controllers\AuthController;
+use Modules\Auth\Http\Controllers\AddressController;
+use Modules\Catalog\Http\Controllers\ProductController;
+use Modules\Catalog\Http\Controllers\CategoryController;
+use Modules\Catalog\Http\Controllers\SearchController;
+use Modules\Affiliate\Http\Controllers\AffiliateController;
+use Modules\Cart\Http\Controllers\CartController;
+use Modules\Checkout\Http\Controllers\CheckoutController;
+use Modules\Orders\Http\Controllers\OrderController;
+use Modules\Cart\Http\Controllers\WishlistController;
+use Modules\Reviews\Http\Controllers\ReviewController;
+use Modules\Support\Http\Controllers\ChatController;
+use Modules\Cms\Http\Controllers\CmsController;
+use Modules\Cms\Http\Controllers\SeoController;
+// ─── Admin Panel Controllers ──────────────────────
+use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;
+use Modules\AdminPanel\Http\Controllers\ProductController as AdminProductController;
+use Modules\AdminPanel\Http\Controllers\CategoryController as AdminCategoryController;
+use Modules\AdminPanel\Http\Controllers\BrandController as AdminBrandController;
+use Modules\AdminPanel\Http\Controllers\OrderController as AdminOrderController;
+use Modules\AdminPanel\Http\Controllers\CouponController as AdminCouponController;
+use Modules\AdminPanel\Http\Controllers\ReviewController as AdminReviewController;
+use Modules\AdminPanel\Http\Controllers\BannerController as AdminBannerController;
+use Modules\AdminPanel\Http\Controllers\AffiliateProductController as AdminAffiliateProductController;
+use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageController;
+use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingController;
+use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
+use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PUBLIC ROUTES (No Authentication Required)
@@ -32,7 +45,7 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
 
 // Products — public browsing
 Route::prefix('products')->middleware('throttle:api')->group(function () {
-    Route::get('/', [ProductController::class, 'index']); // DONE: product list
+    Route::get('/', [ProductController::class, 'index']);
     Route::get('featured',        [ProductController::class, 'featured']);
     Route::get('new-arrivals',    [ProductController::class, 'newArrivals']);
     Route::get('bestsellers',     [ProductController::class, 'bestsellers']);
@@ -119,8 +132,8 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::apiResource('addresses',    AddressController::class);
 
     // Orders
-    Route::get('orders', [OrderController::class, 'index']); // DONE: user order list
-    Route::get('orders/{number}', [OrderController::class, 'show']); // DONE: 
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::get('orders/{number}', [OrderController::class, 'show']);
     Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
 
     // Wishlist
@@ -165,77 +178,77 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
     ->group(function () {
 
         // Dashboard
-        Route::get('dashboard',             [Admin\DashboardController::class, 'index']);
+        Route::get('dashboard',             [AdminDashboardController::class, 'index']);
 
         // Products — permission-gated
-        Route::post('products/upload-image', [Admin\ProductController::class, 'uploadImage'])->middleware('permission:products.create'); // DONE: upload image
+        Route::post('products/upload-image', [AdminProductController::class, 'uploadImage'])->middleware('permission:products.create');
 
-        Route::get('products', [Admin\ProductController::class, 'index'])->middleware('permission:products.view'); // DONE: product list
-        Route::post('products', [Admin\ProductController::class, 'store'])->middleware('permission:products.create'); // DONE: product store
-        Route::get('products/{product}', [Admin\ProductController::class, 'show'])->middleware('permission:products.view'); // DONE: product details
-        Route::put('products/{product}', [Admin\ProductController::class, 'update'])->middleware('permission:products.edit'); // DONE: update product
-        Route::delete('products/{product}', [Admin\ProductController::class, 'destroy'])->middleware('permission:products.delete'); // DONE: product delete
+        Route::get('products', [AdminProductController::class, 'index'])->middleware('permission:products.view');
+        Route::post('products', [AdminProductController::class, 'store'])->middleware('permission:products.create');
+        Route::get('products/{product}', [AdminProductController::class, 'show'])->middleware('permission:products.view');
+        Route::put('products/{product}', [AdminProductController::class, 'update'])->middleware('permission:products.edit');
+        Route::delete('products/{product}', [AdminProductController::class, 'destroy'])->middleware('permission:products.delete');
 
         // Categories
-        Route::get('categories', [Admin\CategoryController::class, 'index'])->middleware('permission:categories.view'); // DONE: Category list
-        Route::post('categories/store', [Admin\CategoryController::class, 'store'])->middleware('permission:categories.manage'); // DONE: Category store
-        Route::put('categories/{category}/update', [Admin\CategoryController::class, 'update'])->middleware('permission:categories.manage'); // DONE: Category update
-        Route::delete('categories/{category}/delete', [Admin\CategoryController::class, 'destroy'])->middleware('permission:categories.manage'); // DONE: Category delete
+        Route::get('categories', [AdminCategoryController::class, 'index'])->middleware('permission:categories.view');
+        Route::post('categories/store', [AdminCategoryController::class, 'store'])->middleware('permission:categories.manage');
+        Route::put('categories/{category}/update', [AdminCategoryController::class, 'update'])->middleware('permission:categories.manage');
+        Route::delete('categories/{category}/delete', [AdminCategoryController::class, 'destroy'])->middleware('permission:categories.manage');
 
         // Brands
-        Route::get('brands', [Admin\BrandController::class, 'index'])->middleware('permission:brands.view'); // DONE: brand list
-        Route::post('brands/store', [Admin\BrandController::class, 'store'])->middleware('permission:brands.manage'); // DONE: brand store
-        Route::put('brands/{brand}/update', [Admin\BrandController::class, 'update'])->middleware('permission:brands.manage'); // DONE: Brand update
-        Route::delete('brands/{brand}/delete', [Admin\BrandController::class, 'destroy'])->middleware('permission:brands.manage'); // DONE: Brand list
+        Route::get('brands', [AdminBrandController::class, 'index'])->middleware('permission:brands.view');
+        Route::post('brands/store', [AdminBrandController::class, 'store'])->middleware('permission:brands.manage');
+        Route::put('brands/{brand}/update', [AdminBrandController::class, 'update'])->middleware('permission:brands.manage');
+        Route::delete('brands/{brand}/delete', [AdminBrandController::class, 'destroy'])->middleware('permission:brands.manage');
 
         // Orders
-        Route::get('orders',[Admin\OrderController::class, 'index'])->middleware('permission:orders.view');
-        Route::get('orders/{order}',[Admin\OrderController::class, 'show'])->middleware('permission:orders.view');
-        Route::patch('orders/{order}/status',[Admin\OrderController::class, 'updateStatus'])->middleware('permission:orders.manage');
-        Route::patch('orders/{order}/note',[Admin\OrderController::class, 'updateAdminNote'])->middleware('permission:orders.manage');
+        Route::get('orders',[AdminOrderController::class, 'index'])->middleware('permission:orders.view');
+        Route::get('orders/{order}',[AdminOrderController::class, 'show'])->middleware('permission:orders.view');
+        Route::patch('orders/{order}/status',[AdminOrderController::class, 'updateStatus'])->middleware('permission:orders.manage');
+        Route::patch('orders/{order}/note',[AdminOrderController::class, 'updateAdminNote'])->middleware('permission:orders.manage');
 
         // Coupons
-        Route::apiResource('coupons',       Admin\CouponController::class)
+        Route::apiResource('coupons',       AdminCouponController::class)
             ->middleware('permission:coupons.manage');
 
         // Reviews
-        Route::get('reviews',               [Admin\ReviewController::class, 'index'])->middleware('permission:reviews.view');
-        Route::post('reviews/{review}/approve', [Admin\ReviewController::class, 'approve'])->middleware('permission:reviews.moderate');
-        Route::post('reviews/{review}/reject', [Admin\ReviewController::class, 'reject'])->middleware('permission:reviews.moderate');
-        Route::delete('reviews/{review}',   [Admin\ReviewController::class, 'destroy'])->middleware('permission:reviews.moderate');
+        Route::get('reviews',               [AdminReviewController::class, 'index'])->middleware('permission:reviews.view');
+        Route::post('reviews/{review}/approve', [AdminReviewController::class, 'approve'])->middleware('permission:reviews.moderate');
+        Route::post('reviews/{review}/reject', [AdminReviewController::class, 'reject'])->middleware('permission:reviews.moderate');
+        Route::delete('reviews/{review}',   [AdminReviewController::class, 'destroy'])->middleware('permission:reviews.moderate');
 
         // Banners
-        Route::get('banners', [Admin\BannerController::class, 'index'])->middleware('permission:banners.view');
-        Route::post('banners', [Admin\BannerController::class, 'store'])->middleware('permission:banners.manage');
-        Route::put('banners/{banner}', [Admin\BannerController::class, 'update'])->middleware('permission:banners.manage');
-        Route::delete('banners/{banner}', [Admin\BannerController::class, 'destroy'])->middleware('permission:banners.manage');
+        Route::get('banners', [AdminBannerController::class, 'index'])->middleware('permission:banners.view');
+        Route::post('banners', [AdminBannerController::class, 'store'])->middleware('permission:banners.manage');
+        Route::put('banners/{banner}', [AdminBannerController::class, 'update'])->middleware('permission:banners.manage');
+        Route::delete('banners/{banner}', [AdminBannerController::class, 'destroy'])->middleware('permission:banners.manage');
 
         // Affiliate Products
-        Route::get('affiliate-products', [Admin\AffiliateProductController::class, 'index'])->middleware('permission:affiliate.manage'); // DONE: affiliate product list
-        Route::post('affiliate-products/store', [Admin\AffiliateProductController::class, 'store'])->middleware('permission:affiliate.manage'); // DONE: affiliate product store
-        Route::put('affiliate-products/{affiliate-product}/update', [Admin\AffiliateProductController::class, 'update'])->middleware('permission:affiliate.manage'); // DONE: affiliate product update
-        Route::delete('affiliate-products/{affiliate-product}/delete', [Admin\AffiliateProductController::class, 'destroy'])->middleware('permission:affiliate.manage'); // DONE: affiliate product delete
+        Route::get('affiliate-products', [AdminAffiliateProductController::class, 'index'])->middleware('permission:affiliate.manage');
+        Route::post('affiliate-products/store', [AdminAffiliateProductController::class, 'store'])->middleware('permission:affiliate.manage');
+        Route::put('affiliate-products/{affiliate-product}/update', [AdminAffiliateProductController::class, 'update'])->middleware('permission:affiliate.manage');
+        Route::delete('affiliate-products/{affiliate-product}/delete', [AdminAffiliateProductController::class, 'destroy'])->middleware('permission:affiliate.manage');
 
         // CMS Pages
-        Route::apiResource('pages', Admin\CmsPageController::class)
+        Route::apiResource('pages', AdminCmsPageController::class)
             ->middleware('permission:cms.manage');
 
         // Settings
-        Route::get('settings',              [Admin\SettingController::class, 'index'])->middleware('permission:settings.view');
-        Route::post('settings',             [Admin\SettingController::class, 'update'])->middleware('permission:settings.manage');
-        Route::post('settings/upload',      [Admin\SettingController::class, 'uploadFile'])->middleware('permission:settings.manage');
+        Route::get('settings',              [AdminSettingController::class, 'index'])->middleware('permission:settings.view');
+        Route::post('settings',             [AdminSettingController::class, 'update'])->middleware('permission:settings.manage');
+        Route::post('settings/upload',      [AdminSettingController::class, 'uploadFile'])->middleware('permission:settings.manage');
 
         // Users
-        Route::get('users',                 [Admin\UserController::class, 'index'])->middleware('permission:users.view');
-        Route::get('users/{user}',          [Admin\UserController::class, 'show'])->middleware('permission:users.view');
-        Route::patch('users/{user}/status', [Admin\UserController::class, 'updateStatus'])->middleware('permission:users.ban');
+        Route::get('users',                 [AdminUserController::class, 'index'])->middleware('permission:users.view');
+        Route::get('users/{user}',          [AdminUserController::class, 'show'])->middleware('permission:users.view');
+        Route::patch('users/{user}/status', [AdminUserController::class, 'updateStatus'])->middleware('permission:users.ban');
 
         // Reports
         Route::prefix('reports')->middleware('permission:reports.view')->group(function () {
-            Route::get('sales',             [Admin\ReportController::class, 'sales']);
-            Route::get('top-products',      [Admin\ReportController::class, 'topProducts']);
-            Route::get('orders-by-status',  [Admin\ReportController::class, 'ordersByStatus']);
-            Route::get('customer-growth',   [Admin\ReportController::class, 'customerGrowth']);
+            Route::get('sales',             [AdminReportController::class, 'sales']);
+            Route::get('top-products',      [AdminReportController::class, 'topProducts']);
+            Route::get('orders-by-status',  [AdminReportController::class, 'ordersByStatus']);
+            Route::get('customer-growth',   [AdminReportController::class, 'customerGrowth']);
         });
 
         // Chat (Admin side)
@@ -250,17 +263,17 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::prefix('security')->middleware('role:admin')->group(function () {
             Route::post('unlock-account', function (\Illuminate\Http\Request $req) {
                 $req->validate(['email' => 'required|email']);
-                app(\App\Services\Security\SecurityService::class)->unlockAccount($req->email);
+                app(\Modules\Core\Services\Security\SecurityService::class)->unlockAccount($req->email);
                 return response()->json(['success' => true, 'message' => 'Account unlocked.']);
             });
             Route::post('block-ip', function (\Illuminate\Http\Request $req) {
                 $req->validate(['ip' => 'required|ip', 'duration' => 'nullable|integer', 'reason' => 'nullable|string']);
-                app(\App\Services\Security\SecurityService::class)
+                app(\Modules\Core\Services\Security\SecurityService::class)
                     ->blockIp($req->ip_address, $req->duration ?? 3600, $req->reason ?? '');
                 return response()->json(['success' => true, 'message' => 'IP blocked.']);
             });
-            Route::post('revoke-tokens/{user}', function (\App\Models\User $user) {
-                app(\App\Services\Security\SecurityService::class)->revokeAllTokens($user->id);
+            Route::post('revoke-tokens/{user}', function (\Modules\Auth\Models\User $user) {
+                app(\Modules\Core\Services\Security\SecurityService::class)->revokeAllTokens($user->id);
                 return response()->json(['success' => true, 'message' => 'All tokens revoked.']);
             });
         });

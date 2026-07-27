@@ -1,0 +1,11 @@
+{
+    "name": "Vendor",
+    "alias": "vendor",
+    "description": "Vendor onboarding, KYC, shop profiles, staff management, subscription plans, commission rates, vendor wallet",
+    "keywords": ["vendor", "seller", "shop", "kyc", "commission"],
+    "priority": 30,
+    "providers": [
+        "Modules\\Vendor\\Providers\\VendorServiceProvider"
+    ],
+    "files": []
+}

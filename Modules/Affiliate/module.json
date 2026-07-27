@@ -1,0 +1,11 @@
+{
+    "name": "Affiliate",
+    "alias": "affiliate",
+    "description": "Affiliate marketing: affiliate products, click tracking, commission management",
+    "keywords": ["affiliate", "referral", "commission", "tracking"],
+    "priority": 180,
+    "providers": [
+        "Modules\\Affiliate\\Providers\\AffiliateServiceProvider"
+    ],
+    "files": []
+}

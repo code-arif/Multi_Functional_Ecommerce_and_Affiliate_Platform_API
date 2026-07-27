@@ -1,0 +1,11 @@
+{
+    "name": "Search",
+    "alias": "search",
+    "description": "Full-text/faceted product search (Elasticsearch), search analytics, autosuggest",
+    "keywords": ["search", "elasticsearch", "autosuggest", "faceted"],
+    "priority": 140,
+    "providers": [
+        "Modules\\Search\\Providers\\SearchServiceProvider"
+    ],
+    "files": []
+}

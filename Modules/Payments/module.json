@@ -1,0 +1,11 @@
+{
+    "name": "Payments",
+    "alias": "payments",
+    "description": "Payment gateway integrations (COD, Stripe, SSLCommerz), transaction ledger, refunds",
+    "keywords": ["payment", "stripe", "sslcommerz", "cod", "refund"],
+    "priority": 90,
+    "providers": [
+        "Modules\\Payments\\Providers\\PaymentsServiceProvider"
+    ],
+    "files": []
+}

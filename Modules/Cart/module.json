@@ -1,0 +1,11 @@
+{
+    "name": "Cart",
+    "alias": "cart",
+    "description": "Cart, cart items (grouped by vendor), wishlist, recently viewed, compare list",
+    "keywords": ["cart", "wishlist", "shopping", "checkout"],
+    "priority": 60,
+    "providers": [
+        "Modules\\Cart\\Providers\\CartServiceProvider"
+    ],
+    "files": []
+}

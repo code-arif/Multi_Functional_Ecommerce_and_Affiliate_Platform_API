@@ -1,0 +1,11 @@
+{
+    "name": "Reviews",
+    "alias": "reviews",
+    "description": "Product reviews with images, seller ratings, review moderation, helpful-vote system",
+    "keywords": ["review", "rating", "feedback", "moderation"],
+    "priority": 120,
+    "providers": [
+        "Modules\\Reviews\\Providers\\ReviewsServiceProvider"
+    ],
+    "files": []
+}

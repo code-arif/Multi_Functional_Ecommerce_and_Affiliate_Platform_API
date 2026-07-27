@@ -1,0 +1,11 @@
+{
+    "name": "Finance",
+    "alias": "finance",
+    "description": "Commission calculation, vendor wallet ledger, payout requests, payout batches, settlement reports",
+    "keywords": ["finance", "commission", "payout", "settlement", "wallet"],
+    "priority": 100,
+    "providers": [
+        "Modules\\Finance\\Providers\\FinanceServiceProvider"
+    ],
+    "files": []
+}

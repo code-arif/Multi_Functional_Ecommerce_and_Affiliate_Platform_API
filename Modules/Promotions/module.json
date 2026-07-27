@@ -1,0 +1,11 @@
+{
+    "name": "Promotions",
+    "alias": "promotions",
+    "description": "Coupons (platform-wide and vendor-specific), flash sales, campaigns, banners/sliders",
+    "keywords": ["coupon", "promotion", "banner", "flash-sale", "campaign"],
+    "priority": 130,
+    "providers": [
+        "Modules\\Promotions\\Providers\\PromotionsServiceProvider"
+    ],
+    "files": []
+}

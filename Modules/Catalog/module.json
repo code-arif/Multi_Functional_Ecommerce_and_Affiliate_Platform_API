@@ -1,0 +1,11 @@
+{
+    "name": "Catalog",
+    "alias": "catalog",
+    "description": "Product Catalog: categories, brands, attributes, variants, products, SEO metadata, product approval",
+    "keywords": ["product", "category", "brand", "attribute", "variant", "catalog"],
+    "priority": 40,
+    "providers": [
+        "Modules\\Catalog\\Providers\\CatalogServiceProvider"
+    ],
+    "files": []
+}

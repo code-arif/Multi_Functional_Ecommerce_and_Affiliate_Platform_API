@@ -1,0 +1,11 @@
+{
+    "name": "Shipping",
+    "alias": "shipping",
+    "description": "Courier integrations, shipping zones/rates, shipment tracking, pickup requests, delivery agent assignment",
+    "keywords": ["shipping", "courier", "delivery", "tracking", "logistics"],
+    "priority": 110,
+    "providers": [
+        "Modules\\Shipping\\Providers\\ShippingServiceProvider"
+    ],
+    "files": []
+}
