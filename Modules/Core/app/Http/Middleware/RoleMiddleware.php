@@ -1,20 +1,12 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Modules\Core\Http\Middleware;
 
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-/**
- * RoleMiddleware
- *
- * Usage in routes:
- *   ->middleware('role:admin')
- *   ->middleware('role:admin,moderator')      // Any of these roles
- *   ->middleware('permission:products.create')
- */
 class RoleMiddleware
 {
     use ApiResponse;
@@ -24,11 +16,8 @@ class RoleMiddleware
         $user = $request->user();
 
         if (!$user) {
-            return $this->unauthorizedResponse('Authentication required.');
+            return $this->errorResponse('Authentication required.', null, 401);
         }
-
-        // Load roles if not already loaded
-        $user->loadMissing('roles');
 
         foreach ($roles as $role) {
             if ($user->hasRole($role)) {
@@ -39,7 +28,6 @@ class RoleMiddleware
         Log::channel('security')->warning('Unauthorized role access attempt', [
             'user_id'        => $user->id,
             'required_roles' => $roles,
-            'user_roles'     => $user->roles->pluck('name')->toArray(),
             'url'            => $request->fullUrl(),
             'ip'             => $request->ip(),
         ]);

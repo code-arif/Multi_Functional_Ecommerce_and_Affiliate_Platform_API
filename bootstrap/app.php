@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Middleware\AdminMiddleware;
+use Modules\Core\Http\Middleware\AdminMiddleware;
+use Modules\Core\Http\Middleware\PermissionMiddleware;
+use Modules\Core\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\BannedUserMiddleware;
 use App\Http\Middleware\ForceJsonResponse;
 use App\Http\Middleware\MaintenanceModeMiddleware;
-use App\Http\Middleware\PermissionMiddleware;
-use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\SanitizeInput;
 use App\Http\Middleware\SecurityHeaders;
 use App\Jobs\CleanExpiredCarts;

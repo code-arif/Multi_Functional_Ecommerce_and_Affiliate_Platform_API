@@ -8,7 +8,6 @@ use Modules\Support\Models\ChatRoom;
 use Modules\Catalog\Models\Wishlist;
 use Modules\Cart\Models\Cart;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -17,10 +16,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, MustVerifyEmailTrait;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, MustVerifyEmailTrait, HasRoles;
 
     protected $fillable = [
         'name',
@@ -43,11 +43,6 @@ class User extends Authenticatable implements MustVerifyEmailContract
     ];
 
     // ─── Relationships ────────────────────────────────────────────
-
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(\Modules\RBAC\Models\Role::class, 'role_users');
-    }
 
     public function addresses(): HasMany
     {
@@ -84,16 +79,11 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasMany(ChatRoom::class);
     }
 
-    // ─── Role Helpers ─────────────────────────────────────────────
-
-    public function hasRole(string $role): bool
-    {
-        return $this->roles->contains('name', $role);
-    }
+    // ─── Role Helpers (bridge from Spatie) ────────────────────────
 
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole(['super-admin', 'admin']);
     }
 
     public function isModerator(): bool
@@ -101,17 +91,9 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasRole('moderator');
     }
 
-    public function hasPermission(string $permission): bool
+    public function isVendor(): bool
     {
-        return $this->roles->flatMap(function ($role) {
-            return $role->permissions;
-        })->contains('name', $permission);
-    }
-
-    public function assignRole(string $roleName): void
-    {
-        $role = \Modules\RBAC\Models\Role::where('name', $roleName)->firstOrFail();
-        $this->roles()->syncWithoutDetaching([$role->id]);
+        return $this->hasRole('vendor');
     }
 
     // ─── Accessors ────────────────────────────────────────────────

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Modules\Core\Http\Middleware;
 
+use Modules\Core\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
-use App\Traits\ApiResponse;
 
 class AdminMiddleware
 {

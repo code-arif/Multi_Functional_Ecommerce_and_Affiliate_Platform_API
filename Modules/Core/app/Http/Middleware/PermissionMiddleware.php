@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace Modules\Core\Http\Middleware;
 
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-/**
- * PermissionMiddleware
- *
- * Usage:
- *   ->middleware('permission:products.create')
- *   ->middleware('permission:orders.view,orders.manage')  // Any of these
- */
 class PermissionMiddleware
 {
     use ApiResponse;
@@ -23,15 +16,18 @@ class PermissionMiddleware
         $user = $request->user();
 
         if (!$user) {
-            return $this->unauthorizedResponse();
+            return $this->errorResponse('Authentication required.', null, 401);
         }
 
-        $user->loadMissing('roles.permissions');
-
         foreach ($permissions as $permission) {
-            if ($user->hasPermission($permission)) {
+            if ($user->can($permission)) {
                 return $next($request);
             }
+        }
+
+        // Super-admin bypass
+        if ($user->hasRole('super-admin')) {
+            return $next($request);
         }
 
         Log::channel('security')->warning('Unauthorized permission access', [
