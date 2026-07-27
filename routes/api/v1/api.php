@@ -34,6 +34,8 @@ use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageControl
 use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingController;
 use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
+use Modules\Vendor\Http\Controllers\VendorController;
+use Modules\Vendor\Http\Controllers\AdminVendorController;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PUBLIC ROUTES (No Authentication Required)
@@ -94,6 +96,12 @@ Route::prefix('cms')->middleware('throttle:api')->group(function () {
     Route::get('settings',        [CmsController::class, 'settings']);
 });
 
+// Vendor Public Routes
+Route::prefix('vendors')->middleware('throttle:api')->group(function () {
+    Route::get('/',               [VendorController::class, 'index']);
+    Route::get('{slug}',          [VendorController::class, 'show']);
+});
+
 // SEO
 Route::prefix('seo')->middleware('throttle:api')->group(function () {
     Route::get('homepage',        [SeoController::class, 'homepage']);
@@ -137,6 +145,12 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::get('auth/me',              [AuthController::class, 'me']);
     Route::put('auth/profile',         [AuthController::class, 'updateProfile']);
     Route::post('auth/avatar',         [AuthController::class, 'updateAvatar']);
+
+    // Phase 4 - Vendor management
+    Route::post('vendor/register',    [VendorController::class, 'register']);
+    Route::get('vendor/profile',      [VendorController::class, 'profile']);
+    Route::put('vendor/profile',      [VendorController::class, 'updateProfile']);
+    Route::post('vendor/documents',   [VendorController::class, 'uploadDocument']);
 
     // Phase 2 - Email Verification
     Route::post('auth/email/verify/send', [EmailVerificationController::class, 'sendVerification']);
@@ -256,6 +270,18 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         // CMS Pages
         Route::apiResource('pages', AdminCmsPageController::class)
             ->middleware('permission:cms.manage');
+
+        // Phase 4 - Vendor Management
+        Route::prefix('vendors')->middleware('permission:vendors.view')->group(function () {
+            Route::get('/',                  [AdminVendorController::class, 'index']);
+            Route::get('pending',            [AdminVendorController::class, 'pending']);
+            Route::get('{vendor}',           [AdminVendorController::class, 'show']);
+            Route::post('{vendor}/approve',  [AdminVendorController::class, 'approve'])->middleware('permission:vendors.approve');
+            Route::post('{vendor}/reject',   [AdminVendorController::class, 'reject'])->middleware('permission:vendors.approve');
+            Route::post('{vendor}/suspend',  [AdminVendorController::class, 'suspend'])->middleware('permission:vendors.manage');
+            Route::post('documents/{document}/verify', [AdminVendorController::class, 'verifyDocument'])->middleware('permission:vendors.manage');
+            Route::post('documents/{document}/reject', [AdminVendorController::class, 'rejectDocument'])->middleware('permission:vendors.manage');
+        });
 
         // Settings
         Route::get('settings',              [AdminSettingController::class, 'index'])->middleware('permission:settings.view');

@@ -116,9 +116,18 @@ class RBACSeeder extends Seeder
 
     private function assignSuperAdmin(): void
     {
-        // Assign super-admin role to the first user (usually the admin seeder user)
-        $admin = User::where('email', config('ecommerce.store_email', 'admin@ecoshop.com'))->first();
-        if ($admin) {
+        // Create admin user if not exists
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name'     => 'Super Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                'status'   => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        if (!$admin->hasRole('super-admin')) {
             $admin->assignRole('super-admin');
             $this->command?->info("Super-admin role assigned to {$admin->email}");
         }

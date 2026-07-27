@@ -19,7 +19,7 @@ class DashboardController
             'stats' => [
                 'total_products'  => Product::count(),
                 'total_orders'    => Order::count(),
-                'total_revenue'   => Order::sum('total'),
+                'total_revenue'   => Order::sum('total_amount'),
                 'total_customers' => User::count(),
                 'total_reviews'   => Review::count(),
                 'pending_reviews' => Review::pending()->count(),

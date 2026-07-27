@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -10,23 +9,20 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call([
-            RoleSeeder::class,
-            PermissionSeeder::class,
-            AdminUserSeeder::class,
+            // Core module: countries, currencies, languages
+            \Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,
+            // RBAC: 39 permissions, 6 roles + admin user
+            \Modules\RBAC\Database\Seeders\RBACSeeder::class,
+            // Other seeders
+            SettingSeeder::class,
             CategorySeeder::class,
             BrandSeeder::class,
-            SettingSeeder::class,
-            AffiliateProductSeeder::class,
-            CategorySeeder::class,
             BannerSeeder::class,
+            AffiliateProductSeeder::class,
             ProductSeeder::class,
-
         ]);
     }
 }
