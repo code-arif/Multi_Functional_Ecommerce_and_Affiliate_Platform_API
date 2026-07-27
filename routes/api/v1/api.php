@@ -36,6 +36,8 @@ use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
 use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
+use Modules\Cms\Http\Controllers\AdminCmsBlockController;
+use Modules\Cms\Http\Controllers\AdminCmsMenuController;
 use Modules\Vendor\Http\Controllers\VendorController;
 use Modules\Vendor\Http\Controllers\AdminVendorController;
 
@@ -279,6 +281,14 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
 
         // CMS Pages
         Route::apiResource('pages', AdminCmsPageController::class)
+            ->middleware('permission:cms.manage');
+
+        // CMS Blocks
+        Route::apiResource('blocks', AdminCmsBlockController::class)
+            ->middleware('permission:cms.manage');
+
+        // CMS Menus
+        Route::apiResource('menus', AdminCmsMenuController::class)
             ->middleware('permission:cms.manage');
 
         // Phase 4 - Vendor Management
