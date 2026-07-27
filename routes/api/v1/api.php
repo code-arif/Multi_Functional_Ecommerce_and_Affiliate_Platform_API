@@ -4,6 +4,10 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\AddressController;
+use Modules\Auth\Http\Controllers\OtpController;
+use Modules\Auth\Http\Controllers\PasswordResetController;
+use Modules\Auth\Http\Controllers\EmailVerificationController;
+use Modules\Auth\Http\Controllers\DeviceController;
 use Modules\Catalog\Http\Controllers\ProductController;
 use Modules\Catalog\Http\Controllers\CategoryController;
 use Modules\Catalog\Http\Controllers\SearchController;
@@ -40,9 +44,15 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 
+    Route::post('password/forgot', [PasswordResetController::class, 'forgot']);
+    Route::post('password/reset',  [PasswordResetController::class, 'reset']);
+
+    // Phase 2 - OTP (no auth required for password reset flow)
+    Route::post('otp/send',   [OtpController::class, 'send']);
+    Route::post('otp/verify', [OtpController::class, 'verify']);
     Route::post('admin/login', [AuthController::class, 'adminLogin']); // DONE: Admin login
 });
-
+    Route::post('otp/verify', [OtpController::class, 'verify']);
 // Products — public browsing
 Route::prefix('products')->middleware('throttle:api')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
@@ -127,6 +137,20 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::get('auth/me',              [AuthController::class, 'me']);
     Route::put('auth/profile',         [AuthController::class, 'updateProfile']);
     Route::post('auth/avatar',         [AuthController::class, 'updateAvatar']);
+
+    // Phase 2 - Email Verification
+    Route::post('auth/email/verify/send', [EmailVerificationController::class, 'sendVerification']);
+    Route::post('auth/email/verify',      [EmailVerificationController::class, 'verify']);
+    Route::get('auth/email/status',       [EmailVerificationController::class, 'status']);
+
+    // Phase 2 - Password Change
+    Route::post('auth/password/change', [PasswordResetController::class, 'change']);
+
+    // Phase 2 - Device Management
+    Route::get('auth/devices',                [DeviceController::class, 'index']);
+    Route::delete('auth/devices',             [DeviceController::class, 'revokeAll']);
+    Route::post('auth/devices/{device}/trust', [DeviceController::class, 'trust']);
+    Route::delete('auth/devices/{device}',    [DeviceController::class, 'destroy']);
 
     // Addresses
     Route::apiResource('addresses',    AddressController::class);
