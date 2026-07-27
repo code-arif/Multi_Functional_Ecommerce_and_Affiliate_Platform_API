@@ -4,6 +4,7 @@ namespace Modules\Cart\Http\Controllers;
 
 use Modules\Cart\Services\WishlistService;
 use Modules\Cart\Services\CartService;
+use Modules\Cart\Http\Resources\WishlistResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class WishlistController
     public function index(Request $request): JsonResponse
     {
         $wishlist = $this->wishlistService->getUserWishlist($request->user());
-        return $this->successResponse($wishlist);
+        return $this->successResponse(WishlistResource::collection($wishlist));
     }
 
     public function toggle(Request $request): JsonResponse
