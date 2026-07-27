@@ -3,42 +3,48 @@
 namespace Modules\Payments\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Payment extends Model
+class Transaction extends Model
 {
     protected $fillable = [
+        'payment_id',
         'order_id',
-        'payment_method',
-        'payment_status',
-        'gateway',
-        'status',
         'transaction_id',
+        'type',
         'amount',
+        'fee',
+        'net',
         'currency',
+        'status',
         'gateway_response',
-        'paid_at',
+        'notes',
     ];
 
     protected $casts = [
         'amount'           => 'decimal:2',
+        'fee'              => 'decimal:2',
+        'net'              => 'decimal:2',
         'gateway_response' => 'array',
-        'paid_at'          => 'datetime',
     ];
+
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class);
+    }
 
     public function order(): BelongsTo
     {
         return $this->belongsTo(\Modules\Orders\Models\Order::class);
     }
 
-    public function transactions(): HasMany
+    public function scopeOfType($query, string $type)
     {
-        return $this->hasMany(Transaction::class);
+        return $query->where('type', $type);
     }
 
-    public function refunds(): HasMany
+    public function scopeCompleted($query)
     {
-        return $this->hasMany(Refund::class);
+        return $query->where('status', 'completed');
     }
 }
