@@ -35,6 +35,7 @@ use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingControl
 use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
 use Modules\Promotions\Http\Controllers\AdminPromotionController;
+use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
 use Modules\Vendor\Http\Controllers\VendorController;
 use Modules\Vendor\Http\Controllers\AdminVendorController;
 
@@ -296,6 +297,16 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::get('promotions',                    [AdminPromotionController::class, 'index'])->middleware('permission:promotions.view');
         Route::post('promotions',                   [AdminPromotionController::class, 'store'])->middleware('permission:promotions.create');
         Route::get('promotions/analytics',          [AdminPromotionController::class, 'analytics'])->middleware('permission:promotions.view');
+
+        // Affiliate
+        Route::prefix('affiliate')->middleware('permission:affiliate.analytics')->group(function () {
+            Route::get('analytics',                    [AdminAffiliateController::class, 'analytics']);
+            Route::get('conversions',                  [AdminAffiliateController::class, 'conversions']);
+            Route::post('conversions/{conversion}/approve', [AdminAffiliateController::class, 'approveConversion'])->middleware('permission:affiliate.manage');
+            Route::post('conversions/{conversion}/reject',  [AdminAffiliateController::class, 'rejectConversion'])->middleware('permission:affiliate.manage');
+            Route::get('earnings',                     [AdminAffiliateController::class, 'earnings']);
+            Route::post('earnings/mark-paid',          [AdminAffiliateController::class, 'markAsPaid'])->middleware('permission:affiliate.manage');
+        });
         Route::get('promotions/{promotion}',        [AdminPromotionController::class, 'show'])->middleware('permission:promotions.view');
         Route::put('promotions/{promotion}',        [AdminPromotionController::class, 'update'])->middleware('permission:promotions.edit');
         Route::post('promotions/{promotion}/toggle', [AdminPromotionController::class, 'toggle'])->middleware('permission:promotions.manage');
