@@ -5,6 +5,10 @@ namespace Modules\Vendor\Http\Controllers;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Models\VendorDocument;
 use Modules\Vendor\Services\VendorService;
+use Modules\Vendor\Http\Requests\UpdateVendorStatusRequest;
+use Modules\Vendor\Http\Resources\VendorResource;
+use Modules\Vendor\Http\Resources\VendorListResource;
+use Modules\Vendor\Http\Resources\VendorDocumentResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +31,7 @@ class AdminVendorController
             ->latest()
             ->paginate($request->per_page ?? 20);
 
-        return $this->paginatedResponse($vendors);
+        return $this->paginatedResponse(VendorResource::collection($vendors));
     }
 
     /**
@@ -37,7 +41,7 @@ class AdminVendorController
     public function show(Vendor $vendor): JsonResponse
     {
         $vendor->load(['user', 'profile', 'addresses', 'bankAccounts', 'documents', 'staff.user']);
-        return $this->successResponse($vendor);
+        return $this->successResponse(new VendorResource($vendor));
     }
 
     /**
@@ -47,35 +51,36 @@ class AdminVendorController
     public function approve(Vendor $vendor, Request $request): JsonResponse
     {
         $vendor = $this->vendorService->approve($vendor, $request->user());
-        return $this->successResponse($vendor, 'Vendor approved.');
+        return $this->successResponse(
+            new VendorResource($vendor->load('profile')),
+            'Vendor approved.'
+        );
     }
 
     /**
      * POST /api/v1/admin/vendors/{vendor}/reject
      * Reject vendor application
      */
-    public function reject(Vendor $vendor, Request $request): JsonResponse
+    public function reject(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'reason' => 'required|string|max:500',
-        ]);
-
-        $vendor = $this->vendorService->reject($vendor, $validated['reason']);
-        return $this->successResponse($vendor, 'Vendor rejected.');
+        $vendor = $this->vendorService->reject($vendor, $request->validated('reason'));
+        return $this->successResponse(
+            new VendorResource($vendor),
+            'Vendor rejected.'
+        );
     }
 
     /**
      * POST /api/v1/admin/vendors/{vendor}/suspend
      * Suspend an active vendor
      */
-    public function suspend(Vendor $vendor, Request $request): JsonResponse
+    public function suspend(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'reason' => 'nullable|string|max:500',
-        ]);
-
-        $vendor = $this->vendorService->suspend($vendor, $validated['reason'] ?? null);
-        return $this->successResponse($vendor, 'Vendor suspended.');
+        $vendor = $this->vendorService->suspend($vendor, $request->validated('reason'));
+        return $this->successResponse(
+            new VendorResource($vendor),
+            'Vendor suspended.'
+        );
     }
 
     /**
@@ -85,7 +90,7 @@ class AdminVendorController
     public function pending(): JsonResponse
     {
         $vendors = Vendor::with('user')->pending()->latest()->get();
-        return $this->successResponse($vendors);
+        return $this->successResponse(VendorResource::collection($vendors));
     }
 
     /**
@@ -100,24 +105,26 @@ class AdminVendorController
             'verified_by' => request()->user()->id,
         ]);
 
-        return $this->successResponse($document->fresh(), 'Document verified.');
+        return $this->successResponse(
+            new VendorDocumentResource($document->fresh()),
+            'Document verified.'
+        );
     }
 
     /**
      * POST /api/v1/admin/vendors/documents/{document}/reject
      * Reject a vendor document
      */
-    public function rejectDocument(VendorDocument $document, Request $request): JsonResponse
+    public function rejectDocument(VendorDocument $document, UpdateVendorStatusRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'reason' => 'required|string|max:500',
-        ]);
-
         $document->update([
             'status'           => 'rejected',
-            'rejection_reason' => $validated['reason'],
+            'rejection_reason' => $request->validated('reason'),
         ]);
 
-        return $this->successResponse($document->fresh(), 'Document rejected.');
+        return $this->successResponse(
+            new VendorDocumentResource($document->fresh()),
+            'Document rejected.'
+        );
     }
 }

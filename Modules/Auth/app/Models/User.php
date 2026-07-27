@@ -7,6 +7,8 @@ use Modules\Reviews\Models\Review;
 use Modules\Support\Models\ChatRoom;
 use Modules\Catalog\Models\Wishlist;
 use Modules\Cart\Models\Cart;
+use Modules\Vendor\Models\Vendor;
+use Modules\Vendor\Models\VendorStaff;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -77,6 +79,17 @@ class User extends Authenticatable implements MustVerifyEmailContract
     public function chatRooms(): HasMany
     {
         return $this->hasMany(ChatRoom::class);
+    }
+
+    // Vendor module relationships
+    public function vendor(): HasOne
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
+    public function vendorStaff(): HasMany
+    {
+        return $this->hasMany(VendorStaff::class);
     }
 
     // ─── Role Helpers (bridge from Spatie) ────────────────────────

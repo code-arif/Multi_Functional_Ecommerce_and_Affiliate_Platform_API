@@ -3,6 +3,9 @@
 namespace Modules\Vendor\Services;
 
 use Modules\Vendor\Models\Vendor;
+use Modules\Vendor\Events\VendorRegistered;
+use Modules\Vendor\Events\VendorApproved;
+use Modules\Vendor\Events\VendorRejected;
 use Modules\Auth\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -11,7 +14,7 @@ class VendorService
 {
     public function register(array $data, User $user): Vendor
     {
-        return DB::transaction(function () use ($data, $user) {
+        $vendor = DB::transaction(function () use ($data, $user) {
             $vendor = Vendor::create([
                 'user_id'  => $user->id,
                 'shop_name' => $data['shop_name'],
@@ -43,6 +46,11 @@ class VendorService
 
             return $vendor;
         });
+
+        // Dispatch event outside transaction
+        VendorRegistered::dispatch($vendor);
+
+        return $vendor;
     }
 
     public function approve(Vendor $vendor, User $admin): Vendor
@@ -53,7 +61,11 @@ class VendorService
             'approved_by' => $admin->id,
         ]);
 
-        return $vendor->fresh();
+        $vendor = $vendor->fresh();
+
+        VendorApproved::dispatch($vendor);
+
+        return $vendor;
     }
 
     public function reject(Vendor $vendor, string $reason): Vendor
@@ -63,7 +75,11 @@ class VendorService
             'rejection_reason'  => $reason,
         ]);
 
-        return $vendor->fresh();
+        $vendor = $vendor->fresh();
+
+        VendorRejected::dispatch($vendor, $reason);
+
+        return $vendor;
     }
 
     public function suspend(Vendor $vendor, ?string $reason = null): Vendor
