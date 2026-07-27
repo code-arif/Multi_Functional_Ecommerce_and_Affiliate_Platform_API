@@ -11,5 +11,6 @@ class InventoryServiceProvider extends ModuleServiceProvider
 
     protected array $providers = [
         RouteServiceProvider::class,
+        EventServiceProvider::class,
     ];
 }
