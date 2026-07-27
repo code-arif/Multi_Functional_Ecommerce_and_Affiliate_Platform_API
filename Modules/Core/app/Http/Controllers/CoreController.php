@@ -2,55 +2,54 @@
 
 namespace Modules\Core\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 
-class CoreController extends Controller
+class CoreController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ApiResponse;
+
+    public function health(): JsonResponse
     {
-        return view('core::index');
+        return $this->successResponse([
+            'status'    => 'ok',
+            'version'   => config('app.version', '1.0'),
+            'time'      => now()->toIso8601String(),
+            'database'  => $this->checkDatabase(),
+            'cache'     => $this->checkCache(),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function info(): JsonResponse
     {
-        return view('core::create');
+        return $this->successResponse([
+            'name'          => config('app.name'),
+            'env'           => config('app.env'),
+            'debug'         => config('app.debug'),
+            'locale'        => app()->getLocale(),
+            'timezone'      => config('app.timezone'),
+            'currency'      => config('ecommerce.currency', 'BDT'),
+            'currency_symbol' => config('ecommerce.currency_symbol', '৳'),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    private function checkDatabase(): bool
     {
-        return view('core::show');
+        try {
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    private function checkCache(): bool
     {
-        return view('core::edit');
+        try {
+            \Illuminate\Support\Facades\Cache::store('file')->get('health-check');
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }
