@@ -11,5 +11,6 @@ class ReviewsServiceProvider extends ModuleServiceProvider
 
     protected array $providers = [
         RouteServiceProvider::class,
+        EventServiceProvider::class,
     ];
 }

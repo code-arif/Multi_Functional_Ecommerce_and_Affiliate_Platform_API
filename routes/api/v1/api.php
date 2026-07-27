@@ -61,8 +61,9 @@ Route::prefix('products')->middleware('throttle:api')->group(function () {
     Route::get('featured',        [ProductController::class, 'featured']);
     Route::get('new-arrivals',    [ProductController::class, 'newArrivals']);
     Route::get('bestsellers',     [ProductController::class, 'bestsellers']);
-    Route::get('{slug}/reviews',  [ReviewController::class, 'index']);
-    Route::get('{slug}/related',  [ProductController::class, 'related']);
+    Route::get('{slug}/reviews/stats', [ReviewController::class, 'stats']);
+    Route::get('{slug}/reviews',     [ReviewController::class, 'index']);
+    Route::get('{slug}/related',     [ProductController::class, 'related']);
     Route::get('{slug}', [ProductController::class, 'show']);
 });
 
