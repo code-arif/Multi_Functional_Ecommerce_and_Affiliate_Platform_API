@@ -3,6 +3,7 @@
 namespace Modules\Checkout\Http\Controllers;
 
 use Modules\Checkout\Services\CheckoutService;
+use Modules\Checkout\Http\Requests\CheckoutRequest;
 use Modules\Cart\Services\CartService;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -17,33 +18,78 @@ class CheckoutController
         private CartService $cartService
     ) {}
 
-    public function process(Request $request): JsonResponse
+    /**
+     * POST /api/v1/checkout/preview
+     * Get order preview/summary before placing order.
+     */
+    public function preview(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'shipping_address' => 'required',
-            'billing_address'  => 'sometimes',
-            'shipping_method'  => 'nullable|string|max:50',
-            'payment_method'   => 'nullable|string|max:50|in:cod,stripe',
-            'notes'            => 'nullable|string|max:1000',
-            'shipping_cost'    => 'nullable|numeric|min:0',
-            'tax_amount'       => 'nullable|numeric|min:0',
-        ]);
-
         $cart = $this->cartService->getCart($request->user(), null);
 
         if ($cart->isEmpty) {
             return $this->errorResponse('Your cart is empty.', null, 400);
         }
 
-        $order = $this->checkoutService->processCheckout($cart, $request->user(), $validated);
+        $preview = $this->checkoutService->preview(
+            $cart,
+            $request->user(),
+            $request->only(['address_id', 'shipping_address', 'shipping_method'])
+        );
 
-        return $this->createdResponse([
-            'order_number'  => $order->order_number,
-            'total'         => $order->total,
-            'tracking_token' => $order->tracking_token,
-        ], 'Order placed successfully.');
+        return $this->successResponse($preview, 'Order preview generated.');
     }
 
+    /**
+     * POST /api/v1/checkout
+     * Place an order (process checkout).
+     */
+    public function process(CheckoutRequest $request): JsonResponse
+    {
+        $cart = $this->cartService->getCart($request->user(), null);
+
+        if ($cart->isEmpty) {
+            return $this->errorResponse('Your cart is empty.', null, 400);
+        }
+
+        $orders = $this->checkoutService->processCheckout(
+            $cart,
+            $request->user(),
+            $request->validated()
+        );
+
+        return $this->createdResponse([
+            'orders'         => collect($orders)->map(fn($o) => [
+                'order_number'  => $o->order_number,
+                'total'         => $o->total,
+                'tracking_token' => $o->tracking_token,
+            ]),
+            'message' => count($orders) > 1
+                ? count($orders) . ' orders placed successfully.'
+                : 'Order placed successfully.',
+        ]);
+    }
+
+    /**
+     * GET /api/v1/checkout/shipping-options
+     * Get available shipping methods per vendor group.
+     */
+    public function shippingOptions(Request $request): JsonResponse
+    {
+        $cart = $this->cartService->getCart($request->user(), null);
+
+        if ($cart->isEmpty) {
+            return $this->errorResponse('Your cart is empty.', null, 400);
+        }
+
+        $options = $this->checkoutService->getShippingOptions($cart);
+
+        return $this->successResponse($options);
+    }
+
+    /**
+     * POST /api/v1/checkout/shipping-cost
+     * Calculate shipping cost.
+     */
     public function shippingCost(Request $request): JsonResponse
     {
         $cart = $this->cartService->getCart($request->user(), null);
@@ -58,5 +104,44 @@ class CheckoutController
             'shipping_cost' => $cost,
             'free_over'     => config('ecommerce.shipping.free_over', 1000),
         ]);
+    }
+
+    /**
+     * POST /api/v1/checkout/calculate-tax
+     * Calculate tax for the current cart.
+     */
+    public function calculateTax(Request $request): JsonResponse
+    {
+        $cart = $this->cartService->getCart($request->user(), null);
+
+        $validated = $request->validate([
+            'country' => 'nullable|string|max:100',
+            'state'   => 'nullable|string|max:100',
+        ]);
+
+        $taxAmount = $this->checkoutService->calculateTax(
+            $cart->subtotal,
+            $validated
+        );
+
+        return $this->successResponse([
+            'subtotal'  => $cart->subtotal,
+            'tax_rate'  => $this->getTaxRateForCountry($validated['country'] ?? ''),
+            'tax_amount' => $taxAmount,
+        ]);
+    }
+
+    private function getTaxRateForCountry(?string $country): float
+    {
+        $rates = [
+            'Bangladesh' => 0.05,
+            'BD'         => 0.05,
+            'India'      => 0.18,
+            'USA'        => 0.0,
+            'US'         => 0.0,
+            'UK'         => 0.20,
+            'GB'         => 0.20,
+        ];
+        return $rates[$country ?? ''] ?? 0.0;
     }
 }

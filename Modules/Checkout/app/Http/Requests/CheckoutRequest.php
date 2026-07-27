@@ -14,13 +14,24 @@ class CheckoutRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipping_address' => 'required',
+            'address_id'       => 'nullable|integer|exists:addresses,id',
+            'shipping_address' => 'required_without:address_id',
             'billing_address'  => 'sometimes',
-            'shipping_method'  => 'nullable|string|max:50',
-            'payment_method'   => 'nullable|string|max:50',
+            'shipping_method'  => 'nullable|string|max:50|in:standard,express',
+            'payment_method'   => 'nullable|string|max:50|in:cod,stripe',
             'shipping_cost'    => 'nullable|numeric|min:0',
             'tax_amount'       => 'nullable|numeric|min:0',
             'notes'            => 'nullable|string|max:1000',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'address_id.exists'            => 'The selected address does not exist.',
+            'shipping_address.required_without' => 'Please provide a shipping address or select a saved address.',
+            'payment_method.in'            => 'Invalid payment method. Accepted: cod, stripe.',
+            'shipping_method.in'           => 'Invalid shipping method. Accepted: standard, express.',
         ];
     }
 }

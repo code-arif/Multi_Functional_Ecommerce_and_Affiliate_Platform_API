@@ -129,6 +129,13 @@ Route::prefix('checkout')->middleware('throttle:checkout')->group(function () {
     Route::get('shipping-cost', [CheckoutController::class, 'shippingCost']);
 });
 
+// Checkout — authenticated routes (preview, shipping options, tax calculation)
+Route::middleware(['auth:sanctum', 'banned'])->prefix('checkout')->group(function () {
+    Route::post('preview',           [CheckoutController::class, 'preview']);
+    Route::get('shipping-options',   [CheckoutController::class, 'shippingOptions']);
+    Route::post('calculate-tax',     [CheckoutController::class, 'calculateTax']);
+});
+
 // Guest order tracking (no auth — uses token)
 Route::get('orders/track/{token}', [OrderController::class, 'trackGuest'])
     ->middleware('throttle:api');
