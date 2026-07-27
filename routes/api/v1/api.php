@@ -34,6 +34,7 @@ use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageControl
 use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingController;
 use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
+use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Vendor\Http\Controllers\VendorController;
 use Modules\Vendor\Http\Controllers\AdminVendorController;
 
@@ -290,6 +291,15 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
             Route::post('documents/{document}/verify', [AdminVendorController::class, 'verifyDocument'])->middleware('permission:vendors.manage');
             Route::post('documents/{document}/reject', [AdminVendorController::class, 'rejectDocument'])->middleware('permission:vendors.manage');
         });
+
+        // Promotions
+        Route::get('promotions',                    [AdminPromotionController::class, 'index'])->middleware('permission:promotions.view');
+        Route::post('promotions',                   [AdminPromotionController::class, 'store'])->middleware('permission:promotions.create');
+        Route::get('promotions/analytics',          [AdminPromotionController::class, 'analytics'])->middleware('permission:promotions.view');
+        Route::get('promotions/{promotion}',        [AdminPromotionController::class, 'show'])->middleware('permission:promotions.view');
+        Route::put('promotions/{promotion}',        [AdminPromotionController::class, 'update'])->middleware('permission:promotions.edit');
+        Route::post('promotions/{promotion}/toggle', [AdminPromotionController::class, 'toggle'])->middleware('permission:promotions.manage');
+        Route::delete('promotions/{promotion}',     [AdminPromotionController::class, 'destroy'])->middleware('permission:promotions.delete');
 
         // Settings
         Route::get('settings',              [AdminSettingController::class, 'index'])->middleware('permission:settings.view');

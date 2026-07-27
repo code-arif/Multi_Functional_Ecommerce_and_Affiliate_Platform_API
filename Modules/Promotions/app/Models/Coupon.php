@@ -3,6 +3,7 @@
 namespace Modules\Promotions\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Coupon extends Model
@@ -10,13 +11,14 @@ class Coupon extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'promotion_id',
         'code',
         'type',
         'value',
         'minimum_order_amount',
         'maximum_discount',
         'usage_limit',
-        'usage_per_user',
+        'usage_limit_per_user',
         'used_count',
         'is_active',
         'starts_at',
@@ -36,6 +38,11 @@ class Coupon extends Model
     public function usages()
     {
         return $this->hasMany(CouponUsage::class);
+    }
+
+    public function promotion(): BelongsTo
+    {
+        return $this->belongsTo(Promotion::class);
     }
 
     public function scopeActive($query)
