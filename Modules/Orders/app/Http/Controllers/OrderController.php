@@ -36,6 +36,20 @@ class OrderController
         return $this->successResponse(new OrderResource($order), 'Order cancelled.');
     }
 
+    /**
+     * POST /api/v1/orders/{number}/cancel-request
+     * Submit a cancellation request for admin review.
+     */
+    public function requestCancel(string $number, Request $request): JsonResponse
+    {
+        $order = $this->orderService->getOrderByNumber($number, $request->user());
+
+        $validated = $request->validate(['reason' => 'required|string|max:500']);
+        $cancelRequest = $this->orderService->requestCancellation($order, $request->user(), $validated['reason']);
+
+        return $this->successResponse($cancelRequest, 'Cancellation request submitted.');
+    }
+
     public function trackGuest(string $token): JsonResponse
     {
         $order = $this->orderService->getOrderByToken($token);

@@ -2,6 +2,8 @@
 
 namespace Modules\Orders\Models;
 
+use Modules\Vendor\Models\Vendor;
+use Modules\Payments\Models\Payment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +16,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'vendor_id',
         'order_number',
         'subtotal',
         'shipping_cost',
@@ -56,6 +59,11 @@ class Order extends Model
         return $this->belongsTo(\Modules\Auth\Models\User::class);
     }
 
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
@@ -66,9 +74,19 @@ class Order extends Model
         return $this->hasMany(OrderStatusHistory::class);
     }
 
-    public function payment()
+    public function payment(): HasOne
     {
-        return $this->hasOne(\Modules\Payments\Models\Payment::class);
+        return $this->hasOne(Payment::class);
+    }
+
+    public function invoice(): HasOne
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
+    public function cancelRequests(): HasMany
+    {
+        return $this->hasMany(CancelRequest::class);
     }
 
     public function scopeByStatus($query, string $status)
@@ -79,6 +97,11 @@ class Order extends Model
     public function scopeByUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function scopeByVendor($query, $vendorId)
+    {
+        return $query->where('vendor_id', $vendorId);
     }
 
     public function getIsPaidAttribute(): bool
