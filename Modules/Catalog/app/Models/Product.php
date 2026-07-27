@@ -10,9 +10,11 @@ use Modules\Catalog\Models\ProductAttribute;
 use Modules\Reviews\Models\Review;
 use Modules\Orders\Models\OrderItem;
 use Modules\Catalog\Models\Wishlist;
+use Modules\Catalog\Models\VendorProductPrice;
 use Modules\Catalog\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,6 +23,8 @@ use Illuminate\Support\Str;
 class Product extends Model
 {
     use HasSlug, SoftDeletes;
+
+    protected string $table = 'products';
 
     protected $fillable = [
         'category_id',
@@ -118,9 +122,43 @@ class Product extends Model
         return $this->hasMany(Wishlist::class);
     }
 
+    /**
+     * Vendors selling this product at their own prices (SRS Section 4.5).
+     */
+    public function vendorProductPrices(): HasMany
+    {
+        return $this->hasMany(VendorProductPrice::class);
+    }
+
+    /**
+     * Active vendors who sell this product.
+     */
+    public function vendors(): BelongsToMany
+    {
+        return $this->belongsToMany(\Modules\Vendor\Models\Vendor::class, 'vendor_product_prices')
+            ->withPivot(['price', 'sale_price', 'stock_quantity', 'is_active'])
+            ->wherePivot('is_active', true);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');
+    }
+
+    /**
+     * Products pending admin approval.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Products that need admin attention (pending review).
+     */
+    public function scopeNeedsApproval($query)
+    {
+        return $query->whereIn('status', ['pending']);
     }
 
     public function scopeFeatured($query)
@@ -251,4 +289,26 @@ class Product extends Model
         }
         return $slug;
     }
+
+    /**
+     * Approve a pending product for public listing (Product Approval Workflow).
+     */
+    public function approve(): void
+    {
+        $this->update([
+            'status'       => 'active',
+            'published_at' => $this->published_at ?? now(),
+        ]);
+    }
+
+    /**
+     * Reject a pending product.
+     */
+    public function reject(?string $reason = null): void
+    {
+        $this->update([
+            'status' => 'inactive',
+        ]);
+    }
 }
+
