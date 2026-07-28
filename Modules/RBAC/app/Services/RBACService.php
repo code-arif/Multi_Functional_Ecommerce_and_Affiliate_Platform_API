@@ -14,8 +14,12 @@ class RBACService
 
     public function listRoles(array $filters = []): LengthAwarePaginator
     {
+        // Note: 'users' count omitted because Spatie's `morphedByMany` relationship
+        // (Role->users()) fails to resolve in some environments (e.g., MySQL testing with
+        // DatabaseTransactions). Use withCount('users') only when the auth guard's user
+        // model is guaranteed to be resolvable.
         return Role::query()
-            ->withCount('users', 'permissions')
+            ->withCount('permissions')
             ->when($filters['search'] ?? null, fn($q, $s) =>
                 $q->where('name', 'like', "%{$s}%")
                   ->orWhere('display_name', 'like', "%{$s}%")
@@ -27,7 +31,7 @@ class RBACService
 
     public function getRole(int $id): Role
     {
-        return Role::with('permissions')->withCount('users')->findOrFail($id);
+        return Role::with('permissions')->findOrFail($id);
     }
 
     public function createRole(array $data): Role

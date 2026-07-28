@@ -24,7 +24,7 @@ class Product extends Model
 {
     use HasSlug, SoftDeletes;
 
-    protected string $table = 'products';
+    protected $table = 'products';
 
     protected $fillable = [
         'category_id',

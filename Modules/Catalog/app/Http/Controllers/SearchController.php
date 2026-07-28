@@ -13,17 +13,40 @@ class SearchController
 
     public function __construct(private SearchService $searchService) {}
 
+    /**
+     * Full-text product search with faceted filtering.
+     * Supports Elasticsearch (returns array with aggregations)
+     * and database fallback (returns paginator).
+     */
     public function search(Request $request): JsonResponse
     {
-        $request->validate(['q' => 'required|string|min:2|max:200']);
+        $request->validate(['q' => 'nullable|string|min:2|max:200']);
 
-        $products = $this->searchService->search(
-            $request->q,
-            $request->only(['category_id', 'brand_id', 'min_price', 'max_price', 'sort']),
+        $results = $this->searchService->search(
+            $request->q ?? '',
+            $request->only(['category_id', 'brand_id', 'min_price', 'max_price', 'sort', 'in_stock', 'rating', 'page']),
             $request->per_page ?? 20
         );
 
-        return $this->paginatedResponse($products);
+        // Elasticsearch response (array with aggregations)
+        if (is_array($results)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Search results',
+                'data'    => $results['products'] ?? [],
+                'pagination' => [
+                    'total'        => $results['total'] ?? 0,
+                    'per_page'     => (int) ($results['size'] ?? $request->per_page ?? 20),
+                    'current_page' => (int) ($request->page ?? 1),
+                    'last_page'    => (int) ceil(($results['total'] ?? 0) / max(($results['size'] ?? 20), 1)),
+                ],
+                'aggregations' => $results['aggregations'] ?? [],
+                'took_ms'      => $results['took_ms'] ?? 0,
+            ]);
+        }
+
+        // Database paginator response
+        return $this->paginatedResponse($results, 'Search results');
     }
 
     public function suggestions(Request $request): JsonResponse
@@ -32,7 +55,7 @@ class SearchController
 
         $suggestions = $this->searchService->suggestions($request->q);
 
-        return $this->successResponse($suggestions);
+        return $this->successResponse($suggestions, 'Suggestions');
     }
 
     public function priceRange(Request $request): JsonResponse
@@ -41,13 +64,13 @@ class SearchController
             $request->only(['category_id'])
         );
 
-        return $this->successResponse($range);
+        return $this->successResponse($range, 'Price range');
     }
 
     public function facets(Request $request): JsonResponse
     {
         $facets = $this->searchService->getFacets($request->q ?? '');
 
-        return $this->successResponse($facets);
+        return $this->successResponse($facets, 'Facets');
     }
 }

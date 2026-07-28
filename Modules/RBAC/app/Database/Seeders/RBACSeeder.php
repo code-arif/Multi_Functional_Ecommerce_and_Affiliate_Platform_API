@@ -100,6 +100,9 @@ class RBACSeeder extends Seeder
             // ─── Inventory ────────────────────────────────────────
             'inventory.view', 'inventory.manage', 'inventory.adjust',
 
+            // ─── Search ───────────────────────────────────────────
+            'search.view', 'search.manage',
+
             // ─── Checkout ─────────────────────────────────────────
             'checkout.view', 'checkout.manage',
         ];

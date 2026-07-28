@@ -220,6 +220,6 @@ return [
          * file. Using 'default' here means to use the `default` set in cache.php.
          */
 
-        'store' => 'default',
+        'store' => env('PERMISSION_CACHE_STORE', env('CACHE_STORE', 'default')),
     ],
 ];
