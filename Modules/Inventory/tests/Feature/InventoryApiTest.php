@@ -1,234 +1,269 @@
 <?php
 
-namespace Modules\Inventory\Tests\Feature;
-
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Modules\Auth\Models\User;
 use Modules\Catalog\Models\Product;
 use Modules\Catalog\Models\VendorProductPrice;
 use Modules\Inventory\Models\InventoryLog;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Vendor\Models\Vendor;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class InventoryApiTest extends TestCase
-{
-    use RefreshDatabase;
+uses(Tests\TestCase::class)->use(DatabaseTransactions::class);
 
-    private User $vendorUser;
-    private Vendor $vendor;
-    private Product $product;
-    private VendorProductPrice $vendorProduct;
+// ─── Helpers ─────────────────────────────────────────────────────
 
-    protected function setUp(): void
+if (!function_exists('createAdminUser')) {
+    function createAdminUser(): User
     {
-        parent::setUp();
-
-        $this->vendorUser = User::factory()->create([
-            'name'   => 'Test Vendor',
-            'email'  => 'vendor-inv@example.com',
-            'status' => 'active',
+        $user = User::create([
+            'name'     => 'Admin User',
+            'email'    => 'admin-' . uniqid() . '@example.com',
+            'password' => bcrypt('password'),
+            'status'   => 'active',
         ]);
-
-        $this->vendor = Vendor::factory()->create([
-            'user_id'   => $this->vendorUser->id,
-            'shop_name' => 'Inventory Test Shop',
-            'slug'      => 'inventory-test-shop',
-            'status'    => 'active',
-        ]);
-
-        $this->product = Product::factory()->create([
-            'name'            => 'Test Product',
-            'slug'            => 'test-product',
-            'sku'             => 'TEST-001',
-            'type'            => 'simple',
-            'price'           => 100.00,
-            'stock_quantity'  => 50,
-            'stock_status'    => 'in_stock',
-            'status'          => 'active',
-        ]);
-
-        $this->vendorProduct = VendorProductPrice::create([
-            'vendor_id'      => $this->vendor->id,
-            'product_id'     => $this->product->id,
-            'price'          => 100.00,
-            'stock_quantity' => 50,
-            'stock_status'   => 'in_stock',
-            'is_active'      => true,
-        ]);
-    }
-
-    // ─── Warehouse CRUD ───────────────────────────────────────────
-
-    /** @test */
-    public function vendor_can_create_warehouse(): void
-    {
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->postJson('/api/v1/vendor/warehouses', [
-                'name'          => 'Main Warehouse',
-                'address_line_1' => '123 Street',
-                'city'          => 'Dhaka',
-                'is_default'    => true,
-            ]);
-
-        $response->assertCreated()
-            ->assertJsonPath('data.name', 'Main Warehouse');
-    }
-
-    /** @test */
-    public function vendor_can_list_warehouses(): void
-    {
-        Warehouse::factory()->create([
-            'vendor_id' => $this->vendor->id,
-            'name'      => 'Warehouse 1',
-            'slug'      => 'wh1',
-        ]);
-
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->getJson('/api/v1/vendor/warehouses');
-
-        $response->assertOk();
-    }
-
-    /** @test */
-    public function non_vendor_cannot_create_warehouse(): void
-    {
-        $user = User::factory()->create(['email' => 'customer2@example.com', 'status' => 'active']);
-
-        $response = $this->actingAs($user, 'sanctum')
-            ->postJson('/api/v1/vendor/warehouses', [
-                'name' => 'My Warehouse',
-            ]);
-
-        $response->assertStatus(403);
-    }
-
-    // ─── Inventory Adjustment ─────────────────────────────────────
-
-    /** @test */
-    public function vendor_can_adjust_stock(): void
-    {
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->postJson('/api/v1/vendor/inventory/adjust', [
-                'vendor_product_id' => $this->vendorProduct->id,
-                'quantity'          => 10,  // Increase by 10
-                'notes'             => 'Restock from supplier',
-            ]);
-
-        $response->assertOk();
-
-        // Verify stock was updated
-        $this->assertEquals(60, $this->vendorProduct->fresh()->stock_quantity);
-
-        // Verify log was created
-        $this->assertDatabaseHas('inventory_logs', [
-            'product_id' => $this->product->id,
-            'vendor_id'  => $this->vendor->id,
-            'type'       => 'adjustment',
-            'quantity'   => 10,
-        ]);
-    }
-
-    /** @test */
-    public function vendor_can_decrease_stock(): void
-    {
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->postJson('/api/v1/vendor/inventory/adjust', [
-                'vendor_product_id' => $this->vendorProduct->id,
-                'quantity'          => -5,
-                'notes'             => 'Damaged item removed',
-            ]);
-
-        $response->assertOk();
-
-        $this->assertEquals(45, $this->vendorProduct->fresh()->stock_quantity);
-
-        $this->assertDatabaseHas('inventory_logs', [
-            'product_id' => $this->product->id,
-            'quantity'   => -5,
-        ]);
-    }
-
-    /** @test */
-    public function vendor_can_view_inventory_summary(): void
-    {
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->getJson('/api/v1/vendor/inventory/summary');
-
-        $response->assertOk()
-            ->assertJsonStructure([
-                'data' => ['total_products', 'low_stock', 'out_of_stock', 'in_stock'],
-            ]);
-    }
-
-    /** @test */
-    public function vendor_can_view_inventory_list(): void
-    {
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->getJson('/api/v1/vendor/inventory');
-
-        $response->assertOk();
-    }
-
-    /** @test */
-    public function vendor_can_view_stock_logs(): void
-    {
-        // Create a log entry first
-        InventoryLog::create([
-            'product_id'   => $this->product->id,
-            'vendor_id'    => $this->vendor->id,
-            'type'         => 'adjustment',
-            'quantity'     => 10,
-            'stock_before' => 50,
-            'stock_after'  => 60,
-            'notes'        => 'Test log',
-        ]);
-
-        $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->getJson('/api/v1/vendor/inventory/logs');
-
-        $response->assertOk();
-    }
-
-    /** @test */
-    public function unauthenticated_user_cannot_access_inventory(): void
-    {
-        $response = $this->getJson('/api/v1/vendor/inventory');
-        $response->assertStatus(401);
-    }
-
-    // ─── Stock Transfer ───────────────────────────────────────────
-
-    /** @test */
-    public function inventory_service_can_transfer_stock(): void
-    {
-        $fromWarehouse = Warehouse::factory()->create([
-            'vendor_id' => $this->vendor->id,
-            'name'      => 'From WH',
-            'slug'      => 'from-wh',
-            'is_default' => true,
-        ]);
-        $toWarehouse = Warehouse::factory()->create([
-            'vendor_id' => $this->vendor->id,
-            'name'      => 'To WH',
-            'slug'      => 'to-wh',
-        ]);
-
-        $service = app(\Modules\Inventory\Services\InventoryService::class);
-        $service->transferStock($this->product, $fromWarehouse, $toWarehouse, 10);
-
-        $this->assertDatabaseHas('inventory_logs', [
-            'product_id'   => $this->product->id,
-            'warehouse_id' => $fromWarehouse->id,
-            'type'         => 'transfer_out',
-            'quantity'     => -10,
-        ]);
-
-        $this->assertDatabaseHas('inventory_logs', [
-            'product_id'   => $this->product->id,
-            'warehouse_id' => $toWarehouse->id,
-            'type'         => 'transfer_in',
-            'quantity'     => 10,
-        ]);
+        $user->assignRole('super-admin');
+        return $user;
     }
 }
+
+beforeEach(function () {
+    $this->seed(\Modules\RBAC\Database\Seeders\RBACSeeder::class);
+
+    // Create vendor user
+    $this->vendorUser = User::create([
+        'name'     => 'Test Vendor',
+        'email'    => 'vendor-inv-' . uniqid() . '@example.com',
+        'password' => bcrypt('password'),
+        'status'   => 'active',
+    ]);
+
+    // Create vendor
+    $this->vendor = Vendor::create([
+        'user_id'   => $this->vendorUser->id,
+        'shop_name' => 'Inventory Test Shop',
+        'slug'      => 'inventory-test-shop-' . uniqid(),
+        'status'    => 'active',
+    ]);
+
+    // Create product
+    $this->product = Product::create([
+        'name'            => 'Test Product',
+        'slug'            => 'test-product-' . uniqid(),
+        'sku'             => 'TEST-' . uniqid(),
+        'type'            => 'simple',
+        'price'           => 100.00,
+        'stock_quantity'  => 50,
+        'stock_status'    => 'in_stock',
+        'status'          => 'active',
+    ]);
+
+    // Create vendor-product price entry
+    $this->vendorProduct = VendorProductPrice::create([
+        'vendor_id'      => $this->vendor->id,
+        'product_id'     => $this->product->id,
+        'price'          => 100.00,
+        'stock_quantity' => 50,
+        'stock_status'   => 'in_stock',
+        'is_active'      => true,
+    ]);
+});
+
+// ─── Warehouse CRUD ─────────────────────────────────────────────
+
+it('creates a warehouse', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/warehouses', [
+            'name'          => 'Main Warehouse',
+            'address_line_1' => '123 Street',
+            'city'          => 'Dhaka',
+            'is_default'    => true,
+        ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('data.name', 'Main Warehouse');
+});
+
+it('lists warehouses for vendor', function () {
+    Warehouse::create([
+        'vendor_id' => $this->vendor->id,
+        'name'      => 'Warehouse 1',
+        'slug'      => 'wh1-' . uniqid(),
+    ]);
+
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/warehouses');
+
+    $response->assertOk();
+});
+
+it('rejects non-vendor from creating warehouse', function () {
+    $user = User::create([
+        'name'     => 'Customer',
+        'email'    => 'customer-' . uniqid() . '@example.com',
+        'password' => bcrypt('password'),
+        'status'   => 'active',
+    ]);
+
+    $response = $this->actingAs($user, 'sanctum')
+        ->postJson('/api/v1/vendor/warehouses', [
+            'name' => 'My Warehouse',
+        ]);
+
+    $response->assertStatus(403);
+});
+
+// ─── Stock Adjustment ──────────────────────────────────────────
+
+it('increases stock', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/inventory/adjust', [
+            'vendor_product_id' => $this->vendorProduct->id,
+            'quantity'          => 10,
+            'notes'             => 'Restock from supplier',
+        ]);
+
+    $response->assertOk();
+
+    // Verify stock was updated
+    $this->assertEquals(60, $this->vendorProduct->fresh()->stock_quantity);
+
+    // Verify log was created
+    $this->assertDatabaseHas('inventory_logs', [
+        'product_id' => $this->product->id,
+        'vendor_id'  => $this->vendor->id,
+        'type'       => 'adjustment',
+        'quantity'   => 10,
+    ]);
+});
+
+it('decreases stock', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/inventory/adjust', [
+            'vendor_product_id' => $this->vendorProduct->id,
+            'quantity'          => -5,
+            'notes'             => 'Damaged item removed',
+        ]);
+
+    $response->assertOk();
+    $this->assertEquals(45, $this->vendorProduct->fresh()->stock_quantity);
+
+    $this->assertDatabaseHas('inventory_logs', [
+        'product_id' => $this->product->id,
+        'quantity'   => -5,
+    ]);
+});
+
+it('rejects zero quantity adjustment', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/inventory/adjust', [
+            'vendor_product_id' => $this->vendorProduct->id,
+            'quantity'          => 0,
+        ]);
+
+    $response->assertStatus(422);
+});
+
+it('rejects invalid product id', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/inventory/adjust', [
+            'vendor_product_id' => 99999,
+            'quantity'          => 10,
+        ]);
+
+    $response->assertStatus(422);
+});
+
+it('views inventory summary', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/inventory/summary');
+
+    $response->assertOk()
+        ->assertJsonStructure([
+            'data' => ['total_products', 'low_stock', 'out_of_stock', 'in_stock'],
+        ]);
+});
+
+it('views inventory list', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/inventory');
+
+    $response->assertOk();
+});
+
+it('views stock logs', function () {
+    InventoryLog::create([
+        'product_id'   => $this->product->id,
+        'vendor_id'    => $this->vendor->id,
+        'type'         => 'adjustment',
+        'quantity'     => 10,
+        'stock_before' => 50,
+        'stock_after'  => 60,
+        'notes'        => 'Test log',
+    ]);
+
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/inventory/logs');
+
+    $response->assertOk();
+});
+
+it('rejects unauthenticated access to inventory', function () {
+    $response = $this->getJson('/api/v1/vendor/inventory');
+    $response->assertStatus(401);
+});
+
+// ─── Stock Transfer ────────────────────────────────────────────
+
+it('transfers stock between warehouses', function () {
+    $fromWarehouse = Warehouse::create([
+        'vendor_id'  => $this->vendor->id,
+        'name'       => 'From WH',
+        'slug'       => 'from-wh-' . uniqid(),
+        'is_default' => true,
+    ]);
+
+    $toWarehouse = Warehouse::create([
+        'vendor_id' => $this->vendor->id,
+        'name'      => 'To WH',
+        'slug'      => 'to-wh-' . uniqid(),
+    ]);
+
+    $service = app(\Modules\Inventory\Services\InventoryService::class);
+    $service->transferStock($this->product, $fromWarehouse, $toWarehouse, 10);
+
+    $this->assertDatabaseHas('inventory_logs', [
+        'product_id'   => $this->product->id,
+        'warehouse_id' => $fromWarehouse->id,
+        'type'         => 'transfer_out',
+        'quantity'     => -10,
+    ]);
+
+    $this->assertDatabaseHas('inventory_logs', [
+        'product_id'   => $this->product->id,
+        'warehouse_id' => $toWarehouse->id,
+        'type'         => 'transfer_in',
+        'quantity'     => 10,
+    ]);
+});
+
+// ─── Admin Routes ─────────────────────────────────────────────
+
+it('allows admin to view inventory summary', function () {
+    $admin = createAdminUser();
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->getJson('/api/v1/admin/inventory/summary');
+
+    $response->assertOk()
+        ->assertJsonStructure(['data' => [
+            'total_products', 'in_stock', 'out_of_stock', 'on_backorder',
+        ]]);
+});
+
+it('rejects non-admin from admin inventory', function () {
+    $response = $this->actingAs($this->vendorUser, 'sanctum')
+        ->getJson('/api/v1/admin/inventory/summary');
+
+    // The admin middleware should reject non-admin users
+    expect(in_array($response->status(), [401, 403]))->toBeTrue();
+});

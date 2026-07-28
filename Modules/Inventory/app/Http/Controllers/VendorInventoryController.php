@@ -4,6 +4,8 @@ namespace Modules\Inventory\Http\Controllers;
 
 use Modules\Inventory\Services\InventoryService;
 use Modules\Catalog\Models\VendorProductPrice;
+use Modules\Inventory\Http\Requests\StoreInventoryAdjustmentRequest;
+use Modules\Inventory\Http\Resources\InventoryLogResource;
 use Modules\Vendor\Models\Vendor;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -89,18 +91,14 @@ class VendorInventoryController
      * POST /api/v1/vendor/inventory/adjust
      * Adjust stock for a vendor product.
      */
-    public function adjust(Request $request): JsonResponse
+    public function adjust(StoreInventoryAdjustmentRequest $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
         if (!$vendor) {
             return $this->errorResponse('You are not a vendor.', null, 403);
         }
 
-        $validated = $request->validate([
-            'vendor_product_id' => 'required|exists:vendor_product_prices,id',
-            'quantity'          => 'required|integer',
-            'notes'             => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $vendorProduct = VendorProductPrice::where('id', $validated['vendor_product_id'])
             ->where('vendor_id', $vendor->id)
@@ -139,6 +137,6 @@ class VendorInventoryController
             ->latest()
             ->paginate($request->per_page ?? 20);
 
-        return $this->paginatedResponse($logs);
+        return $this->paginatedResponse(InventoryLogResource::collection($logs));
     }
 }

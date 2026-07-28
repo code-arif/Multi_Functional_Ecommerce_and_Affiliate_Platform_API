@@ -9,20 +9,24 @@ use Modules\Search\Http\Controllers\AdminSearchController;
 | Search Module API Routes
 |--------------------------------------------------------------------------
 |
-| Public search endpoints (via Catalog SearchController) and admin
-| analytics/reindex management.
+| All search endpoints consolidated in the Search module:
+| - Public search (/, suggestions, price-range, facets, popular)
+| - Admin analytics, reindex, status
 |
-| NOTE: Public search endpoints (/, suggestions, price-range, facets)
-| are registered in routes/api/v1/api.php via Catalog\SearchController
-| which already uses the ES-backed SearchService. Only additional
-| endpoints are added here.
+| NOTE: The old `routes/api/v1/api.php` still references SearchController
+| for backwards compatibility but now points to this module's controller.
 |
 */
 
-// ─── Public Search Routes (additional) ──────────────────────────────
+// ─── Public Search Routes ───────────────────────────────────────────
 
-Route::get('search/popular', [SearchController::class, 'popularSearches'])
-    ->name('public.search.popular');
+Route::prefix('search')->middleware('throttle:search')->group(function () {
+    Route::get('/',               [SearchController::class, 'search'])->name('public.search');
+    Route::get('suggestions',     [SearchController::class, 'suggestions'])->name('public.search.suggestions');
+    Route::get('price-range',     [SearchController::class, 'priceRange'])->name('public.search.price-range');
+    Route::get('facets',          [SearchController::class, 'facets'])->name('public.search.facets');
+    Route::get('popular',         [SearchController::class, 'popularSearches'])->name('public.search.popular');
+});
 
 // ─── Admin Search Routes ────────────────────────────────────────────
 

@@ -9,26 +9,30 @@ uses(\Tests\TestCase::class)->use(DatabaseTransactions::class);
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
-function createAdminUser(): User
-{
-    $user = User::create([
-        'name'     => 'Admin User',
-        'email'    => 'admin-' . uniqid() . '@example.com',
-        'password' => bcrypt('password'),
-        'status'   => 'active',
-    ]);
-    $user->assignRole('super-admin');
-    return $user;
+if (!function_exists('createAdminUser')) {
+    function createAdminUser(): User
+    {
+        $user = User::create([
+            'name'     => 'Admin User',
+            'email'    => 'admin-' . uniqid() . '@example.com',
+            'password' => bcrypt('password'),
+            'status'   => 'active',
+        ]);
+        $user->assignRole('super-admin');
+        return $user;
+    }
 }
 
-function createRegularUser(): User
-{
-    return User::create([
-        'name'     => 'Regular User',
-        'email'    => 'user-' . uniqid() . '@example.com',
-        'password' => bcrypt('password'),
-        'status'   => 'active',
-    ]);
+if (!function_exists('createRegularUser')) {
+    function createRegularUser(): User
+    {
+        return User::create([
+            'name'     => 'Regular User',
+            'email'    => 'user-' . uniqid() . '@example.com',
+            'password' => bcrypt('password'),
+            'status'   => 'active',
+        ]);
+    }
 }
 
 beforeEach(function () {

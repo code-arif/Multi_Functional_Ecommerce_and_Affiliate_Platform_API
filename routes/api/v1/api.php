@@ -10,7 +10,6 @@ use Modules\Auth\Http\Controllers\EmailVerificationController;
 use Modules\Auth\Http\Controllers\DeviceController;
 use Modules\Catalog\Http\Controllers\ProductController;
 use Modules\Catalog\Http\Controllers\CategoryController;
-use Modules\Catalog\Http\Controllers\SearchController;
 use Modules\Affiliate\Http\Controllers\AffiliateController;
 use Modules\Cart\Http\Controllers\CartController;
 use Modules\Checkout\Http\Controllers\CheckoutController;
@@ -77,13 +76,9 @@ Route::prefix('categories')->middleware('throttle:api')->group(function () {
     Route::get('{slug}',          [CategoryController::class, 'show']);
 });
 
-// Search — separate throttle (higher load)
-Route::prefix('search')->middleware('throttle:search')->group(function () {
-    Route::get('/',               [SearchController::class, 'search']);
-    Route::get('suggestions',     [SearchController::class, 'suggestions']);
-    Route::get('price-range',     [SearchController::class, 'priceRange']);
-    Route::get('facets',          [SearchController::class, 'facets']);
-});
+// Search — handled by Modules/Search/routes/api.php (consolidated)
+// All public search endpoints (/, suggestions, price-range, facets, popular)
+// are now defined in the Search module with throttle:search middleware.
 
 // Affiliate
 Route::prefix('affiliate')->middleware('throttle:api')->group(function () {

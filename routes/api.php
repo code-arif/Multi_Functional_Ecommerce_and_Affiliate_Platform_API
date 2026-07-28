@@ -14,6 +14,9 @@ Route::prefix('v1')->group(base_path('Modules/RBAC/routes/api.php'));
 // Shipping module routes
 Route::prefix('v1')->group(base_path('Modules/Shipping/routes/api.php'));
 
+// Inventory module routes (vendor + admin)
+Route::prefix('v1')->group(base_path('Modules/Inventory/routes/api.php'));
+
 // Search module routes (public + admin)
 Route::prefix('v1')->group(base_path('Modules/Search/routes/api.php'));
 
