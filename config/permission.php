@@ -31,6 +31,12 @@ return [
         'role' => Role::class,
 
         /*
+         * The user model used by the application. This is required for the
+         * Role->users() relationship to resolve correctly.
+         */
+        'user' => \Modules\Auth\Models\User::class,
+
+        /*
          * When using the "Teams" feature from this package, we need to know which
          * Eloquent model should be used to retrieve your teams. Of course, it
          * is often just the "Team" model but you may use whatever you like.
