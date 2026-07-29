@@ -2,6 +2,9 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\Cms\Http\Resources\CmsPageResource;
+use Modules\Cms\Http\Requests\StoreCmsPageRequest;
+use Modules\AdminPanel\Http\Requests\UpdateCmsPageRequest;
 use Modules\Cms\Models\CmsPage;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -14,67 +17,41 @@ class CmsPageController
     public function index(Request $request): JsonResponse
     {
         $pages = CmsPage::when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
-            ->orderBy('order')
+            ->orderBy(\DB::raw('`cms_pages`.`order`'))
             ->paginate($request->per_page ?? 20);
 
-        return $this->paginatedResponse($pages);
+        return $this->paginatedResponse(CmsPageResource::collection($pages));
     }
 
     public function show(CmsPage $page): JsonResponse
     {
-        return $this->successResponse($page);
+        return $this->successResponse(new CmsPageResource($page));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCmsPageRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title'           => 'required|string|max:200',
-            'slug'            => 'nullable|string|max:200|unique:cms_pages,slug',
-            'content'         => 'nullable|string',
-            'excerpt'         => 'nullable|string|max:500',
-            'meta_title'      => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'meta_keywords'   => 'nullable|string|max:255',
-            'og_image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'template'        => 'nullable|string|max:50',
-            'is_published'    => 'boolean',
-            'published_at'    => 'nullable|date',
-            'order'           => 'nullable|integer|min:0',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('og_image')) {
-            $validated['og_image'] = $request->file('og_image')->store('cms/pages', 'public');
+            $data['og_image'] = $request->file('og_image')->store('cms/pages', 'public');
         }
 
-        $page = CmsPage::create($validated);
+        $page = CmsPage::create($data);
 
-        return $this->createdResponse($page, 'Page created.');
+        return $this->createdResponse(new CmsPageResource($page), 'Page created.');
     }
 
-    public function update(CmsPage $page, Request $request): JsonResponse
+    public function update(CmsPage $page, UpdateCmsPageRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title'           => 'sometimes|string|max:200',
-            'slug'            => 'nullable|string|max:200|unique:cms_pages,slug,' . $page->id,
-            'content'         => 'nullable|string',
-            'excerpt'         => 'nullable|string|max:500',
-            'meta_title'      => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'meta_keywords'   => 'nullable|string|max:255',
-            'og_image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'template'        => 'nullable|string|max:50',
-            'is_published'    => 'boolean',
-            'published_at'    => 'nullable|date',
-            'order'           => 'nullable|integer|min:0',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('og_image')) {
-            $validated['og_image'] = $request->file('og_image')->store('cms/pages', 'public');
+            $data['og_image'] = $request->file('og_image')->store('cms/pages', 'public');
         }
 
-        $page->update($validated);
+        $page->update($data);
 
-        return $this->successResponse($page->fresh(), 'Page updated.');
+        return $this->successResponse(new CmsPageResource($page->fresh()), 'Page updated.');
     }
 
     public function destroy(CmsPage $page): JsonResponse

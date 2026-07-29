@@ -3,9 +3,11 @@
 namespace Modules\AdminPanel\Http\Controllers;
 
 use Modules\AdminPanel\Models\Setting;
+use Modules\AdminPanel\Http\Resources\SettingResource;
+use Modules\AdminPanel\Http\Requests\UpdateSettingsRequest;
+use Modules\AdminPanel\Http\Requests\UploadSettingFileRequest;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class SettingController
 {
@@ -14,18 +16,12 @@ class SettingController
     public function index(): JsonResponse
     {
         $settings = Setting::orderBy('group')->orderBy('key')->get();
-        return $this->successResponse($settings);
+        return $this->successResponse(SettingResource::collection($settings));
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateSettingsRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'settings' => 'required|array',
-            'settings.*.key'   => 'required|string|max:100',
-            'settings.*.value' => 'nullable|string',
-        ]);
-
-        foreach ($validated['settings'] as $setting) {
+        foreach ($request->validated('settings') as $setting) {
             Setting::updateOrCreate(
                 ['key' => $setting['key']],
                 ['value' => $setting['value'] ?? '']
@@ -35,12 +31,8 @@ class SettingController
         return $this->successResponse(null, 'Settings updated.');
     }
 
-    public function uploadFile(Request $request): JsonResponse
+    public function uploadFile(UploadSettingFileRequest $request): JsonResponse
     {
-        $request->validate([
-            'file' => 'required|file|mimes:jpg,jpeg,png,webp,svg,pdf|max:5120',
-        ]);
-
         $path = $request->file('file')->store('settings', 'public');
 
         return $this->successResponse([

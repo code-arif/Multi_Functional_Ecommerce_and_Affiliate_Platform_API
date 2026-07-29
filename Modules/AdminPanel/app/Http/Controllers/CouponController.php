@@ -2,6 +2,9 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\AdminPanel\Http\Resources\CouponResource;
+use Modules\AdminPanel\Http\Requests\StoreCouponRequest;
+use Modules\AdminPanel\Http\Requests\UpdateCouponRequest;
 use Modules\Promotions\Models\Coupon;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -18,55 +21,25 @@ class CouponController
             ->latest()
             ->paginate($request->per_page ?? 20);
 
-        return $this->paginatedResponse($coupons);
+        return $this->paginatedResponse(CouponResource::collection($coupons));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCouponRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'code'                => 'required|string|max:50|unique:coupons,code',
-            'type'                => 'required|string|in:fixed,percentage',
-            'value'               => 'required|numeric|min:0',
-            'minimum_order_amount' => 'nullable|numeric|min:0',
-            'maximum_discount'    => 'nullable|numeric|min:0',
-            'usage_limit'         => 'nullable|integer|min:0',
-            'usage_per_user'      => 'nullable|integer|min:0',
-            'is_active'           => 'boolean',
-            'starts_at'           => 'nullable|date',
-            'expires_at'          => 'nullable|date|after:starts_at',
-            'description'         => 'nullable|string|max:500',
-        ]);
-
-        $coupon = Coupon::create($validated);
-
-        return $this->createdResponse($coupon, 'Coupon created.');
+        $coupon = Coupon::create($request->validated());
+        return $this->createdResponse(new CouponResource($coupon), 'Coupon created.');
     }
 
     public function show(Coupon $coupon): JsonResponse
     {
         $coupon->loadCount('usages');
-        return $this->successResponse($coupon);
+        return $this->successResponse(new CouponResource($coupon));
     }
 
-    public function update(Request $request, Coupon $coupon): JsonResponse
+    public function update(UpdateCouponRequest $request, Coupon $coupon): JsonResponse
     {
-        $validated = $request->validate([
-            'code'                => 'sometimes|string|max:50|unique:coupons,code,' . $coupon->id,
-            'type'                => 'sometimes|string|in:fixed,percentage',
-            'value'               => 'sometimes|numeric|min:0',
-            'minimum_order_amount' => 'nullable|numeric|min:0',
-            'maximum_discount'    => 'nullable|numeric|min:0',
-            'usage_limit'         => 'nullable|integer|min:0',
-            'usage_per_user'      => 'nullable|integer|min:0',
-            'is_active'           => 'boolean',
-            'starts_at'           => 'nullable|date',
-            'expires_at'          => 'nullable|date|after:starts_at',
-            'description'         => 'nullable|string|max:500',
-        ]);
-
-        $coupon->update($validated);
-
-        return $this->successResponse($coupon->fresh(), 'Coupon updated.');
+        $coupon->update($request->validated());
+        return $this->successResponse(new CouponResource($coupon->fresh()), 'Coupon updated.');
     }
 
     public function destroy(Coupon $coupon): JsonResponse

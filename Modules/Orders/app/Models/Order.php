@@ -22,13 +22,22 @@ class Order extends Model
         'shipping_cost',
         'discount_amount',
         'tax_amount',
-        'total',
+        'total_amount',
         'coupon_code',
         'coupon_discount',
         'payment_method',
         'payment_status',
         'shipping_method',
         'shipping_address',
+        'shipping_name',
+        'shipping_phone',
+        'shipping_email',
+        'shipping_address_line1',
+        'shipping_address_line2',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postal_code',
+        'shipping_country',
         'billing_address',
         'notes',
         'admin_note',
@@ -46,7 +55,7 @@ class Order extends Model
         'shipping_cost'   => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'tax_amount'      => 'decimal:2',
-        'total'           => 'decimal:2',
+        'total_amount'    => 'decimal:2',
         'coupon_discount' => 'decimal:2',
         'paid_at'         => 'datetime',
         'shipped_at'      => 'datetime',
@@ -102,6 +111,11 @@ class Order extends Model
     public function scopeByVendor($query, $vendorId)
     {
         return $query->where('vendor_id', $vendorId);
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return (float) ($this->total_amount ?? 0);
     }
 
     public function getIsPaidAttribute(): bool

@@ -47,6 +47,9 @@ return new class extends Migration
                 if (!Schema::hasColumn('cms_pages', 'order')) {
                     $table->integer('order')->default(0)->after('published_at');
                 }
+                if (!Schema::hasColumn('cms_pages', 'deleted_at')) {
+                    $table->softDeletes();
+                }
             });
         }
 

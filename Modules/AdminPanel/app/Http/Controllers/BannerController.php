@@ -2,6 +2,9 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\AdminPanel\Http\Resources\BannerResource;
+use Modules\AdminPanel\Http\Requests\StoreBannerRequest;
+use Modules\AdminPanel\Http\Requests\UpdateBannerRequest;
 use Modules\Promotions\Models\Banner;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -16,63 +19,39 @@ class BannerController
         $banners = Banner::orderBy('position')->orderBy('sort_order')
             ->paginate($request->per_page ?? 50);
 
-        return $this->paginatedResponse($banners);
+        return $this->paginatedResponse(BannerResource::collection($banners));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBannerRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title'        => 'required|string|max:200',
-            'subtitle'     => 'nullable|string|max:500',
-            'description'  => 'nullable|string',
-            'image'        => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'link'         => 'nullable|url|max:500',
-            'position'     => 'required|string|max:50',
-            'sort_order'   => 'nullable|integer|min:0',
-            'is_active'    => 'boolean',
-            'starts_at'    => 'nullable|date',
-            'expires_at'   => 'nullable|date|after:starts_at',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('banners', 'public');
+            $data['image'] = $request->file('image')->store('banners', 'public');
         }
         if ($request->hasFile('mobile_image')) {
-            $validated['mobile_image'] = $request->file('mobile_image')->store('banners/mobile', 'public');
+            $data['mobile_image'] = $request->file('mobile_image')->store('banners/mobile', 'public');
         }
 
-        $banner = Banner::create($validated);
+        $banner = Banner::create($data);
 
-        return $this->createdResponse($banner, 'Banner created.');
+        return $this->createdResponse(new BannerResource($banner), 'Banner created.');
     }
 
-    public function update(Banner $banner, Request $request): JsonResponse
+    public function update(Banner $banner, UpdateBannerRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title'        => 'sometimes|string|max:200',
-            'subtitle'     => 'nullable|string|max:500',
-            'description'  => 'nullable|string',
-            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'mobile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'link'         => 'nullable|url|max:500',
-            'position'     => 'sometimes|string|max:50',
-            'sort_order'   => 'nullable|integer|min:0',
-            'is_active'    => 'boolean',
-            'starts_at'    => 'nullable|date',
-            'expires_at'   => 'nullable|date|after:starts_at',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('banners', 'public');
+            $data['image'] = $request->file('image')->store('banners', 'public');
         }
         if ($request->hasFile('mobile_image')) {
-            $validated['mobile_image'] = $request->file('mobile_image')->store('banners/mobile', 'public');
+            $data['mobile_image'] = $request->file('mobile_image')->store('banners/mobile', 'public');
         }
 
-        $banner->update($validated);
+        $banner->update($data);
 
-        return $this->successResponse($banner->fresh(), 'Banner updated.');
+        return $this->successResponse(new BannerResource($banner->fresh()), 'Banner updated.');
     }
 
     public function destroy(Banner $banner): JsonResponse

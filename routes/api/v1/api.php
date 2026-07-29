@@ -32,6 +32,7 @@ use Modules\AdminPanel\Http\Controllers\AffiliateProductController as AdminAffil
 use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageController;
 use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingController;
 use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
+use Modules\AdminPanel\Http\Controllers\DisputeController as AdminDisputeController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
 use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
@@ -335,6 +336,14 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         Route::get('users',                 [AdminUserController::class, 'index'])->middleware('permission:users.view');
         Route::get('users/{user}',          [AdminUserController::class, 'show'])->middleware('permission:users.view');
         Route::patch('users/{user}/status', [AdminUserController::class, 'updateStatus'])->middleware('permission:users.ban');
+
+        // Disputes
+        Route::prefix('disputes')->middleware('permission:orders.manage')->group(function () {
+            Route::get('/',                        [AdminDisputeController::class, 'index']);
+            Route::get('{dispute}',                [AdminDisputeController::class, 'show']);
+            Route::patch('{dispute}/status',       [AdminDisputeController::class, 'updateStatus']);
+            Route::post('{dispute}/messages',      [AdminDisputeController::class, 'addMessage']);
+        });
 
         // Reports
         Route::prefix('reports')->middleware('permission:reports.view')->group(function () {

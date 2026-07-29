@@ -2,6 +2,8 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\Catalog\Http\Requests\StoreCategoryRequest;
+use Modules\Catalog\Http\Requests\UpdateCategoryRequest;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Http\Resources\CategoryResource;
 use Modules\Core\Traits\ApiResponse;
@@ -19,63 +21,37 @@ class CategoryController
             ->orderBy('sort_order')
             ->paginate($request->per_page ?? 50);
 
-        return $this->paginatedResponse($categories);
+        return $this->paginatedResponse(CategoryResource::collection($categories));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'parent_id'      => 'nullable|exists:categories,id',
-            'name'           => 'required|string|max:100',
-            'description'    => 'nullable|string|max:1000',
-            'icon'           => 'nullable|string|max:255',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'banner'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'meta_title'     => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'meta_keywords'  => 'nullable|string|max:255',
-            'sort_order'     => 'nullable|integer|min:0',
-            'is_featured'    => 'boolean',
-            'is_active'      => 'boolean',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'public');
         }
         if ($request->hasFile('banner')) {
-            $validated['banner'] = $request->file('banner')->store('categories/banners', 'public');
+            $data['banner'] = $request->file('banner')->store('categories/banners', 'public');
         }
 
-        $category = Category::create($validated);
+        $category = Category::create($data);
 
         return $this->createdResponse(new CategoryResource($category->load('parent')), 'Category created.');
     }
 
-    public function update(Category $category, Request $request): JsonResponse
+    public function update(Category $category, UpdateCategoryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'parent_id'      => 'nullable|exists:categories,id',
-            'name'           => 'sometimes|string|max:100',
-            'description'    => 'nullable|string|max:1000',
-            'icon'           => 'nullable|string|max:255',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'banner'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'meta_title'     => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'meta_keywords'  => 'nullable|string|max:255',
-            'sort_order'     => 'nullable|integer|min:0',
-            'is_featured'    => 'boolean',
-            'is_active'      => 'boolean',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'public');
         }
         if ($request->hasFile('banner')) {
-            $validated['banner'] = $request->file('banner')->store('categories/banners', 'public');
+            $data['banner'] = $request->file('banner')->store('categories/banners', 'public');
         }
 
-        $category->update($validated);
+        $category->update($data);
 
         return $this->successResponse(new CategoryResource($category->fresh()->load('parent')), 'Category updated.');
     }

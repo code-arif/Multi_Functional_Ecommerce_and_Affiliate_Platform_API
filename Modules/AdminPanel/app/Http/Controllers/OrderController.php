@@ -2,6 +2,8 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\AdminPanel\Http\Requests\UpdateOrderStatusRequest;
+use Modules\AdminPanel\Http\Requests\UpdateAdminNoteRequest;
 use Modules\Orders\Models\Order;
 use Modules\Orders\Http\Resources\OrderResource;
 use Modules\Orders\Services\OrderService;
@@ -35,12 +37,9 @@ class OrderController
         return $this->successResponse(new OrderResource($order));
     }
 
-    public function updateStatus(Order $order, Request $request): JsonResponse
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|string|in:pending,confirmed,processing,shipped,delivered,cancelled',
-            'note'   => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $order = $this->orderService->updateStatus(
             $order,
@@ -51,11 +50,9 @@ class OrderController
         return $this->successResponse(new OrderResource($order), 'Order status updated.');
     }
 
-    public function updateAdminNote(Order $order, Request $request): JsonResponse
+    public function updateAdminNote(UpdateAdminNoteRequest $request, Order $order): JsonResponse
     {
-        $validated = $request->validate(['note' => 'nullable|string|max:1000']);
-        $order->update(['admin_note' => $validated['note'] ?? null]);
-
-        return $this->successResponse($order, 'Admin note updated.');
+        $order->update(['admin_note' => $request->validated('note')]);
+        return $this->successResponse(new OrderResource($order->fresh()), 'Admin note updated.');
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\Catalog\Http\Resources\BrandResource;
+use Modules\Catalog\Http\Requests\StoreBrandRequest;
+use Modules\Catalog\Http\Requests\UpdateBrandRequest;
 use Modules\Catalog\Models\Brand;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -18,51 +21,33 @@ class BrandController
             ->orderBy('name')
             ->paginate($request->per_page ?? 50);
 
-        return $this->paginatedResponse($brands);
+        return $this->paginatedResponse(BrandResource::collection($brands));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBrandRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'           => 'required|string|max:100',
-            'description'    => 'nullable|string|max:1000',
-            'logo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'website'        => 'nullable|url|max:255',
-            'meta_title'     => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'sort_order'     => 'nullable|integer|min:0',
-            'is_active'      => 'boolean',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $request->file('logo')->store('brands', 'public');
         }
 
-        $brand = Brand::create($validated);
+        $brand = Brand::create($data);
 
-        return $this->createdResponse($brand, 'Brand created.');
+        return $this->createdResponse(new BrandResource($brand), 'Brand created.');
     }
 
-    public function update(Brand $brand, Request $request): JsonResponse
+    public function update(Brand $brand, UpdateBrandRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'           => 'sometimes|string|max:100',
-            'description'    => 'nullable|string|max:1000',
-            'logo'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'website'        => 'nullable|url|max:255',
-            'meta_title'     => 'nullable|string|max:100',
-            'meta_description' => 'nullable|string|max:255',
-            'sort_order'     => 'nullable|integer|min:0',
-            'is_active'      => 'boolean',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $request->file('logo')->store('brands', 'public');
         }
 
-        $brand->update($validated);
+        $brand->update($data);
 
-        return $this->successResponse($brand->fresh(), 'Brand updated.');
+        return $this->successResponse(new BrandResource($brand->fresh()), 'Brand updated.');
     }
 
     public function destroy(Brand $brand): JsonResponse

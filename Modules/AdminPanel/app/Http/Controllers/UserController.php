@@ -2,6 +2,7 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\AdminPanel\Http\Requests\UpdateUserStatusRequest;
 use Modules\Auth\Models\User;
 use Modules\Auth\Http\Resources\UserResource;
 use Modules\Core\Traits\ApiResponse;
@@ -27,22 +28,19 @@ class UserController
 
     public function show(User $user): JsonResponse
     {
-        $user->load('roles', 'addresses', 'orders');
+        $user->load('roles', 'orders');
         return $this->successResponse(new UserResource($user));
     }
 
-    public function updateStatus(User $user, Request $request): JsonResponse
+    public function updateStatus(UpdateUserStatusRequest $request, User $user): JsonResponse
     {
-        $validated = $request->validate([
-            'status' => 'required|string|in:active,inactive,banned',
-        ]);
+        $status = $request->validated('status');
+        $user->update(['status' => $status]);
 
-        $user->update(['status' => $validated['status']]);
-
-        if ($validated['status'] === 'banned') {
+        if ($status === 'banned') {
             $user->tokens()->delete();
         }
 
-        return $this->successResponse(new UserResource($user->fresh()), "User status updated to {$validated['status']}.");
+        return $this->successResponse(new UserResource($user->fresh()), "User status updated to {$status}.");
     }
 }

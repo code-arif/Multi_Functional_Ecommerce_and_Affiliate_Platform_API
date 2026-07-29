@@ -2,6 +2,9 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
+use Modules\AdminPanel\Http\Resources\AffiliateProductResource;
+use Modules\AdminPanel\Http\Requests\StoreAffiliateProductRequest;
+use Modules\AdminPanel\Http\Requests\UpdateAffiliateProductRequest;
 use Modules\Affiliate\Models\AffiliateProduct;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -18,57 +21,33 @@ class AffiliateProductController
             ->orderBy('sort_order')
             ->paginate($request->per_page ?? 20);
 
-        return $this->paginatedResponse($products);
+        return $this->paginatedResponse(AffiliateProductResource::collection($products));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreAffiliateProductRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'             => 'required|string|max:200',
-            'description'      => 'nullable|string',
-            'price'            => 'required|numeric|min:0',
-            'sale_price'       => 'nullable|numeric|min:0',
-            'image'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'affiliate_link'   => 'required|url|max:1000',
-            'commission_type'  => 'required|string|in:fixed,percentage',
-            'commission_value' => 'required|numeric|min:0',
-            'is_featured'      => 'boolean',
-            'is_active'        => 'boolean',
-            'sort_order'       => 'nullable|integer|min:0',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('affiliate-products', 'public');
+            $data['image'] = $request->file('image')->store('affiliate-products', 'public');
         }
 
-        $product = AffiliateProduct::create($validated);
+        $product = AffiliateProduct::create($data);
 
-        return $this->createdResponse($product, 'Affiliate product created.');
+        return $this->createdResponse(new AffiliateProductResource($product), 'Affiliate product created.');
     }
 
-    public function update(AffiliateProduct $affiliateProduct, Request $request): JsonResponse
+    public function update(AffiliateProduct $affiliateProduct, UpdateAffiliateProductRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'             => 'sometimes|string|max:200',
-            'description'      => 'nullable|string',
-            'price'            => 'sometimes|numeric|min:0',
-            'sale_price'       => 'nullable|numeric|min:0',
-            'image'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'affiliate_link'   => 'sometimes|url|max:1000',
-            'commission_type'  => 'sometimes|string|in:fixed,percentage',
-            'commission_value' => 'sometimes|numeric|min:0',
-            'is_featured'      => 'boolean',
-            'is_active'        => 'boolean',
-            'sort_order'       => 'nullable|integer|min:0',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('affiliate-products', 'public');
+            $data['image'] = $request->file('image')->store('affiliate-products', 'public');
         }
 
-        $affiliateProduct->update($validated);
+        $affiliateProduct->update($data);
 
-        return $this->successResponse($affiliateProduct->fresh(), 'Affiliate product updated.');
+        return $this->successResponse(new AffiliateProductResource($affiliateProduct->fresh()), 'Affiliate product updated.');
     }
 
     public function destroy(AffiliateProduct $affiliateProduct): JsonResponse

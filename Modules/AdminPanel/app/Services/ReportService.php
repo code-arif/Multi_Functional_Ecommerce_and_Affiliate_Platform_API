@@ -25,10 +25,10 @@ class ReportService
 
         return [
             'total_orders'    => (clone $query)->count(),
-            'total_revenue'   => (clone $query)->sum('total'),
-            'avg_order_value' => (clone $query)->avg('total'),
+            'total_revenue'   => (clone $query)->sum('total_amount'),
+            'avg_order_value' => (clone $query)->avg('total_amount'),
             'orders_by_status' => (clone $query)
-                ->select('status', DB::raw('count(*) as count'), DB::raw('sum(total) as revenue'))
+                ->select('status', DB::raw('count(*) as count'), DB::raw('sum(total_amount) as revenue'))
                 ->groupBy('status')
                 ->get()
                 ->toArray(),
