@@ -8,7 +8,7 @@ class ChatMessage extends Model
 {
     protected $fillable = [
         'chat_room_id',
-        'user_id',
+        'sender_id',
         'message',
         'type',
         'is_read',
@@ -25,6 +25,6 @@ class ChatMessage extends Model
 
     public function user()
     {
-        return $this->belongsTo(\Modules\Auth\Models\User::class);
+        return $this->belongsTo(\Modules\Auth\Models\User::class, 'sender_id');
     }
 }

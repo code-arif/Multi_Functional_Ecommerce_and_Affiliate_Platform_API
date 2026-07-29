@@ -34,6 +34,6 @@ class ChatRoom extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'open');
     }
 }

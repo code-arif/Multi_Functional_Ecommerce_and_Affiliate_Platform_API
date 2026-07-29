@@ -20,6 +20,9 @@ Route::prefix('v1')->group(base_path('Modules/Inventory/routes/api.php'));
 // Search module routes (public + admin)
 Route::prefix('v1')->group(base_path('Modules/Search/routes/api.php'));
 
+// Support module routes (FAQs, tickets, customer disputes, chat)
+Route::prefix('v1')->group(base_path('Modules/Support/routes/api.php'));
+
 // Health check
 Route::get('health', fn() => response()->json([
     'status'  => 'ok',

@@ -14,7 +14,7 @@ class ChatService
             'user_id'  => $user->id,
             'order_id' => $data['order_id'] ?? null,
             'subject'  => $data['subject'] ?? 'General Inquiry',
-            'status'   => 'active',
+            'status'   => 'open',
         ]);
     }
 
@@ -26,10 +26,10 @@ class ChatService
     public function sendMessage(ChatRoom $room, User $user, string $message, string $type = 'text'): ChatMessage
     {
         $msg = $room->messages()->create([
-            'user_id' => $user->id,
-            'message' => $message,
-            'type'    => $type,
-            'is_read' => false,
+            'sender_id' => $user->id,
+            'message'   => $message,
+            'type'      => $type,
+            'is_read'   => false,
         ]);
 
         $room->update(['last_message_at' => now()]);
