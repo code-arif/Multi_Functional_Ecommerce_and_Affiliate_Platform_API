@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('coupons', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             $table->foreignId('vendor_id')
                 ->nullable()
-                ->after('id')
+                ->after('user_id')
                 ->constrained('vendors')
-                ->cascadeOnDelete();
+                ->nullOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::table('coupons', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             $table->dropForeign(['vendor_id']);
             $table->dropColumn('vendor_id');
         });
