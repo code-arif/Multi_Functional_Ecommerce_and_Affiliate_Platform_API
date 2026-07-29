@@ -28,7 +28,7 @@ return new class extends Migration
 
             $table->string('extension', 20)->nullable();
 
-            $table->morphs('mediable'); // product/vendor/user
+            $table->nullableMorphs('mediable'); // product/vendor/user
 
             $table->foreignId('uploaded_by')->nullable()->constrained('users')->nullOnDelete();
 

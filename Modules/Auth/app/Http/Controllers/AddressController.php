@@ -21,10 +21,10 @@ class AddressController
     {
         $validated = $request->validate([
             'label'          => 'nullable|string|max:50',
-            'full_name'      => 'required|string|max:100',
+            'recipient_name' => 'required|string|max:100',
             'phone'          => 'required|string|max:20',
-            'address_line_1' => 'required|string|max:255',
-            'address_line_2' => 'nullable|string|max:255',
+            'address_line1'  => 'required|string|max:255',
+            'address_line2'  => 'nullable|string|max:255',
             'city'           => 'required|string|max:100',
             'state'          => 'nullable|string|max:100',
             'postal_code'    => 'nullable|string|max:20',
@@ -58,10 +58,10 @@ class AddressController
 
         $validated = $request->validate([
             'label'          => 'nullable|string|max:50',
-            'full_name'      => 'sometimes|string|max:100',
+            'recipient_name' => 'sometimes|string|max:100',
             'phone'          => 'sometimes|string|max:20',
-            'address_line_1' => 'sometimes|string|max:255',
-            'address_line_2' => 'nullable|string|max:255',
+            'address_line1'  => 'sometimes|string|max:255',
+            'address_line2'  => 'nullable|string|max:255',
             'city'           => 'sometimes|string|max:100',
             'state'          => 'nullable|string|max:100',
             'postal_code'    => 'nullable|string|max:20',

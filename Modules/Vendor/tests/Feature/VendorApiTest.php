@@ -34,7 +34,7 @@ function seedPermissions(): void
     }
 }
 
-function makeUser(string $name, string $emailPrefix, string $role): User
+function makeRoleUser(string $name, string $emailPrefix, string $role): User
 {
     $user = User::create([
         'name'     => $name,
@@ -70,7 +70,7 @@ function makeVendor(User $user, string $status = 'active', ?string $shopName = n
 
 it('lists active vendors for guests', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'vendor-list', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'vendor-list', 'vendor');
     makeVendor($vendorUser);
 
     $response = $this->getJson('/api/v1/vendors');
@@ -82,7 +82,7 @@ it('lists active vendors for guests', function () {
 
 it('shows a public vendor page by slug', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'vendor-show', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'vendor-show', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->getJson("/api/v1/vendors/{$vendor->slug}");
@@ -93,7 +93,7 @@ it('shows a public vendor page by slug', function () {
 
 it('hides pending vendors from public', function () {
     seedPermissions();
-    $user = makeUser('Pending', 'pending', 'vendor');
+    $user = makeRoleUser('Pending', 'pending', 'vendor');
     $pendingVendor = makeVendor($user, 'pending', 'Hidden Pending Shop');
 
     $response = $this->getJson("/api/v1/vendors/{$pendingVendor->slug}");
@@ -102,10 +102,10 @@ it('hides pending vendors from public', function () {
 
 it('only returns active vendors in public listing', function () {
     seedPermissions();
-    $vendorUser = makeUser('Active', 'active-list', 'vendor');
+    $vendorUser = makeRoleUser('Active', 'active-list', 'vendor');
     makeVendor($vendorUser, 'active', 'Visible Shop');
 
-    $pendingUser = makeUser('PendingUser', 'pending-list', 'vendor');
+    $pendingUser = makeRoleUser('PendingUser', 'pending-list', 'vendor');
     makeVendor($pendingUser, 'pending', 'Hidden Shop');
 
     $response = $this->getJson('/api/v1/vendors');
@@ -125,7 +125,7 @@ it('requires authentication to register as vendor', function () {
 
 it('allows customer to register as vendor', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'register', 'customer');
+    $customer = makeRoleUser('Customer', 'register', 'customer');
 
     $response = $this->actingAs($customer, 'sanctum')
         ->postJson('/api/v1/vendor/register', [
@@ -143,7 +143,7 @@ it('allows customer to register as vendor', function () {
 
 it('prevents duplicate vendor registration', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'dup', 'customer');
+    $customer = makeRoleUser('Customer', 'dup', 'customer');
 
     $this->actingAs($customer, 'sanctum')
         ->postJson('/api/v1/vendor/register', ['shop_name' => 'First Shop']);
@@ -156,7 +156,7 @@ it('prevents duplicate vendor registration', function () {
 
 it('validates shop name is required for registration', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'validation', 'customer');
+    $customer = makeRoleUser('Customer', 'validation', 'customer');
 
     $response = $this->actingAs($customer, 'sanctum')
         ->postJson('/api/v1/vendor/register', []);
@@ -169,7 +169,7 @@ it('validates shop name is required for registration', function () {
 
 it('allows vendor to view own profile', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'profile', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'profile', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -181,7 +181,7 @@ it('allows vendor to view own profile', function () {
 
 it('returns 404 for non-vendor profile access', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'no-vendor', 'customer');
+    $customer = makeRoleUser('Customer', 'no-vendor', 'customer');
 
     $response = $this->actingAs($customer, 'sanctum')
         ->getJson('/api/v1/vendor/profile');
@@ -191,7 +191,7 @@ it('returns 404 for non-vendor profile access', function () {
 
 it('allows vendor to update own profile', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'update', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'update', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -221,7 +221,7 @@ it('allows vendor to update own profile', function () {
 
 it('allows vendor to upload a document', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'doc', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'doc', 'vendor');
     $vendor = makeVendor($vendorUser);
     $file = Illuminate\Http\Testing\File::image('trade_license.jpg', 100, 100);
 
@@ -245,7 +245,7 @@ it('allows vendor to upload a document', function () {
 
 it('rejects invalid document type', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'doc-invalid', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'doc-invalid', 'vendor');
     makeVendor($vendorUser);
     $file = Illuminate\Http\Testing\File::image('test.jpg', 100, 100);
 
@@ -263,7 +263,7 @@ it('rejects invalid document type', function () {
 
 it('allows admin to list all vendors', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'admin-list', 'super-admin');
+    $admin = makeRoleUser('Admin', 'admin-list', 'super-admin');
 
     $response = $this->actingAs($admin, 'sanctum')
         ->getJson('/api/v1/admin/vendors');
@@ -274,7 +274,7 @@ it('allows admin to list all vendors', function () {
 
 it('blocks non-admin from listing vendors', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'blocked', 'customer');
+    $customer = makeRoleUser('Customer', 'blocked', 'customer');
 
     $response = $this->actingAs($customer, 'sanctum')
         ->getJson('/api/v1/admin/vendors');
@@ -284,8 +284,8 @@ it('blocks non-admin from listing vendors', function () {
 
 it('shows pending vendors to admin', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'admin-pending', 'super-admin');
-    $pendingUser = makeUser('Pending', 'pending-admin', 'vendor');
+    $admin = makeRoleUser('Admin', 'admin-pending', 'super-admin');
+    $pendingUser = makeRoleUser('Pending', 'pending-admin', 'vendor');
     makeVendor($pendingUser, 'pending', 'Pending Approval Shop');
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -298,8 +298,8 @@ it('shows pending vendors to admin', function () {
 
 it('shows vendor details to admin', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'admin-detail', 'super-admin');
-    $vendorUser = makeUser('Vendor', 'detail', 'vendor');
+    $admin = makeRoleUser('Admin', 'admin-detail', 'super-admin');
+    $vendorUser = makeRoleUser('Vendor', 'detail', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -311,8 +311,8 @@ it('shows vendor details to admin', function () {
 
 it('allows admin to approve a pending vendor', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'approve', 'super-admin');
-    $pendingUser = makeUser('Pending', 'to-approve', 'vendor');
+    $admin = makeRoleUser('Admin', 'approve', 'super-admin');
+    $pendingUser = makeRoleUser('Pending', 'to-approve', 'vendor');
     $pendingVendor = makeVendor($pendingUser, 'pending', 'Approve Shop');
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -329,8 +329,8 @@ it('allows admin to approve a pending vendor', function () {
 
 it('allows admin to reject a pending vendor', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'reject', 'super-admin');
-    $pendingUser = makeUser('Pending', 'to-reject', 'vendor');
+    $admin = makeRoleUser('Admin', 'reject', 'super-admin');
+    $pendingUser = makeRoleUser('Pending', 'to-reject', 'vendor');
     $pendingVendor = makeVendor($pendingUser, 'pending', 'Reject Shop');
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -350,8 +350,8 @@ it('allows admin to reject a pending vendor', function () {
 
 it('requires reason when rejecting', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'reject-reason', 'super-admin');
-    $pendingUser = makeUser('Pending', 'no-reason', 'vendor');
+    $admin = makeRoleUser('Admin', 'reject-reason', 'super-admin');
+    $pendingUser = makeRoleUser('Pending', 'no-reason', 'vendor');
     $pendingVendor = makeVendor($pendingUser, 'pending', 'No Reason');
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -362,8 +362,8 @@ it('requires reason when rejecting', function () {
 
 it('allows admin to suspend an active vendor', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'suspend', 'super-admin');
-    $vendorUser = makeUser('Vendor', 'to-suspend', 'vendor');
+    $admin = makeRoleUser('Admin', 'suspend', 'super-admin');
+    $vendorUser = makeRoleUser('Vendor', 'to-suspend', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($admin, 'sanctum')
@@ -382,8 +382,8 @@ it('allows admin to suspend an active vendor', function () {
 
 it('allows admin to verify a document', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'verify-doc', 'super-admin');
-    $vendorUser = makeUser('Vendor', 'doc-owner', 'vendor');
+    $admin = makeRoleUser('Admin', 'verify-doc', 'super-admin');
+    $vendorUser = makeRoleUser('Vendor', 'doc-owner', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $document = VendorDocument::create([
@@ -408,8 +408,8 @@ it('allows admin to verify a document', function () {
 
 it('allows admin to reject a document', function () {
     seedPermissions();
-    $admin = makeUser('Admin', 'reject-doc', 'super-admin');
-    $vendorUser = makeUser('Vendor', 'doc-reject', 'vendor');
+    $admin = makeRoleUser('Admin', 'reject-doc', 'super-admin');
+    $vendorUser = makeRoleUser('Vendor', 'doc-reject', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $document = VendorDocument::create([
@@ -444,7 +444,7 @@ it('requires auth for vendor profile', function () {
 
 it('prevents vendor from self-approving via admin endpoint', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'self-approve', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'self-approve', 'vendor');
     $pendingVendor = makeVendor($vendorUser, 'pending', 'Self Approve');
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -462,7 +462,7 @@ it('requires auth for wallet access', function () {
 
 it('shows wallet summary for vendor', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'wallet', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'wallet', 'vendor');
     makeVendor($vendorUser);
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -475,7 +475,7 @@ it('shows wallet summary for vendor', function () {
 
 it('shows wallet transactions for vendor', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'txn', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'txn', 'vendor');
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -487,7 +487,7 @@ it('shows wallet transactions for vendor', function () {
 
 it('shows wallet stats for vendor', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'stats', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'stats', 'vendor');
     makeVendor($vendorUser);
 
     $response = $this->actingAs($vendorUser, 'sanctum')
@@ -500,7 +500,7 @@ it('shows wallet stats for vendor', function () {
 
 it('returns 404 for non-vendor wallet access', function () {
     seedPermissions();
-    $customer = makeUser('Customer', 'wallet-404', 'customer');
+    $customer = makeRoleUser('Customer', 'wallet-404', 'customer');
 
     $response = $this->actingAs($customer, 'sanctum')
         ->getJson('/api/v1/vendor/wallet');
@@ -510,7 +510,7 @@ it('returns 404 for non-vendor wallet access', function () {
 
 it('allows vendor to request a payout', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'payout-req', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'payout-req', 'vendor');
     $vendor = makeVendor($vendorUser);
     // Give the vendor some wallet balance
     $vendor->update(['wallet_balance' => 5000]);
@@ -529,7 +529,7 @@ it('allows vendor to request a payout', function () {
 
 it('rejects payout exceeding wallet balance', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'payout-exceed', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'payout-exceed', 'vendor');
     $vendor = makeVendor($vendorUser);
     // Give some balance but request more
     $vendor->update(['wallet_balance' => 500]);
@@ -544,7 +544,7 @@ it('rejects payout exceeding wallet balance', function () {
 
 it('rejects payout below minimum amount', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'payout-min', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'payout-min', 'vendor');
     $vendor = makeVendor($vendorUser);
     $vendor->update(['wallet_balance' => 5000]);
 
@@ -558,7 +558,7 @@ it('rejects payout below minimum amount', function () {
 
 it('lists vendor payout requests', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'payout-list', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'payout-list', 'vendor');
     $vendor = makeVendor($vendorUser);
     $vendor->update(['wallet_balance' => 5000]);
 
@@ -577,7 +577,7 @@ it('lists vendor payout requests', function () {
 
 it('prevents payout for non-active vendor', function () {
     seedPermissions();
-    $vendorUser = makeUser('Vendor', 'payout-inactive', 'vendor');
+    $vendorUser = makeRoleUser('Vendor', 'payout-inactive', 'vendor');
     makeVendor($vendorUser, 'pending', 'Pending Payout Shop');
 
     $response = $this->actingAs($vendorUser, 'sanctum')
