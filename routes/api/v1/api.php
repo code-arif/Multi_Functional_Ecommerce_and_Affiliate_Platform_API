@@ -1,13 +1,6 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
-use Modules\Auth\Http\Controllers\AuthController;
-use Modules\Auth\Http\Controllers\AddressController;
-use Modules\Auth\Http\Controllers\OtpController;
-use Modules\Auth\Http\Controllers\PasswordResetController;
-use Modules\Auth\Http\Controllers\EmailVerificationController;
-use Modules\Auth\Http\Controllers\DeviceController;
 use Modules\Catalog\Http\Controllers\ProductController;
 use Modules\Catalog\Http\Controllers\CategoryController;
 use Modules\Affiliate\Http\Controllers\AffiliateController;
@@ -45,24 +38,6 @@ use Modules\Vendor\Http\Controllers\AdminVendorController;
 // PUBLIC ROUTES (No Authentication Required)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Auth — rate-limited to prevent brute force
-Route::prefix('auth')->middleware('throttle:auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
-
-    Route::post('password/forgot', [PasswordResetController::class, 'forgot']);
-    Route::post('password/reset',  [PasswordResetController::class, 'reset']);
-
-    // Phase 2 - OTP (no auth required for password reset flow)
-    Route::post('otp/send',   [OtpController::class, 'send']);
-    Route::post('otp/verify', [OtpController::class, 'verify']);
-    Route::post('admin/login', [AuthController::class, 'adminLogin']); // Password-based admin login
-
-    // Passwordless admin login (OTP-based)
-    Route::post('admin/otp/send',   [AuthController::class, 'adminOtpSend']);
-    Route::post('admin/otp/verify', [AuthController::class, 'adminOtpVerify']);
-});
-    Route::post('otp/verify', [OtpController::class, 'verify']);
 // Products — public browsing
 Route::prefix('products')->middleware('throttle:api')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
@@ -157,13 +132,6 @@ Route::get('orders/track/{token}', [OrderController::class, 'trackGuest'])
 
 Route::middleware(['auth:sanctum', 'banned'])->group(function () {
 
-    // Auth
-    Route::post('auth/logout',         [AuthController::class, 'logout']);
-    Route::post('auth/logout-all',     [AuthController::class, 'logoutAll']);
-    Route::get('auth/me',              [AuthController::class, 'me']);
-    Route::put('auth/profile',         [AuthController::class, 'updateProfile']);
-    Route::post('auth/avatar',         [AuthController::class, 'updateAvatar']);
-
     // Phase 4 - Vendor management
     Route::post('vendor/register',    [VendorController::class, 'register']);
     Route::get('vendor/profile',      [VendorController::class, 'profile']);
@@ -178,23 +146,6 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
         Route::post('payouts',            [VendorController::class, 'requestPayout']);
         Route::get('payouts',             [VendorController::class, 'payouts']);
     });
-
-    // Phase 2 - Email Verification
-    Route::post('auth/email/verify/send', [EmailVerificationController::class, 'sendVerification']);
-    Route::post('auth/email/verify',      [EmailVerificationController::class, 'verify']);
-    Route::get('auth/email/status',       [EmailVerificationController::class, 'status']);
-
-    // Phase 2 - Password Change
-    Route::post('auth/password/change', [PasswordResetController::class, 'change']);
-
-    // Phase 2 - Device Management
-    Route::get('auth/devices',                [DeviceController::class, 'index']);
-    Route::delete('auth/devices',             [DeviceController::class, 'revokeAll']);
-    Route::post('auth/devices/{device}/trust', [DeviceController::class, 'trust']);
-    Route::delete('auth/devices/{device}',    [DeviceController::class, 'destroy']);
-
-    // Addresses
-    Route::apiResource('addresses',    AddressController::class);
 
     // Orders
     Route::get('orders', [OrderController::class, 'index']);

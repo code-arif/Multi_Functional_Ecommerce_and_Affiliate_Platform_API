@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Auth module routes (auth, profile, addresses, devices, OTP, passwordless login)
+Route::prefix('v1')->group(base_path('Modules/Auth/routes/api.php'));
+
 Route::prefix('v1')->group(base_path('routes/api/v1/api.php'));
 Route::prefix('v1')->group(base_path('routes/api/v1/seo_and_extras.php'));
 
