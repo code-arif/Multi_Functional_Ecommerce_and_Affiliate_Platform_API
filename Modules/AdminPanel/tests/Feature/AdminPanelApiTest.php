@@ -88,9 +88,22 @@ it('allows admin to view dashboard', function () {
     $response = $this->actingAs($admin, 'sanctum')
         ->getJson('/api/v1/admin/dashboard');
 
+    if ($response->status() === 500) {
+        dump('DASHBOARD 500:', $response->getContent());
+    }
+
     $response->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonStructure(['data' => ['stats', 'recent_orders', 'recent_users']]);
+        ->assertJsonStructure(['data' => [
+            'stats' => ['total_products', 'total_orders', 'total_revenue', 'total_customers', 'total_vendors', 'total_reviews', 'pending_reviews'],
+            'vendor_stats' => ['active_vendors', 'pending_approval', 'total_earned', 'total_withdrawn', 'total_wallet_balance', 'avg_commission_rate'],
+            'top_vendors' => ['by_revenue'],
+            'commission_stats' => ['total_commission', 'pending_commission', 'approved_commission', 'total_orders_value', 'total_commission_lines', 'effective_rate'],
+            'monthly_commission_trend',
+            'pending_vendors',
+            'recent_orders',
+            'recent_users',
+        ]]);
 });
 
 it('blocks non-admin from dashboard', function () {

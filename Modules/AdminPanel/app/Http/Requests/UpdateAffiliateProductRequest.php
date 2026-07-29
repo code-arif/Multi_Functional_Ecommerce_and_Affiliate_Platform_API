@@ -15,7 +15,7 @@ class UpdateAffiliateProductRequest extends FormRequest
     {
         return [
             'title'            => 'sometimes|string|max:200',
-            'slug'             => 'sometimes|string|max:200|unique:affiliate_products,slug,' . $this->route('affiliate-product'),
+            'slug'             => 'sometimes|string|max:200|unique:affiliate_products,slug,' . $this->route('affiliate_product'),
             'category_id'      => 'nullable|exists:categories,id',
             'description'      => 'nullable|string',
             'display_price'    => 'nullable|numeric|min:0',
