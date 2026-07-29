@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Traits\HasSlug;
+use Modules\Catalog\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
