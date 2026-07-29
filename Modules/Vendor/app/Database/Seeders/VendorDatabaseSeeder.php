@@ -21,6 +21,11 @@ class VendorDatabaseSeeder extends Seeder
             ]
         );
 
+        // Assign vendor role
+        if (!$user->hasRole('vendor')) {
+            $user->assignRole('vendor');
+        }
+
         // Create vendor
         $vendor = Vendor::firstOrCreate(
             ['user_id' => $user->id],
@@ -77,6 +82,11 @@ class VendorDatabaseSeeder extends Seeder
                 'status'   => 'active',
             ]
         );
+
+        // Assign vendor role
+        if (!$user2->hasRole('vendor')) {
+            $user2->assignRole('vendor');
+        }
 
         Vendor::firstOrCreate(
             ['user_id' => $user2->id],
