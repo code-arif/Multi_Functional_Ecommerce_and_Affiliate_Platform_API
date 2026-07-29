@@ -39,32 +39,6 @@ function seedSupportPermissions(): void
     }
 }
 
-function makeAdminUser(): User
-{
-    $user = User::create([
-        'name'     => 'Admin',
-        'email'    => 'admin-' . uniqid() . '@example.com',
-        'phone'    => '+88017' . mt_rand(10000000, 99999999),
-        'password' => bcrypt('password'),
-        'status'   => 'active',
-    ]);
-    $user->assignRole('super-admin');
-    return $user;
-}
-
-function makeCustomerUser(): User
-{
-    $user = User::create([
-        'name'     => 'Customer',
-        'email'    => 'cust-' . uniqid() . '@example.com',
-        'phone'    => '+88017' . mt_rand(10000000, 99999999),
-        'password' => bcrypt('password'),
-        'status'   => 'active',
-    ]);
-    $user->assignRole('customer');
-    return $user;
-}
-
 function createOrder(User $customer): Order
 {
     return Order::create([

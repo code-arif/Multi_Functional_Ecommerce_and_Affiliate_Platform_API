@@ -34,16 +34,15 @@ expect()->extend('toBeOne', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Functions
+| Global test helpers
 |--------------------------------------------------------------------------
 |
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
+| Shared helper functions used across module test files (makeAdminUser,
+| makeCustomerUser, etc.) are defined in Helpers/TestHelpers.php with
+| function_exists() guards to prevent redeclaration conflicts when
+| multiple module test files are run together.
 |
 */
 
-function something()
-{
-    // ..
-}
+require_once __DIR__ . '/Helpers/TestHelpers.php';
+
