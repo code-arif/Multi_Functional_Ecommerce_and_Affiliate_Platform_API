@@ -54,6 +54,16 @@ Route::prefix('v1')->group(base_path('Modules/Search/routes/api.php'));
 // Support module routes (FAQs, tickets, customer disputes, chat)
 Route::prefix('v1')->group(base_path('Modules/Support/routes/api.php'));
 
+// Finance module routes (wallet, transactions, commissions, payouts, settlements)
+Route::prefix('v1')->group(base_path('Modules/Finance/routes/api.php'));
+
+// Payments module routes (payment processing, refunds)
+Route::prefix('v1')->group(base_path('Modules/Payments/routes/api.php'));
+
+// Promotions module routes (public promotion listings)
+// Admin promotion routes are in routes/api/v1/api.php under admin middleware
+Route::prefix('v1')->group(base_path('Modules/Promotions/routes/api.php'));
+
 // Main api.php (admin routes, cross-cutting concern routes)
 Route::prefix('v1')->group(base_path('routes/api/v1/api.php'));
 Route::prefix('v1')->group(base_path('routes/api/v1/seo_and_extras.php'));
