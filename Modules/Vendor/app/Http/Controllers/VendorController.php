@@ -15,6 +15,9 @@ use Modules\Vendor\Http\Resources\VendorDocumentResource;
 use Modules\Vendor\Http\Resources\VendorWalletTransactionResource;
 use Modules\Vendor\Http\Resources\VendorPayoutResource;
 use Modules\Finance\Models\VendorPayoutRequest;
+use Modules\Auth\Models\User;
+use Modules\Auth\Http\Resources\UserResource;
+use Modules\Auth\Services\PasswordlessAuthService;
 use Modules\Finance\Services\FinanceService;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +29,8 @@ class VendorController
 
     public function __construct(
         private VendorService $vendorService,
-        private FinanceService $financeService
+        private FinanceService $financeService,
+        private PasswordlessAuthService $passwordlessAuth
     ) {}
 
     // ─── Vendor Registration & Profile ────────────────────────────
@@ -248,6 +252,71 @@ class VendorController
         );
     }
 
+    // ─── Passwordless Login (OTP-based) ──────────────────────────
+
+    /**
+     * Step 1: Send a 6-digit OTP to the vendor's email for passwordless login.
+     *
+     * POST /api/v1/vendor/auth/otp/send
+     */
+    public function vendorOtpSend(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = $this->resolveVendorUser($validated['email']);
+        if (!$user) {
+            return $this->errorResponse('Vendor access required.', null, 403);
+        }
+
+        try {
+            $this->passwordlessAuth->sendOtp($user, 'vendor_passwordless');
+            return $this->successResponse(
+                ['email' => $user->email],
+                'Verification code sent to your email.'
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to send verification code. Please try again.', null, 500);
+        }
+    }
+
+    /**
+     * Step 2: Verify the OTP and log in the vendor.
+     *
+     * POST /api/v1/vendor/auth/otp/verify
+     */
+    public function vendorOtpVerify(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'code'  => 'required|string|size:6',
+        ]);
+
+        $user = $this->resolveVendorUser($validated['email']);
+        if (!$user) {
+            return $this->errorResponse('Vendor access required.', null, 403);
+        }
+
+        $result = $this->passwordlessAuth->verifyOtp(
+            $user,
+            $validated['code'],
+            'vendor_passwordless'
+        );
+
+        if (!$result['success']) {
+            return $this->errorResponse($result['message'], null, 422);
+        }
+
+        return $this->successResponse([
+            'user'        => new UserResource($result['user']),
+            'token'       => $result['token'],
+            'permissions' => $result['permissions'],
+        ], 'Login successful.');
+    }
+
+    // ─── Wallet Stats ────────────────────────────────────────────
+
     /**
      * GET /api/v1/vendor/wallet/stats
      * Get wallet stats summary (earnings chart data)
@@ -275,5 +344,33 @@ class VendorController
         ];
 
         return $this->successResponse($stats, 'Wallet stats retrieved.');
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────
+
+    /**
+     * Resolve and validate a vendor user for passwordless login.
+     *
+     * Returns the User if valid (has vendor role + active vendor + not banned),
+     * or null if any check fails.
+     */
+    private function resolveVendorUser(string $email): ?User
+    {
+        $user = User::where('email', $email)->first();
+
+        if (!$user || !$user->isVendor()) {
+            return null;
+        }
+
+        $vendor = $user->vendor;
+        if (!$vendor || $vendor->status !== 'active') {
+            return null;
+        }
+
+        if ($user->status === 'banned') {
+            return null;
+        }
+
+        return $user;
     }
 }

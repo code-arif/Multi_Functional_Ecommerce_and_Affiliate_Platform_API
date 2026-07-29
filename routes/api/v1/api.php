@@ -107,6 +107,12 @@ Route::prefix('vendors')->middleware('throttle:api')->group(function () {
     Route::get('{slug}',          [VendorController::class, 'show']);
 });
 
+// Vendor passwordless login (OTP-based) — rate-limited
+Route::prefix('vendor/auth')->middleware('throttle:auth')->group(function () {
+    Route::post('otp/send',    [VendorController::class, 'vendorOtpSend']);
+    Route::post('otp/verify',  [VendorController::class, 'vendorOtpVerify']);
+});
+
 // SEO
 Route::prefix('seo')->middleware('throttle:api')->group(function () {
     Route::get('homepage',        [SeoController::class, 'homepage']);

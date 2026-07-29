@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Modules\Auth\Models\User;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Models\VendorDocument;
@@ -584,6 +585,120 @@ it('prevents payout for non-active vendor', function () {
         ->postJson('/api/v1/vendor/wallet/payouts', [
             'amount' => 1000,
         ]);
+
+    $response->assertStatus(403);
+});
+
+// ─── Vendor Passwordless Login (OTP-based) ──────────────────────
+
+it('sends OTP for passwordless vendor login', function () {
+    Mail::fake();
+    seedPermissions();
+    $vendorUser = makeRoleUser('Vendor', 'vendor-otp-send', 'vendor');
+    makeVendor($vendorUser, 'active', 'OTP Shop');
+
+    $response = $this->postJson('/api/v1/vendor/auth/otp/send', [
+        'email' => $vendorUser->email,
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('message', 'Verification code sent to your email.')
+        ->assertJsonStructure(['data' => ['email']]);
+
+    $this->assertDatabaseHas('otp_codes', [
+        'user_id' => $vendorUser->id,
+        'type'    => 'vendor_passwordless',
+    ]);
+});
+
+it('rejects OTP send for non-vendor user', function () {
+    seedPermissions();
+    $customer = makeRoleUser('Customer', 'not-vendor', 'customer');
+
+    $response = $this->postJson('/api/v1/vendor/auth/otp/send', [
+        'email' => $customer->email,
+    ]);
+
+    $response->assertStatus(403);
+});
+
+it('rejects OTP send for non-existent email', function () {
+    $response = $this->postJson('/api/v1/vendor/auth/otp/send', [
+        'email' => 'nobody@example.com',
+    ]);
+
+    $response->assertStatus(422);
+});
+
+it('rejects OTP send for inactive vendor', function () {
+    Mail::fake();
+    seedPermissions();
+    $vendorUser = makeRoleUser('Vendor', 'inactive-vendor', 'vendor');
+    makeVendor($vendorUser, 'pending', 'Inactive Shop');
+
+    $response = $this->postJson('/api/v1/vendor/auth/otp/send', [
+        'email' => $vendorUser->email,
+    ]);
+
+    $response->assertStatus(403);
+});
+
+it('verifies OTP and logs in vendor', function () {
+    Mail::fake();
+    seedPermissions();
+    $vendorUser = makeRoleUser('Vendor', 'vendor-otp-login', 'vendor');
+    makeVendor($vendorUser, 'active', 'Login Shop');
+
+    // Send OTP first
+    $this->postJson('/api/v1/vendor/auth/otp/send', [
+        'email' => $vendorUser->email,
+    ]);
+
+    // Get the OTP code from the database
+    $otp = Modules\Auth\Models\OtpCode::where('user_id', $vendorUser->id)
+        ->where('type', 'vendor_passwordless')
+        ->first();
+
+    $this->assertNotNull($otp);
+
+    // Verify with the actual OTP code
+    $response = $this->postJson('/api/v1/vendor/auth/otp/verify', [
+        'email' => $vendorUser->email,
+        'code'  => $otp->code,
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('message', 'Login successful.')
+        ->assertJsonStructure(['data' => ['user', 'token', 'permissions']]);
+
+    // OTP should be marked as used
+    $this->assertNotNull($otp->fresh()->used_at);
+});
+
+it('rejects invalid OTP code during vendor login', function () {
+    Mail::fake();
+    seedPermissions();
+    $vendorUser = makeRoleUser('Vendor', 'bad-otp', 'vendor');
+    makeVendor($vendorUser, 'active', 'Bad OTP Shop');
+
+    $response = $this->postJson('/api/v1/vendor/auth/otp/verify', [
+        'email' => $vendorUser->email,
+        'code'  => '000000',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('message', 'Invalid or expired OTP code.');
+});
+
+it('rejects OTP verify for non-vendor user', function () {
+    seedPermissions();
+    $customer = makeRoleUser('Customer', 'not-vendor-verify', 'customer');
+
+    $response = $this->postJson('/api/v1/vendor/auth/otp/verify', [
+        'email' => $customer->email,
+        'code'  => '123456',
+    ]);
 
     $response->assertStatus(403);
 });

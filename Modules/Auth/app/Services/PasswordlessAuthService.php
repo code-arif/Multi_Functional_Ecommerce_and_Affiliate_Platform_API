@@ -90,25 +90,21 @@ class PasswordlessAuthService
         // Create a new token with appropriate abilities
         $token = $user->createToken("passwordless-{$type}", [$type])->plainTextToken;
 
-        // Get permissions if the user has roles
-        $permissions = [];
-        if (method_exists($user, 'roles') && $user->relationLoaded('roles') || $user->roles()->exists()) {
-            try {
-                $permissions = $user->roles
-                    ->flatMap(fn($r) => $r->permissions)
-                    ->pluck('name')
-                    ->unique()
-                    ->values()
-                    ->toArray();
-            } catch (\Exception $e) {
-                $permissions = [];
-            }
-        }
+        // Refresh user and eager-load roles for permission resolution
+        $user = $user->fresh()->load('roles');
+
+        // Resolve permissions from Spatie roles
+        $permissions = $user->roles
+            ->flatMap(fn($r) => $r->permissions)
+            ->pluck('name')
+            ->unique()
+            ->values()
+            ->toArray();
 
         return [
             'success'     => true,
             'message'     => 'Login successful.',
-            'user'        => $user->fresh()->load('roles'),
+            'user'        => $user,
             'token'       => $token,
             'permissions' => $permissions,
         ];

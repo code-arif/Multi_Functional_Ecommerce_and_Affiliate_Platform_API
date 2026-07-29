@@ -62,10 +62,6 @@ it('allows admin to view dashboard', function () {
     $response = $this->actingAs($admin, 'sanctum')
         ->getJson('/api/v1/admin/dashboard');
 
-    if ($response->status() === 500) {
-        dump('DASHBOARD 500:', $response->getContent());
-    }
-
     $response->assertOk()
         ->assertJsonPath('success', true)
         ->assertJsonStructure(['data' => [
@@ -375,17 +371,12 @@ it('allows admin to list and manage users', function () {
 
     $response->assertOk();
 
-    // Show (skip assertion if 500 due to pre-existing Address SoftDeletes issue)
+    // Show
     $response = $this->actingAs($admin, 'sanctum')
         ->getJson("/api/v1/admin/users/{$customer->id}");
 
-    if ($response->status() === 500) {
-        // Pre-existing bug: Address model uses SoftDeletes but table lacks deleted_at
-        // TODO: fix the Address model/migration
-    } else {
-        $response->assertOk()
-            ->assertJsonPath('data.id', $customer->id);
-    }
+    $response->assertOk()
+        ->assertJsonPath('data.id', $customer->id);
 
     // Ban
     $response = $this->actingAs($admin, 'sanctum')
@@ -438,17 +429,12 @@ it('allows admin to manage CMS pages', function () {
 
     $pageId = $response->json('data.id');
 
-    // Show (skip assertion if 500 due to pre-existing SoftDeletes issue)
+    // Show
     $response = $this->actingAs($admin, 'sanctum')
         ->getJson("/api/v1/admin/pages/{$pageId}");
 
-    if ($response->status() === 500) {
-        // Pre-existing bug: CmsPage model uses SoftDeletes but migration lacked deleted_at
-        // TODO: fix the CmsPage model/migration
-    } else {
-        $response->assertOk()
-            ->assertJsonPath('data.id', $pageId);
-    }
+    $response->assertOk()
+        ->assertJsonPath('data.id', $pageId);
 
     // Update
     $response = $this->actingAs($admin, 'sanctum')
@@ -456,11 +442,7 @@ it('allows admin to manage CMS pages', function () {
             'title' => 'Updated Page',
         ]);
 
-    if ($response->status() === 500) {
-        // Pre-existing bug
-    } else {
-        $response->assertOk();
-    }
+    $response->assertOk();
 
     // List
     $response = $this->actingAs($admin, 'sanctum')
@@ -511,21 +493,13 @@ it('allows admin to manage affiliate products', function () {
             'commission_value' => 15,
         ]);
 
-    if ($response->status() === 404) {
-        // Pre-existing route binding issue with kebab-case parameter
-    } else {
-        $response->assertOk();
-    }
+    $response->assertOk();
 
     // Delete
     $response = $this->actingAs($admin, 'sanctum')
         ->deleteJson("/api/v1/admin/affiliate-products/{$affId}/delete");
 
-    if ($response->status() === 404) {
-        // Pre-existing route binding issue
-    } else {
-        $response->assertOk();
-    }
+    $response->assertOk();
 });
 
 // ─── Dispute Resolution ─────────────────────────────────────────
@@ -580,12 +554,8 @@ it('allows admin to manage dispute resolution', function () {
             'message' => 'We are reviewing your claim.',
         ]);
 
-    if ($response->status() === 500) {
-        // Check if it's a pre-existing issue
-    } else {
-        $response->assertCreated()
-            ->assertJsonPath('success', true);
-    }
+    $response->assertCreated()
+        ->assertJsonPath('success', true);
 
     // Update status to under_review
     $response = $this->actingAs($admin, 'sanctum')
@@ -594,11 +564,7 @@ it('allows admin to manage dispute resolution', function () {
             'resolution_notes' => 'Investigating with vendor',
         ]);
 
-    if ($response->status() === 500) {
-        // Check if it's a pre-existing issue
-    } else {
-        $response->assertOk();
-    }
+    $response->assertOk();
 
     // Resolve the dispute
     $response = $this->actingAs($admin, 'sanctum')
@@ -607,12 +573,8 @@ it('allows admin to manage dispute resolution', function () {
             'resolution_notes' => 'Refund issued to customer',
         ]);
 
-    if ($response->status() === 500) {
-        // Check if it's a pre-existing issue
-    } else {
-        $response->assertOk()
-            ->assertJsonPath('data.status', 'resolved');
-    }
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'resolved');
 });
 
 it('blocks non-admin from managing disputes', function () {

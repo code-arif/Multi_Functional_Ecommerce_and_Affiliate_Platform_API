@@ -3,8 +3,8 @@
 namespace Modules\AdminPanel\Http\Controllers;
 
 use Modules\AdminPanel\Models\Dispute;
-use Modules\AdminPanel\Models\DisputeMessage;
 use Modules\AdminPanel\Http\Resources\DisputeResource;
+use Modules\AdminPanel\Http\Resources\DisputeMessageResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
