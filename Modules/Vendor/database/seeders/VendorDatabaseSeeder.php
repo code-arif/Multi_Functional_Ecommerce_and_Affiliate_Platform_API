@@ -4,8 +4,6 @@ namespace Modules\Vendor\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\Vendor\Models\Vendor;
-use Modules\Vendor\Models\VendorProfile;
-use Modules\Vendor\Models\VendorAddress;
 use Modules\Auth\Models\User;
 
 class VendorDatabaseSeeder extends Seeder

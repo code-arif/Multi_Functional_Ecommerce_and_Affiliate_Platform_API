@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Vendor\Database\Seeders\VendorDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,6 +24,8 @@ class DatabaseSeeder extends Seeder
             BannerSeeder::class,
             AffiliateProductSeeder::class,
             ProductSeeder::class,
+            // Vendor: demo vendor account with shop
+            VendorDatabaseSeeder::class,
         ]);
     }
 }

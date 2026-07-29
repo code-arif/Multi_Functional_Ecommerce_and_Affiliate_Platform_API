@@ -69,8 +69,9 @@ Route::prefix('v1')->group(base_path('routes/api/v1/api.php'));
 Route::prefix('v1')->group(base_path('routes/api/v1/seo_and_extras.php'));
 
 // Health check
-Route::get('health', fn() => response()->json([
+Route::get('/health', fn() => response()->json([
     'status'  => 'ok',
+    'message' => 'API is healthy and running.',
     'version' => 'v1',
     'time'    => now()->toDateTimeString(),
 ]));
