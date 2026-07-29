@@ -13,7 +13,6 @@ return new class extends Migration
             Schema::table('payments', function (Blueprint $table) {
                 $table->string('payment_method', 50)->nullable()->after('gateway');
                 $table->string('payment_status', 50)->nullable()->after('status');
-                $table->string('order_id')->nullable()->change(); // ensure nullable for edge cases
             });
         }
 

@@ -59,7 +59,27 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Modules\\AdminPanel\\Tests\\": "Modules/AdminPanel/tests/",
+            "Modules\\Affiliate\\Tests\\": "Modules/Affiliate/tests/",
+            "Modules\\Auth\\Tests\\": "Modules/Auth/tests/",
+            "Modules\\Cart\\Tests\\": "Modules/Cart/tests/",
+            "Modules\\Catalog\\Tests\\": "Modules/Catalog/tests/",
+            "Modules\\Checkout\\Tests\\": "Modules/Checkout/tests/",
+            "Modules\\Cms\\Tests\\": "Modules/Cms/tests/",
+            "Modules\\Core\\Tests\\": "Modules/Core/tests/",
+            "Modules\\Finance\\Tests\\": "Modules/Finance/tests/",
+            "Modules\\Inventory\\Tests\\": "Modules/Inventory/tests/",
+            "Modules\\Notifications\\Tests\\": "Modules/Notifications/tests/",
+            "Modules\\Orders\\Tests\\": "Modules/Orders/tests/",
+            "Modules\\Payments\\Tests\\": "Modules/Payments/tests/",
+            "Modules\\Promotions\\Tests\\": "Modules/Promotions/tests/",
+            "Modules\\RBAC\\Tests\\": "Modules/RBAC/tests/",
+            "Modules\\Reviews\\Tests\\": "Modules/Reviews/tests/",
+            "Modules\\Search\\Tests\\": "Modules/Search/tests/",
+            "Modules\\Shipping\\Tests\\": "Modules/Shipping/tests/",
+            "Modules\\Support\\Tests\\": "Modules/Support/tests/",
+            "Modules\\Vendor\\Tests\\": "Modules/Vendor/tests/"
         }
     },
     "scripts": {

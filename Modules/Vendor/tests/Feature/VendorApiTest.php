@@ -1,232 +1,454 @@
 <?php
 
-namespace Modules\Vendor\Tests\Feature;
-
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\Vendor\Models\Vendor;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Modules\Vendor\Models\VendorDocument;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
-class VendorApiTest extends TestCase
+uses(Tests\TestCase::class)->use(RefreshDatabase::class);
+
+// ─── Helpers ─────────────────────────────────────────────────────
+
+function seedPermissions(): void
 {
-    use RefreshDatabase;
+    app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-    private User $user;
-    private User $admin;
+    if (!Role::where('name', 'super-admin')->exists()) {
+        $superAdmin = Role::create(['name' => 'super-admin', 'guard_name' => 'web']);
+        Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        Role::create(['name' => 'vendor', 'guard_name' => 'web']);
+        Role::create(['name' => 'customer', 'guard_name' => 'web']);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+        $vendorPermissions = [
+            'vendors.view', 'vendors.create', 'vendors.edit', 'vendors.delete',
+            'vendors.approve', 'vendors.manage', 'vendors.suspend',
+        ];
 
-        $this->user = User::factory()->create([
-            'name'   => 'Test Customer',
-            'email'  => 'customer@example.com',
-            'status' => 'active',
-        ]);
+        foreach ($vendorPermissions as $perm) {
+            Permission::findOrCreate($perm, 'web');
+        }
 
-        $this->admin = User::factory()->create([
-            'name'   => 'Admin User',
-            'email'  => 'admin@example.com',
-            'status' => 'active',
-        ]);
+        $superAdmin->givePermissionTo(Permission::all());
     }
-
-    // ─── Public Routes (No Auth) ──────────────────────────────────
-
-    /** @test */
-    public function guest_can_list_active_vendors(): void
-    {
-        Vendor::factory()->create([
-            'shop_name' => 'Active Shop',
-            'status'    => 'active',
-            'slug'      => 'active-shop',
-        ]);
-
-        Vendor::factory()->create([
-            'shop_name' => 'Pending Shop',
-            'status'    => 'pending',
-            'slug'      => 'pending-shop',
-        ]);
-
-        $response = $this->getJson('/api/v1/vendors');
-
-        $response->assertOk()
-            ->assertJsonStructure([
-                'success',
-                'data' => [
-                    '*' => ['id', 'shop_name', 'slug', 'status'],
-                ],
-            ]);
-    }
-
-    /** @test */
-    public function guest_can_view_active_vendor_by_slug(): void
-    {
-        $vendor = Vendor::factory()->create([
-            'shop_name' => 'Active Shop',
-            'status'    => 'active',
-            'slug'      => 'active-shop',
-        ]);
-
-        $response = $this->getJson("/api/v1/vendors/{$vendor->slug}");
-
-        $response->assertOk()
-            ->assertJsonPath('data.shop_name', 'Active Shop');
-    }
-
-    // ─── Vendor Registration (Authenticated) ──────────────────────
-
-    /** @test */
-    public function authenticated_user_can_register_as_vendor(): void
-    {
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/vendor/register', [
-                'shop_name'   => 'My New Shop',
-                'description' => 'A test shop',
-            ]);
-
-        $response->assertCreated()
-            ->assertJsonPath('data.shop_name', 'My New Shop')
-            ->assertJsonPath('data.status', 'pending');
-    }
-
-    /** @test */
-    public function vendor_cannot_register_twice(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'First Shop',
-            'slug'      => 'first-shop',
-        ]);
-
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/vendor/register', [
-                'shop_name' => 'Second Shop',
-            ]);
-
-        $response->assertStatus(400)
-            ->assertJsonPath('success', false);
-    }
-
-    /** @test */
-    public function unauthenticated_user_cannot_register_as_vendor(): void
-    {
-        $response = $this->postJson('/api/v1/vendor/register', [
-            'shop_name' => 'Unauthorized Shop',
-        ]);
-
-        $response->assertStatus(401);
-    }
-
-    // ─── Vendor Profile (Authenticated) ───────────────────────────
-
-    /** @test */
-    public function vendor_can_view_own_profile(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'My Shop',
-            'slug'      => 'my-shop',
-        ]);
-
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/vendor/profile');
-
-        $response->assertOk()
-            ->assertJsonPath('data.shop_name', 'My Shop');
-    }
-
-    /** @test */
-    public function non_vendor_gets_404_on_profile(): void
-    {
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->getJson('/api/v1/vendor/profile');
-
-        $response->assertStatus(404);
-    }
-
-    /** @test */
-    public function vendor_can_update_own_profile(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'My Shop',
-            'slug'      => 'my-shop',
-        ]);
-
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/v1/vendor/profile', [
-                'description' => 'Updated description',
-            ]);
-
-        $response->assertOk()
-            ->assertJsonPath('data.description', 'Updated description');
-    }
-
-    /** @test */
-    public function vendor_can_update_profile_without_changing_shop_name(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'My Shop',
-            'slug'      => 'my-shop',
-        ]);
-
-        // Sending same shop_name should not trigger uniqueness error
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson('/api/v1/vendor/profile', [
-                'shop_name'   => 'My Shop',
-                'description' => 'Updated description',
-            ]);
-
-        $response->assertOk();
-    }
-
-    // ─── Document Upload ──────────────────────────────────────────
-
-    /** @test */
-    public function vendor_can_upload_document(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'My Shop',
-            'slug'      => 'my-shop',
-        ]);
-
-        // Use a fake file upload
-        $file = \Illuminate\Http\UploadedFile::fake()->image('license.jpg');
-
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/vendor/documents', [
-                'type'     => 'trade_license',
-                'document' => $file,
-            ]);
-
-        $response->assertCreated()
-            ->assertJsonPath('data.type', 'trade_license');
-    }
-
-    /** @test */
-    public function vendor_cannot_upload_without_document_file(): void
-    {
-        Vendor::factory()->create([
-            'user_id'   => $this->user->id,
-            'shop_name' => 'My Shop',
-            'slug'      => 'my-shop',
-        ]);
-
-        $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson('/api/v1/vendor/documents', [
-                'type' => 'nid',
-                // No document file
-            ]);
-
-        $response->assertStatus(422);
-    }
-
-    // ─── Admin Vendor Routes (requires seeded permissions in production) ──
-    // Note: Admin route tests (approve/reject/suspend) are intentionally
-    // omitted here because they require pre-seeded admin roles and permissions
-    // via Spatie. In a real test environment, seed the RBAC seeder first in setUp().
-    // See: Modules/RBAC/database/seeders/RBACSeeder.php
 }
+
+function makeUser(string $name, string $emailPrefix, string $role): User
+{
+    $user = User::create([
+        'name'     => $name,
+        'email'    => $emailPrefix . '-' . uniqid() . '@example.com',
+        'phone'    => '+88017' . mt_rand(10000000, 99999999),
+        'password' => bcrypt('password'),
+        'status'   => 'active',
+    ]);
+    $user->assignRole($role);
+    return $user;
+}
+
+function makeVendor(User $user, string $status = 'active', ?string $shopName = null): Vendor
+{
+    return Vendor::create([
+        'user_id'         => $user->id,
+        'shop_name'       => $shopName ?? 'Shop ' . uniqid(),
+        'slug'            => 'shop-' . uniqid(),
+        'email'           => $user->email,
+        'phone'           => $user->phone,
+        'description'     => 'Test shop description',
+        'status'          => $status,
+        'commission_rate' => 10,
+        'commission_type' => 'percentage',
+        'wallet_balance'  => 0,
+        'total_earned'    => 0,
+        'total_withdrawn' => 0,
+        'approved_at'     => $status === 'active' ? now() : null,
+    ]);
+}
+
+// ─── Public Routes ─────────────────────────────────────────────
+
+it('lists active vendors for guests', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'vendor-list', 'vendor');
+    makeVendor($vendorUser);
+
+    $response = $this->getJson('/api/v1/vendors');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonStructure(['data' => [['id', 'shop_name', 'slug']]]);
+});
+
+it('shows a public vendor page by slug', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'vendor-show', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->getJson("/api/v1/vendors/{$vendor->slug}");
+
+    $response->assertOk()
+        ->assertJsonPath('data.shop_name', $vendor->shop_name);
+});
+
+it('hides pending vendors from public', function () {
+    seedPermissions();
+    $user = makeUser('Pending', 'pending', 'vendor');
+    $pendingVendor = makeVendor($user, 'pending', 'Hidden Pending Shop');
+
+    $response = $this->getJson("/api/v1/vendors/{$pendingVendor->slug}");
+    $response->assertStatus(404);
+});
+
+it('only returns active vendors in public listing', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Active', 'active-list', 'vendor');
+    makeVendor($vendorUser, 'active', 'Visible Shop');
+
+    $pendingUser = makeUser('PendingUser', 'pending-list', 'vendor');
+    makeVendor($pendingUser, 'pending', 'Hidden Shop');
+
+    $response = $this->getJson('/api/v1/vendors');
+    $response->assertOk();
+
+    $vendorNames = collect($response->json('data'))->pluck('shop_name')->toArray();
+    expect($vendorNames)->toContain('Visible Shop');
+    expect($vendorNames)->not->toContain('Hidden Shop');
+});
+
+// ─── Vendor Registration ───────────────────────────────────────
+
+it('requires authentication to register as vendor', function () {
+    $response = $this->postJson('/api/v1/vendor/register', ['shop_name' => 'New Shop']);
+    $response->assertStatus(401);
+});
+
+it('allows customer to register as vendor', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'register', 'customer');
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->postJson('/api/v1/vendor/register', [
+            'shop_name'     => 'My Awesome Shop',
+            'email'         => 'shop-' . uniqid() . '@example.com',
+            'phone'         => '+8801700000100',
+            'description'   => 'Best shop ever',
+            'business_type' => 'retail',
+        ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.status', 'pending');
+});
+
+it('prevents duplicate vendor registration', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'dup', 'customer');
+
+    $this->actingAs($customer, 'sanctum')
+        ->postJson('/api/v1/vendor/register', ['shop_name' => 'First Shop']);
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->postJson('/api/v1/vendor/register', ['shop_name' => 'Second Shop']);
+
+    $response->assertStatus(400);
+});
+
+it('validates shop name is required for registration', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'validation', 'customer');
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->postJson('/api/v1/vendor/register', []);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['shop_name']);
+});
+
+// ─── Vendor Profile ────────────────────────────────────────────
+
+it('allows vendor to view own profile', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'profile', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/profile');
+
+    $response->assertOk()
+        ->assertJsonPath('data.shop_name', $vendor->shop_name);
+});
+
+it('returns 404 for non-vendor profile access', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'no-vendor', 'customer');
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->getJson('/api/v1/vendor/profile');
+
+    $response->assertStatus(404);
+});
+
+it('allows vendor to update own profile', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'update', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->putJson('/api/v1/vendor/profile', [
+            'shop_name'    => 'Updated Shop Name',
+            'description'  => 'Updated description',
+            'business_type' => 'wholesale',
+            'website'      => 'https://updatedshop.com',
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.shop_name', 'Updated Shop Name');
+
+    $this->assertDatabaseHas('vendors', [
+        'id'          => $vendor->id,
+        'shop_name'   => 'Updated Shop Name',
+        'description' => 'Updated description',
+    ]);
+
+    $this->assertDatabaseHas('vendor_profiles', [
+        'vendor_id'     => $vendor->id,
+        'business_type' => 'wholesale',
+    ]);
+});
+
+// ─── Vendor Documents ──────────────────────────────────────────
+
+it('allows vendor to upload a document', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'doc', 'vendor');
+    $vendor = makeVendor($vendorUser);
+    $file = Illuminate\Http\Testing\File::image('trade_license.jpg', 100, 100);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/documents', [
+            'type'            => 'trade_license',
+            'document'        => $file,
+            'document_number' => 'TR-12345',
+        ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('success', true);
+
+    $this->assertDatabaseHas('vendor_documents', [
+        'vendor_id'       => $vendor->id,
+        'type'            => 'trade_license',
+        'document_number' => 'TR-12345',
+        'status'          => 'pending',
+    ]);
+});
+
+it('rejects invalid document type', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'doc-invalid', 'vendor');
+    makeVendor($vendorUser);
+    $file = Illuminate\Http\Testing\File::image('test.jpg', 100, 100);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/documents', [
+            'type'     => 'invalid_type',
+            'document' => $file,
+        ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors(['type']);
+});
+
+// ─── Admin Vendor Routes ───────────────────────────────────────
+
+it('allows admin to list all vendors', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'admin-list', 'super-admin');
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->getJson('/api/v1/admin/vendors');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true);
+});
+
+it('blocks non-admin from listing vendors', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'blocked', 'customer');
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->getJson('/api/v1/admin/vendors');
+
+    $response->assertStatus(403);
+});
+
+it('shows pending vendors to admin', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'admin-pending', 'super-admin');
+    $pendingUser = makeUser('Pending', 'pending-admin', 'vendor');
+    makeVendor($pendingUser, 'pending', 'Pending Approval Shop');
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->getJson('/api/v1/admin/vendors/pending');
+
+    $response->assertOk();
+    $vendorNames = collect($response->json('data'))->pluck('shop_name')->toArray();
+    expect($vendorNames)->toContain('Pending Approval Shop');
+});
+
+it('shows vendor details to admin', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'admin-detail', 'super-admin');
+    $vendorUser = makeUser('Vendor', 'detail', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->getJson("/api/v1/admin/vendors/{$vendor->id}");
+
+    $response->assertOk()
+        ->assertJsonPath('data.id', $vendor->id);
+});
+
+it('allows admin to approve a pending vendor', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'approve', 'super-admin');
+    $pendingUser = makeUser('Pending', 'to-approve', 'vendor');
+    $pendingVendor = makeVendor($pendingUser, 'pending', 'Approve Shop');
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/approve");
+
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'active');
+
+    $this->assertDatabaseHas('vendors', [
+        'id'     => $pendingVendor->id,
+        'status' => 'active',
+    ]);
+});
+
+it('allows admin to reject a pending vendor', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'reject', 'super-admin');
+    $pendingUser = makeUser('Pending', 'to-reject', 'vendor');
+    $pendingVendor = makeVendor($pendingUser, 'pending', 'Reject Shop');
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/reject", [
+            'reason' => 'Incomplete KYC documents',
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'rejected');
+
+    $this->assertDatabaseHas('vendors', [
+        'id'               => $pendingVendor->id,
+        'status'           => 'rejected',
+        'rejection_reason' => 'Incomplete KYC documents',
+    ]);
+});
+
+it('requires reason when rejecting', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'reject-reason', 'super-admin');
+    $pendingUser = makeUser('Pending', 'no-reason', 'vendor');
+    $pendingVendor = makeVendor($pendingUser, 'pending', 'No Reason');
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/reject", []);
+
+    $response->assertStatus(422);
+});
+
+it('allows admin to suspend an active vendor', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'suspend', 'super-admin');
+    $vendorUser = makeUser('Vendor', 'to-suspend', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/{$vendor->id}/suspend", [
+            'reason' => 'Violation of terms',
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'suspended');
+
+    $this->assertDatabaseHas('vendors', [
+        'id'     => $vendor->id,
+        'status' => 'suspended',
+    ]);
+});
+
+it('allows admin to verify a document', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'verify-doc', 'super-admin');
+    $vendorUser = makeUser('Vendor', 'doc-owner', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $document = VendorDocument::create([
+        'vendor_id'       => $vendor->id,
+        'type'            => 'trade_license',
+        'document_path'   => 'vendors/documents/test.jpg',
+        'document_number' => 'TR-999',
+        'status'          => 'pending',
+    ]);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/documents/{$document->id}/verify");
+
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'verified');
+
+    $this->assertDatabaseHas('vendor_documents', [
+        'id'     => $document->id,
+        'status' => 'verified',
+    ]);
+});
+
+it('allows admin to reject a document', function () {
+    seedPermissions();
+    $admin = makeUser('Admin', 'reject-doc', 'super-admin');
+    $vendorUser = makeUser('Vendor', 'doc-reject', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $document = VendorDocument::create([
+        'vendor_id'       => $vendor->id,
+        'type'            => 'nid',
+        'document_path'   => 'vendors/documents/nid.jpg',
+        'document_number' => 'NID-123',
+        'status'          => 'pending',
+    ]);
+
+    $response = $this->actingAs($admin, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/documents/{$document->id}/reject", [
+            'reason' => 'Document is illegible',
+        ]);
+
+    $response->assertOk()
+        ->assertJsonPath('data.status', 'rejected');
+
+    $this->assertDatabaseHas('vendor_documents', [
+        'id'               => $document->id,
+        'status'           => 'rejected',
+        'rejection_reason' => 'Document is illegible',
+    ]);
+});
+
+// ─── Authorization ─────────────────────────────────────────────
+
+it('requires auth for vendor profile', function () {
+    $response = $this->getJson('/api/v1/vendor/profile');
+    $response->assertStatus(401);
+});
+
+it('prevents vendor from self-approving via admin endpoint', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'self-approve', 'vendor');
+    $pendingVendor = makeVendor($vendorUser, 'pending', 'Self Approve');
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/approve");
+
+    $response->assertStatus(403);
+});

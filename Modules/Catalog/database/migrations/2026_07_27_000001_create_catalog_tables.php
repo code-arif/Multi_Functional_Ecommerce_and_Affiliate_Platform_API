@@ -155,7 +155,7 @@ return new class extends Migration
         if (!Schema::hasTable('vendor_product_prices')) {
             Schema::create('vendor_product_prices', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+                $table->unsignedBigInteger('vendor_id');
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->decimal('price', 12, 2)->default(0);
                 $table->decimal('sale_price', 12, 2)->nullable();

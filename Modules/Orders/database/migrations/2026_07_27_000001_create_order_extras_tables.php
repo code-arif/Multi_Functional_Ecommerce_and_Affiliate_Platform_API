@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->string('tracking_token', 100)->nullable()->unique()->after('admin_note');
                 $table->text('cancel_reason')->nullable()->after('cancelled_at');
                 $table->timestamp('paid_at')->nullable()->after('cancelled_at');
-                $table->foreignId('vendor_id')->nullable()->constrained('vendors')->nullOnDelete()->after('user_id');
+                $table->unsignedBigInteger('vendor_id')->nullable()->after('user_id');
                 $table->index('vendor_id');
             });
         }
@@ -41,10 +41,9 @@ return new class extends Migration
         if (Schema::hasTable('order_items') && !Schema::hasColumn('order_items', 'total_price')) {
             Schema::table('order_items', function (Blueprint $table) {
                 $table->decimal('total_price', 12, 2)->default(0)->after('unit_price');
-                $table->foreignId('vendor_id')->nullable()->constrained('vendors')->nullOnDelete()->after('product_id');
+                $table->unsignedBigInteger('vendor_id')->nullable()->after('product_id');
                 $table->string('product_name')->nullable()->change();
                 $table->string('product_sku')->nullable()->change();
-                $table->string('product_image')->nullable()->after('product_sku');
             });
         }
 

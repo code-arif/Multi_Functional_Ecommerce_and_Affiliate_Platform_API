@@ -13,7 +13,7 @@ return new class extends Migration
             Schema::create('commissions', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
-                $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+                $table->unsignedBigInteger('vendor_id');
                 $table->decimal('order_total', 15, 2);
                 $table->decimal('commission_rate', 5, 2); // e.g., 10.00 = 10%
                 $table->string('commission_type', 20)->default('percentage'); // percentage, fixed
@@ -33,7 +33,7 @@ return new class extends Migration
         if (!Schema::hasTable('vendor_payout_requests')) {
             Schema::create('vendor_payout_requests', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+                $table->unsignedBigInteger('vendor_id');
                 $table->decimal('amount', 15, 2);
                 $table->decimal('balance_before', 15, 2);
                 $table->decimal('balance_after', 15, 2);
@@ -56,7 +56,7 @@ return new class extends Migration
         if (!Schema::hasTable('vendor_settlements')) {
             Schema::create('vendor_settlements', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+                $table->unsignedBigInteger('vendor_id');
                 $table->string('period_label', 50);         // "July 2026", "Q3 2026"
                 $table->date('period_start');
                 $table->date('period_end');

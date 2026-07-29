@@ -82,7 +82,7 @@ return new class extends Migration
             Schema::table('order_items', function (Blueprint $table) {
                 $table->foreignId('applied_promotion_id')
                     ->nullable()
-                    ->after('total')
+                    ->after('subtotal')
                     ->constrained('promotions')
                     ->nullOnDelete();
                 $table->decimal('promotion_discount', 12, 2)

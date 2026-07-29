@@ -11,7 +11,7 @@ return new class extends Migration
         // Add columns to existing reviews table
         Schema::table('reviews', function (Blueprint $table) {
             if (!Schema::hasColumn('reviews', 'vendor_response')) {
-                $table->text('vendor_response')->nullable()->after('admin_response');
+                $table->text('vendor_response')->nullable()->after('status');
             }
             if (!Schema::hasColumn('reviews', 'vendor_responded_at')) {
                 $table->timestamp('vendor_responded_at')->nullable()->after('vendor_response');

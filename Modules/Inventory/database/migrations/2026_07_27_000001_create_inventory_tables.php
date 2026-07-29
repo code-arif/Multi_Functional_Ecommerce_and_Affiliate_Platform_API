@@ -11,7 +11,7 @@ return new class extends Migration
         // ── Warehouses ─────────────────────────────────────────────
         Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
+            $table->unsignedBigInteger('vendor_id');
             $table->string('name', 200);
             $table->string('slug', 200);
             $table->text('address_line_1')->nullable();
@@ -38,7 +38,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
-            $table->foreignId('vendor_id')->nullable()->constrained('vendors')->nullOnDelete();
+            $table->unsignedBigInteger('vendor_id')->nullable();
             $table->foreignId('warehouse_id')->nullable()->constrained('warehouses')->nullOnDelete();
             $table->enum('type', [
                 'adjustment', 'order_placed', 'order_cancelled',

@@ -92,7 +92,7 @@ class VendorService
         return $vendor->fresh();
     }
 
-    public function addToWallet(Vendor $vendor, float $amount, string $description = '', ?string $referenceType = null, ?int $referenceId = null): Vendor
+    public function addToWallet(Vendor $vendor, int|float $amount, string $description = '', ?string $referenceType = null, ?int $referenceId = null): Vendor
     {
         return DB::transaction(function () use ($vendor, $amount, $description, $referenceType, $referenceId) {
             $before = $vendor->wallet_balance;

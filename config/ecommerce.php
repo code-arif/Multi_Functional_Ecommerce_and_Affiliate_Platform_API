@@ -82,6 +82,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Vendor / Commission
+    |--------------------------------------------------------------------------
+    */
+    'vendor' => [
+        'default_commission_rate' => env('VENDOR_DEFAULT_COMMISSION_RATE', 10),
+        'default_commission_type' => 'percentage',
+        'max_staff_per_vendor'    => env('VENDOR_MAX_STAFF', 10),
+        'auto_approve'            => env('VENDOR_AUTO_APPROVE', false),
+        'max_document_size_kb'    => 10240,
+        'allowed_document_types'  => ['trade_license', 'nid', 'bin', 'tin', 'passport'],
+        'allowed_document_mimes'  => 'jpg,jpeg,png,pdf',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Features Flags
     |--------------------------------------------------------------------------
     */

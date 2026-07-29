@@ -17,7 +17,6 @@ class VendorListResource extends JsonResource
             'banner_url'  => $this->banner_url,
             'status'      => $this->status,
             'is_active'   => $this->is_active,
-            'rating'      => (float) $this->profile?->rating ?? 0,
             'products_count' => $this->whenCounted('products'),
             'created_at'  => $this->created_at,
         ];
