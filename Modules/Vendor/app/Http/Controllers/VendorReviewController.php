@@ -22,12 +22,6 @@ class VendorReviewController
     public function index(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
-        if ($vendor->status !== 'active') {
-            return $this->errorResponse('Your vendor account is not active.', null, 403);
-        }
 
         $reviews = Review::with(['user', 'product'])
             ->whereHas('product.vendorProductPrices', fn($q) => $q->where('vendor_id', $vendor->id))
@@ -48,12 +42,6 @@ class VendorReviewController
     public function reply(Request $request, Review $review): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
-        if ($vendor->status !== 'active') {
-            return $this->errorResponse('Your vendor account is not active.', null, 403);
-        }
 
         $validated = $request->validate([
             'response' => 'required|string|max:2000',

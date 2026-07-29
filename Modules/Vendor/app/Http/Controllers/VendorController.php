@@ -61,13 +61,7 @@ class VendorController
      */
     public function profile(Request $request): JsonResponse
     {
-        $vendor = Vendor::with(['profile', 'addresses', 'bankAccounts', 'documents'])
-            ->where('user_id', $request->user()->id)
-            ->first();
-
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
+        $vendor = $request->user()->vendor->load(['profile', 'addresses', 'bankAccounts', 'documents']);
 
         return $this->successResponse(new VendorResource($vendor));
     }
@@ -78,7 +72,7 @@ class VendorController
      */
     public function updateProfile(UpdateVendorRequest $request): JsonResponse
     {
-        $vendor = Vendor::where('user_id', $request->user()->id)->firstOrFail();
+        $vendor = $request->user()->vendor;
 
         $data = $request->validated();
 
@@ -175,9 +169,6 @@ class VendorController
     public function wallet(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
 
         $summary = $this->financeService->getWalletSummary($vendor);
         return $this->successResponse($summary, 'Wallet summary retrieved.');
@@ -190,9 +181,6 @@ class VendorController
     public function walletTransactions(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
 
         $transactions = VendorWalletTransaction::where('vendor_id', $vendor->id)
             ->when($request->type, fn($q, $t) => $q->where('type', $t))
@@ -211,13 +199,6 @@ class VendorController
     public function requestPayout(PayoutRequest $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
-
-        if ($vendor->status !== 'active') {
-            return $this->errorResponse('Your vendor account is not active.', null, 403);
-        }
 
         $payout = $this->financeService->requestPayout(
             $vendor,
@@ -238,9 +219,6 @@ class VendorController
     public function payouts(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
 
         $payouts = VendorPayoutRequest::where('vendor_id', $vendor->id)
             ->when($request->status, fn($q, $s) => $q->where('status', $s))
@@ -324,9 +302,6 @@ class VendorController
     public function walletStats(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
 
         $stats = [
             'current_balance'  => (float) $vendor->wallet_balance,

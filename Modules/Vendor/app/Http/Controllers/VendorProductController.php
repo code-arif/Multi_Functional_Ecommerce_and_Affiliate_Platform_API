@@ -24,12 +24,6 @@ class VendorProductController
     public function index(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
-        if ($vendor->status !== 'active') {
-            return $this->errorResponse('Your vendor account is not active.', null, 403);
-        }
 
         $productIds = VendorProductPrice::where('vendor_id', $vendor->id)
             ->where('is_active', true)
@@ -81,6 +75,9 @@ class VendorProductController
             'description' => 'nullable|string',
             'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'status'      => 'nullable|in:active,inactive,draft',
+            'low_stock_threshold' => 'nullable|integer|min:0',
+            'manage_stock' => 'nullable|boolean',
+            'is_active'    => 'nullable|boolean',
         ]);
 
         // If linking to an existing product
@@ -90,10 +87,12 @@ class VendorProductController
             VendorProductPrice::updateOrCreate(
                 ['vendor_id' => $vendor->id, 'product_id' => $product->id],
                 [
-                    'price'          => $validated['price'] ?? $product->price,
-                    'sale_price'     => $validated['sale_price'] ?? null,
-                    'stock_quantity' => $validated['stock_quantity'] ?? $product->stock_quantity,
-                    'is_active'      => true,
+                    'price'                => $validated['price'] ?? $product->price,
+                    'sale_price'           => $validated['sale_price'] ?? null,
+                    'stock_quantity'       => $validated['stock_quantity'] ?? $product->stock_quantity,
+                    'low_stock_threshold'  => $validated['low_stock_threshold'] ?? 5,
+                    'manage_stock'         => $validated['manage_stock'] ?? true,
+                    'is_active'            => $validated['is_active'] ?? true,
                 ]
             );
 
@@ -115,12 +114,14 @@ class VendorProductController
 
         // Link to vendor
         VendorProductPrice::create([
-            'vendor_id'      => $vendor->id,
-            'product_id'     => $product->id,
-            'price'          => $data['price'] ?? $product->price,
-            'sale_price'     => $data['sale_price'] ?? null,
-            'stock_quantity' => $data['stock_quantity'] ?? 0,
-            'is_active'      => true,
+            'vendor_id'             => $vendor->id,
+            'product_id'            => $product->id,
+            'price'                 => $data['price'] ?? $product->price,
+            'sale_price'            => $data['sale_price'] ?? null,
+            'stock_quantity'        => $data['stock_quantity'] ?? 0,
+            'low_stock_threshold'   => $data['low_stock_threshold'] ?? 5,
+            'manage_stock'          => $data['manage_stock'] ?? true,
+            'is_active'             => $data['is_active'] ?? true,
         ]);
 
         return $this->createdResponse(

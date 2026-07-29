@@ -24,7 +24,7 @@ return [
     | In production these are loaded from env. Never use ['*'] in production.
     */
     'allowed_origins' => array_filter([
-        env('FRONTEND_URL', 'http://localhost:4173/'),
+        env('FRONTEND_URL', 'http://localhost:3001/'),
         env('ADMIN_URL',    'http://localhost:3004/'),
     ]),
 

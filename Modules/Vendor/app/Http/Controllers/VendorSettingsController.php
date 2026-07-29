@@ -19,13 +19,7 @@ class VendorSettingsController
      */
     public function index(Request $request): JsonResponse
     {
-        $vendor = Vendor::with(['profile', 'addresses', 'bankAccounts'])
-            ->where('user_id', $request->user()->id)
-            ->first();
-
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
+        $vendor = $request->user()->vendor->load(['profile', 'addresses', 'bankAccounts']);
 
         return $this->successResponse([
             'shop' => new VendorResource($vendor),
@@ -45,7 +39,7 @@ class VendorSettingsController
      */
     public function update(Request $request): JsonResponse
     {
-        $vendor = Vendor::where('user_id', $request->user()->id)->firstOrFail();
+        $vendor = $request->user()->vendor;
 
         $validated = $request->validate([
             'shop_name'      => 'nullable|string|max:255',

@@ -22,12 +22,6 @@ class VendorOrderController
     public function index(Request $request): JsonResponse
     {
         $vendor = $request->user()->vendor;
-        if (!$vendor) {
-            return $this->errorResponse('You are not registered as a vendor.', null, 404);
-        }
-        if ($vendor->status !== 'active') {
-            return $this->errorResponse('Your vendor account is not active.', null, 403);
-        }
 
         $orders = $this->orderService->getVendorOrders($vendor->id, $request->only([
             'status', 'search', 'per_page',
