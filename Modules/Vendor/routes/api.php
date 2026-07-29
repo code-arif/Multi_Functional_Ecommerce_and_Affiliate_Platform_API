@@ -8,6 +8,7 @@ use Modules\Vendor\Http\Controllers\VendorOrderController;
 use Modules\Vendor\Http\Controllers\VendorCouponController;
 use Modules\Vendor\Http\Controllers\VendorReviewController;
 use Modules\Vendor\Http\Controllers\VendorSettingsController;
+use Modules\Vendor\Http\Controllers\VendorStaffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,15 @@ Route::middleware(['auth:sanctum', 'vendor', 'banned'])->group(function () {
     Route::prefix('vendor/reviews')->group(function () {
         Route::get('/',                     [VendorReviewController::class, 'index']);
         Route::post('{review}/reply',       [VendorReviewController::class, 'reply']);
+    });
+
+    // ─── Vendor Staff ─────────────────────────────────────────
+    Route::prefix('vendor/staff')->group(function () {
+        Route::get('/',                     [VendorStaffController::class, 'index']);
+        Route::post('/',                    [VendorStaffController::class, 'store']);
+        Route::put('{staff}',               [VendorStaffController::class, 'update']);
+        Route::post('{staff}/toggle-status',[VendorStaffController::class, 'toggleStatus']);
+        Route::delete('{staff}',            [VendorStaffController::class, 'destroy']);
     });
 
     // ─── Vendor Settings ──────────────────────────────────────
