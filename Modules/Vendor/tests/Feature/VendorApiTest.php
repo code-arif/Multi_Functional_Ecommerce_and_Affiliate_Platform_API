@@ -452,3 +452,138 @@ it('prevents vendor from self-approving via admin endpoint', function () {
 
     $response->assertStatus(403);
 });
+
+// ─── Wallet & Payouts ────────────────────────────────────────────
+
+it('requires auth for wallet access', function () {
+    $response = $this->getJson('/api/v1/vendor/wallet');
+    $response->assertStatus(401);
+});
+
+it('shows wallet summary for vendor', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'wallet', 'vendor');
+    makeVendor($vendorUser);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/wallet');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonStructure(['data' => ['balance', 'total_earned', 'total_withdrawn', 'available']]);
+});
+
+it('shows wallet transactions for vendor', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'txn', 'vendor');
+    $vendor = makeVendor($vendorUser);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/wallet/transactions');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true);
+});
+
+it('shows wallet stats for vendor', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'stats', 'vendor');
+    makeVendor($vendorUser);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/wallet/stats');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonStructure(['data' => ['current_balance', 'total_earned', 'total_withdrawn', 'available']]);
+});
+
+it('returns 404 for non-vendor wallet access', function () {
+    seedPermissions();
+    $customer = makeUser('Customer', 'wallet-404', 'customer');
+
+    $response = $this->actingAs($customer, 'sanctum')
+        ->getJson('/api/v1/vendor/wallet');
+
+    $response->assertStatus(404);
+});
+
+it('allows vendor to request a payout', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'payout-req', 'vendor');
+    $vendor = makeVendor($vendorUser);
+    // Give the vendor some wallet balance
+    $vendor->update(['wallet_balance' => 5000]);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/wallet/payouts', [
+            'amount' => 1000,
+            'notes'  => 'Monthly payout',
+        ]);
+
+    $response->assertCreated()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('data.amount', 1000)
+        ->assertJsonPath('data.status', 'pending');
+});
+
+it('rejects payout exceeding wallet balance', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'payout-exceed', 'vendor');
+    $vendor = makeVendor($vendorUser);
+    // Give some balance but request more
+    $vendor->update(['wallet_balance' => 500]);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/wallet/payouts', [
+            'amount' => 5000,
+        ]);
+
+    $response->assertStatus(400);
+});
+
+it('rejects payout below minimum amount', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'payout-min', 'vendor');
+    $vendor = makeVendor($vendorUser);
+    $vendor->update(['wallet_balance' => 5000]);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/wallet/payouts', [
+            'amount' => 10, // Below minimum 100
+        ]);
+
+    $response->assertStatus(422);
+});
+
+it('lists vendor payout requests', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'payout-list', 'vendor');
+    $vendor = makeVendor($vendorUser);
+    $vendor->update(['wallet_balance' => 5000]);
+
+    // Create a payout first
+    $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/wallet/payouts', [
+            'amount' => 1000,
+        ]);
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->getJson('/api/v1/vendor/wallet/payouts');
+
+    $response->assertOk()
+        ->assertJsonPath('success', true);
+});
+
+it('prevents payout for non-active vendor', function () {
+    seedPermissions();
+    $vendorUser = makeUser('Vendor', 'payout-inactive', 'vendor');
+    makeVendor($vendorUser, 'pending', 'Pending Payout Shop');
+
+    $response = $this->actingAs($vendorUser, 'sanctum')
+        ->postJson('/api/v1/vendor/wallet/payouts', [
+            'amount' => 1000,
+        ]);
+
+    $response->assertStatus(403);
+});

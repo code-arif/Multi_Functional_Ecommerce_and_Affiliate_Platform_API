@@ -159,6 +159,15 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
     Route::put('vendor/profile',      [VendorController::class, 'updateProfile']);
     Route::post('vendor/documents',   [VendorController::class, 'uploadDocument']);
 
+    // Vendor Wallet & Payouts
+    Route::prefix('vendor/wallet')->group(function () {
+        Route::get('/',                   [VendorController::class, 'wallet']);
+        Route::get('transactions',        [VendorController::class, 'walletTransactions']);
+        Route::get('stats',               [VendorController::class, 'walletStats']);
+        Route::post('payouts',            [VendorController::class, 'requestPayout']);
+        Route::get('payouts',             [VendorController::class, 'payouts']);
+    });
+
     // Phase 2 - Email Verification
     Route::post('auth/email/verify/send', [EmailVerificationController::class, 'sendVerification']);
     Route::post('auth/email/verify',      [EmailVerificationController::class, 'verify']);

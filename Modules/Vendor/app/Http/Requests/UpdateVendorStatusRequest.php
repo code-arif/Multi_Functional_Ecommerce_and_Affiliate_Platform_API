@@ -14,14 +14,14 @@ class UpdateVendorStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => 'required_if:action,reject,suspend|string|max:500',
+            'reason' => 'required|string|max:500',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'reason.required_if' => 'A reason is required when rejecting or suspending a vendor.',
+            'reason.required' => 'A reason is required when rejecting or suspending a vendor.',
         ];
     }
 }

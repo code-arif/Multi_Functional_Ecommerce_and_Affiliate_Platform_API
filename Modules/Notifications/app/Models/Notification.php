@@ -3,6 +3,7 @@
 namespace Modules\Notifications\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * This references the notifications table for querying.
@@ -28,6 +29,17 @@ class Notification extends Model
         'data'    => 'array',
         'read_at' => 'datetime',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $notification) {
+            if (empty($notification->{$notification->getKeyName()})) {
+                $notification->{$notification->getKeyName()} = (string) Str::uuid();
+            }
+        });
+    }
 
     public function scopeUnread($query)
     {

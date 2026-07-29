@@ -116,6 +116,34 @@ class VendorService
         });
     }
 
+    public function withdrawFromWallet(Vendor $vendor, int|float $amount, string $description = '', ?string $referenceType = null, ?int $referenceId = null): Vendor
+    {
+        if ($vendor->wallet_balance < $amount) {
+            abort(400, 'Insufficient wallet balance.');
+        }
+
+        return DB::transaction(function () use ($vendor, $amount, $description, $referenceType, $referenceId) {
+            $before = $vendor->wallet_balance;
+            $after  = $before - $amount;
+
+            $vendor->walletTransactions()->create([
+                'type'           => 'withdrawal',
+                'amount'         => -$amount,
+                'balance_before' => $before,
+                'balance_after'  => $after,
+                'description'    => $description,
+                'reference_type' => $referenceType,
+                'reference_id'   => $referenceId,
+                'status'         => 'completed',
+            ]);
+
+            $vendor->decrement('wallet_balance', $amount);
+            $vendor->increment('total_withdrawn', $amount);
+
+            return $vendor->fresh();
+        });
+    }
+
     public function addStaff(Vendor $vendor, User $user, string $role = 'staff', array $permissions = []): \Modules\Vendor\Models\VendorStaff
     {
         return $vendor->staff()->create([
