@@ -8,7 +8,11 @@ use Modules\Catalog\Events\ProductUpdated;
 use Modules\Catalog\Events\ProductDeleted;
 use Modules\Catalog\Listeners\LogProductActivity;
 use Modules\Catalog\Models\Brand;
+use Modules\Catalog\Models\Category;
+use Modules\Catalog\Models\Product;
 use Modules\Catalog\Observers\BrandObserver;
+use Modules\Catalog\Observers\CategoryObserver;
+use Modules\Catalog\Observers\ProductObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -24,10 +28,9 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
-    public function boot(): void
-    {
-        parent::boot();
-
-        Brand::observe(BrandObserver::class);
-    }
+    protected $observers = [
+        Product::class => [ProductObserver::class],
+        Category::class => [CategoryObserver::class],
+        Brand::class => [BrandObserver::class],
+    ];
 }

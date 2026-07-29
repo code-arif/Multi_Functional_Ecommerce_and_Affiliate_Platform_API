@@ -2,16 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Banner;
-use App\Models\Category;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\Setting;
-use App\Observers\BannerObserver;
-use App\Observers\CategoryObserver;
-use App\Observers\OrderObserver;
-use App\Observers\ProductObserver;
-use App\Observers\SettingObserver;
 use App\Services\Cache\CacheService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -29,13 +19,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // ─── Register Model Observers ─────────────────────────────
-        Product::observe(ProductObserver::class);
-        Category::observe(CategoryObserver::class);
-        Banner::observe(BannerObserver::class);
-        Setting::observe(SettingObserver::class);
-        Order::observe(OrderObserver::class);
-
         // ─── Rate Limiters ────────────────────────────────────────
         $this->configureRateLimiting();
 

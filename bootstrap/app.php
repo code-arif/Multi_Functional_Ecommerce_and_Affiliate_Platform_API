@@ -14,7 +14,6 @@ use App\Jobs\GenerateDailyReport;
 use App\Jobs\WarmCacheJob;
 use App\Providers\AppServiceProvider;
 use App\Providers\EventServiceProvider;
-use App\Providers\RepositoryServiceProvider;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Console\Scheduling\Schedule;
@@ -68,7 +67,6 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })->withProviders([
         AppServiceProvider::class,
-        RepositoryServiceProvider::class,
         EventServiceProvider::class,
     ])
     ->withSchedule(function (Schedule $schedule) {

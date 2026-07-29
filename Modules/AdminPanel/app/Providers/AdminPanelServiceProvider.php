@@ -27,6 +27,8 @@ use Modules\Reviews\Models\Review;
 use Modules\Affiliate\Models\AffiliateProduct;
 use Modules\Cms\Models\CmsPage;
 use Modules\AdminPanel\Models\Dispute;
+use Modules\AdminPanel\Models\Setting;
+use Modules\AdminPanel\Observers\SettingObserver;
 use Modules\AdminPanel\Policies\DisputePolicy;
 use Illuminate\Support\Facades\Gate;
 
@@ -43,6 +45,7 @@ class AdminPanelServiceProvider extends ModuleServiceProvider
     {
         parent::boot();
 
+        Setting::observe(SettingObserver::class);
         $this->registerPolicies();
     }
 

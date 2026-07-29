@@ -3,17 +3,20 @@
 namespace Modules\Orders\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\Orders\Events\OrderPlaced;
+use Modules\Orders\Events\OrderStatusUpdated;
+use Modules\Orders\Listeners\SendOrderNotification;
 use Modules\Orders\Models\Order;
-use Modules\Orders\Policies\OrderPolicy;
 use Modules\Orders\Observers\OrderObserver;
+use Modules\Orders\Policies\OrderPolicy;
 
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        \Modules\Orders\Events\OrderPlaced::class => [
-            \Modules\Orders\Listeners\SendOrderNotification::class,
+        OrderPlaced::class => [
+            SendOrderNotification::class,
         ],
-        \Modules\Orders\Events\OrderStatusUpdated::class => [
+        OrderStatusUpdated::class => [
             // Future: SendStatusUpdateNotification::class,
         ],
     ];
@@ -22,10 +25,7 @@ class EventServiceProvider extends ServiceProvider
         Order::class => OrderPolicy::class,
     ];
 
-    public function boot(): void
-    {
-        parent::boot();
-
-        Order::observe(OrderObserver::class);
-    }
+    protected $observers = [
+        Order::class => [OrderObserver::class],
+    ];
 }
