@@ -23,10 +23,19 @@ return [
     |--------------------------------------------------------------------------
     | In production these are loaded from env. Never use ['*'] in production.
     */
-    'allowed_origins' => array_filter([
-        env('FRONTEND_URL', 'http://localhost:3001/'),
-        env('ADMIN_URL',    'http://localhost:3004/'),
-    ]),
+    // 'allowed_origins' => array_filter([
+    //     env('FRONTEND_URL', 'http://localhost:3001/'),
+    //     env('ADMIN_URL',    'http://localhost:3004/'),
+    //     'http://localhost:3000/',
+    //     'http://localhost:3001/',
+    //     'http://localhost:3002/',
+    //     'http://localhost:3003/login',
+    //     'http://localhost:3004/',
+    //     'http://localhost:3005/',
+    //     'http://localhost:3006/',
+    // ]),
+
+    
 
     'allowed_origins_patterns' => [],
 

@@ -90,7 +90,7 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
     });
 
 // ─── Vendor Routes ──────────────────────────────────────────────
-Route::middleware(['auth:sanctum', 'banned'])
+Route::middleware(['auth:sanctum', 'vendor', 'banned'])
     ->prefix('vendor/shipping')
     ->group(function () {
 

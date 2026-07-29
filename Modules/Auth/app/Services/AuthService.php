@@ -60,6 +60,33 @@ class AuthService
         return ['user' => $user, 'token' => $token];
     }
 
+    public function vendorLogin(array $credentials, ?string $ip = null): array
+    {
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            abort(401, 'Invalid credentials.');
+        }
+
+        if (!$user->isVendor()) {
+            abort(403, 'Vendor access required.');
+        }
+
+        if ($user->status === 'banned') {
+            abort(403, 'Your account has been suspended.');
+        }
+
+        $vendor = $user->vendor;
+
+        if (!$vendor || $vendor->status !== 'active') {
+            abort(403, 'Your vendor account is not active or pending approval.');
+        }
+
+        $token = $user->createToken('vendor-api', ['vendor'])->plainTextToken;
+
+        return ['user' => $user, 'token' => $token, 'vendor' => $vendor];
+    }
+
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();

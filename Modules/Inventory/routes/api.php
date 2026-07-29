@@ -10,7 +10,7 @@ use Modules\Inventory\Http\Controllers\AdminInventoryController;
 | Vendor Inventory Routes (auth:sanctum + vendor role)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'banned'])->prefix('vendor')->group(function () {
+Route::middleware(['auth:sanctum', 'vendor', 'banned'])->prefix('vendor')->group(function () {
 
     // Warehouses
     Route::prefix('warehouses')->group(function () {

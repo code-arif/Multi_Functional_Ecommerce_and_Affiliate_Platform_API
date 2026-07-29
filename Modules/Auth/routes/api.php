@@ -26,6 +26,9 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     // Password-based admin login
     Route::post('admin/login', [AuthController::class, 'adminLogin']);
 
+    // Password-based vendor login
+    Route::post('vendor/login', [AuthController::class, 'vendorLogin']);
+
     // Passwordless admin login (OTP-based)
     Route::post('admin/otp/send',   [AuthController::class, 'adminOtpSend']);
     Route::post('admin/otp/verify', [AuthController::class, 'adminOtpVerify']);

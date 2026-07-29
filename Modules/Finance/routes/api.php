@@ -9,7 +9,7 @@ use Modules\Finance\Http\Controllers\AdminFinanceController;
 | Vendor Finance Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'banned'])->prefix('vendor/finance')->group(function () {
+Route::middleware(['auth:sanctum', 'vendor', 'banned'])->prefix('vendor/finance')->group(function () {
     Route::get('wallet',           [VendorFinanceController::class, 'wallet']);
     Route::get('transactions',     [VendorFinanceController::class, 'transactions']);
     Route::get('commissions',      [VendorFinanceController::class, 'commissions']);

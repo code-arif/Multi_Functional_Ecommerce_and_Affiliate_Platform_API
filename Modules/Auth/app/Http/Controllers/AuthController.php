@@ -8,6 +8,7 @@ use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Services\PasswordlessAuthService;
+use Modules\Vendor\Http\Resources\VendorResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,6 +59,24 @@ class AuthController
                 ->unique()
                 ->values(),
         ], 'Admin login successful.');
+    }
+
+    /**
+     * POST /api/v1/auth/vendor/login
+     * Password-based vendor login — validates vendor role & active status.
+     */
+    public function vendorLogin(LoginRequest $request): JsonResponse
+    {
+        $result = $this->authService->vendorLogin(
+            $request->only('email', 'password'),
+            $request->ip()
+        );
+
+        return $this->successResponse([
+            'user'  => new UserResource($result['user']),
+            'token' => $result['token'],
+            'shop'  => new VendorResource($result['vendor']->load(['profile', 'addresses'])),
+        ], 'Vendor login successful.');
     }
 
     public function logout(Request $request): JsonResponse

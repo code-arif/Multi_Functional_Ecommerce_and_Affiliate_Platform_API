@@ -40,16 +40,8 @@ Route::middleware(['auth:sanctum', 'vendor', 'banned'])->group(function () {
     // ─── Vendor Profile ───────────────────────────────────────
     Route::get('vendor/profile',            [VendorController::class, 'profile']);
     Route::put('vendor/profile',            [VendorController::class, 'updateProfile']);
+    Route::get('vendor/documents',          [VendorController::class, 'documents']);
     Route::post('vendor/documents',         [VendorController::class, 'uploadDocument']);
-
-    // ─── Vendor Wallet & Payouts ──────────────────────────────
-    Route::prefix('vendor/wallet')->group(function () {
-        Route::get('/',                     [VendorController::class, 'wallet']);
-        Route::get('transactions',          [VendorController::class, 'walletTransactions']);
-        Route::get('stats',                 [VendorController::class, 'walletStats']);
-        Route::post('payouts',              [VendorController::class, 'requestPayout']);
-        Route::get('payouts',               [VendorController::class, 'payouts']);
-    });
 
     // ─── Vendor Dashboard ─────────────────────────────────────
     Route::get('vendor/dashboard',          [VendorDashboardController::class, 'index']);
