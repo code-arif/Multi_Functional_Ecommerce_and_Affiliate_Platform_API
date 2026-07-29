@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Vendor\Http\Controllers\VendorController;
+use Modules\Vendor\Http\Controllers\VendorDashboardController;
+use Modules\Vendor\Http\Controllers\VendorProductController;
+use Modules\Vendor\Http\Controllers\VendorOrderController;
+use Modules\Vendor\Http\Controllers\VendorCouponController;
+use Modules\Vendor\Http\Controllers\VendorReviewController;
+use Modules\Vendor\Http\Controllers\VendorSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,18 +30,59 @@ Route::prefix('vendor/auth')->middleware('throttle:auth')->group(function () {
 
 // Authenticated vendor routes
 Route::middleware(['auth:sanctum', 'banned'])->group(function () {
-    // Vendor management
+
+    // ─── Vendor Registration & Profile ─────────────────────────
     Route::post('vendor/register',    [VendorController::class, 'register']);
     Route::get('vendor/profile',      [VendorController::class, 'profile']);
     Route::put('vendor/profile',      [VendorController::class, 'updateProfile']);
     Route::post('vendor/documents',   [VendorController::class, 'uploadDocument']);
 
-    // Vendor Wallet & Payouts
+    // ─── Vendor Wallet & Payouts ───────────────────────────────
     Route::prefix('vendor/wallet')->group(function () {
         Route::get('/',                   [VendorController::class, 'wallet']);
         Route::get('transactions',        [VendorController::class, 'walletTransactions']);
         Route::get('stats',               [VendorController::class, 'walletStats']);
         Route::post('payouts',            [VendorController::class, 'requestPayout']);
         Route::get('payouts',             [VendorController::class, 'payouts']);
+    });
+
+    // ─── Vendor Dashboard ──────────────────────────────────────
+    Route::get('vendor/dashboard', [VendorDashboardController::class, 'index']);
+
+    // ─── Vendor Products (vendor-scoped CRUD) ──────────────────
+    // POST is used for store/update to support _method=PUT spoofing for file uploads
+    Route::prefix('vendor/products')->group(function () {
+        Route::get('/',                  [VendorProductController::class, 'index']);
+        Route::post('/',                 [VendorProductController::class, 'store']);
+        Route::get('{product}',          [VendorProductController::class, 'show']);
+        Route::put('{product}',          [VendorProductController::class, 'update']);
+        Route::delete('{product}',       [VendorProductController::class, 'destroy']);
+    });
+
+    // ─── Vendor Orders ─────────────────────────────────────────
+    Route::prefix('vendor/orders')->group(function () {
+        Route::get('/',                  [VendorOrderController::class, 'index']);
+        Route::get('{order}',            [VendorOrderController::class, 'show']);
+        Route::patch('{order}/status',   [VendorOrderController::class, 'updateStatus']);
+    });
+
+    // ─── Vendor Coupons ────────────────────────────────────────
+    Route::prefix('vendor/coupons')->group(function () {
+        Route::get('/',                  [VendorCouponController::class, 'index']);
+        Route::post('/',                 [VendorCouponController::class, 'store']);
+        Route::put('{coupon}',           [VendorCouponController::class, 'update']);
+        Route::delete('{coupon}',        [VendorCouponController::class, 'destroy']);
+    });
+
+    // ─── Vendor Reviews ────────────────────────────────────────
+    Route::prefix('vendor/reviews')->group(function () {
+        Route::get('/',                  [VendorReviewController::class, 'index']);
+        Route::post('{review}/reply',    [VendorReviewController::class, 'reply']);
+    });
+
+    // ─── Vendor Settings ───────────────────────────────────────
+    Route::prefix('vendor/settings')->group(function () {
+        Route::get('/',                  [VendorSettingsController::class, 'index']);
+        Route::post('/',                 [VendorSettingsController::class, 'update']);
     });
 });
