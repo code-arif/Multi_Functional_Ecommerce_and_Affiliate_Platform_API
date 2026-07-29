@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API\V1\Shop;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductListResource;
 use Modules\Search\Services\SearchService;
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

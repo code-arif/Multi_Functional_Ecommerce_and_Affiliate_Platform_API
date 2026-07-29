@@ -7,7 +7,7 @@ use App\Http\Requests\CheckoutRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Setting;
 use App\Services\CheckoutService;
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

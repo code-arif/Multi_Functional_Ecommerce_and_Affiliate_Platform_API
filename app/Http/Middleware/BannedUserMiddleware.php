@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

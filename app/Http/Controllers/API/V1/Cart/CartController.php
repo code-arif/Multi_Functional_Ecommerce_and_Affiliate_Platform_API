@@ -7,7 +7,7 @@ use App\Http\Requests\AddToCartRequest;
 use App\Http\Resources\CartResource;
 use App\Models\CartItem;
 use App\Services\CartService;
-use App\Traits\ApiResponse;
+use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
