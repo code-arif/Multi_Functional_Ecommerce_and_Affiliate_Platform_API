@@ -1,18 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Orders\Http\Controllers\VendorOrderController;
+use Modules\Orders\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
-| Vendor Order Routes (auth:sanctum + vendor role)
+| Orders Module API Routes
+| Prefix: api/v1
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'banned'])->prefix('vendor')->group(function () {
 
-    Route::prefix('orders')->group(function () {
-        Route::get('/',                       [VendorOrderController::class, 'index']);
-        Route::get('{order}',                 [VendorOrderController::class, 'show']);
-        Route::patch('{order}/status',         [VendorOrderController::class, 'updateStatus']);
-    });
+// Guest order tracking (no auth — uses token)
+Route::get('orders/track/{token}', [OrderController::class, 'trackGuest'])
+    ->middleware('throttle:api');
+
+// Authenticated order routes
+Route::middleware(['auth:sanctum', 'banned'])->group(function () {
+    Route::get('orders',                [OrderController::class, 'index']);
+    Route::get('orders/{number}',       [OrderController::class, 'show']);
+    Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
 });

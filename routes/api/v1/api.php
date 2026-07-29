@@ -1,17 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Catalog\Http\Controllers\ProductController;
-use Modules\Catalog\Http\Controllers\CategoryController;
-use Modules\Affiliate\Http\Controllers\AffiliateController;
-use Modules\Cart\Http\Controllers\CartController;
-use Modules\Checkout\Http\Controllers\CheckoutController;
-use Modules\Orders\Http\Controllers\OrderController;
 use Modules\Cart\Http\Controllers\WishlistController;
-use Modules\Reviews\Http\Controllers\ReviewController;
 use Modules\Support\Http\Controllers\ChatController;
-use Modules\Cms\Http\Controllers\CmsController;
-use Modules\Cms\Http\Controllers\SeoController;
+
 // ─── Admin Panel Controllers ──────────────────────
 use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;
 use Modules\AdminPanel\Http\Controllers\ProductController as AdminProductController;
@@ -31,100 +23,7 @@ use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
 use Modules\Cms\Http\Controllers\AdminCmsBlockController;
 use Modules\Cms\Http\Controllers\AdminCmsMenuController;
-use Modules\Vendor\Http\Controllers\VendorController;
 use Modules\Vendor\Http\Controllers\AdminVendorController;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PUBLIC ROUTES (No Authentication Required)
-// ─────────────────────────────────────────────────────────────────────────────
-
-// Products — public browsing
-Route::prefix('products')->middleware('throttle:api')->group(function () {
-    Route::get('/', [ProductController::class, 'index']);
-    Route::get('featured',        [ProductController::class, 'featured']);
-    Route::get('new-arrivals',    [ProductController::class, 'newArrivals']);
-    Route::get('bestsellers',     [ProductController::class, 'bestsellers']);
-    Route::get('{slug}/reviews/stats', [ReviewController::class, 'stats']);
-    Route::get('{slug}/reviews',     [ReviewController::class, 'index']);
-    Route::get('{slug}/related',     [ProductController::class, 'related']);
-    Route::get('{slug}', [ProductController::class, 'show']);
-});
-
-// Categories
-Route::prefix('categories')->middleware('throttle:api')->group(function () {
-    Route::get('/',               [CategoryController::class, 'index']);
-    Route::get('{slug}',          [CategoryController::class, 'show']);
-});
-
-// Search — handled by Modules/Search/routes/api.php (consolidated)
-// All public search endpoints (/, suggestions, price-range, facets, popular)
-// are now defined in the Search module with throttle:search middleware.
-
-// Affiliate
-Route::prefix('affiliate')->middleware('throttle:api')->group(function () {
-    Route::get('/',               [AffiliateController::class, 'index']);
-    Route::get('{slug}',          [AffiliateController::class, 'show']);
-    Route::post('{slug}/click',   [AffiliateController::class, 'click']);
-});
-
-// CMS — public content
-Route::prefix('cms')->middleware('throttle:api')->group(function () {
-    Route::get('pages',           [CmsController::class, 'pages']);
-    Route::get('pages/{slug}',    [CmsController::class, 'page']);
-    Route::get('banners/{pos}',[CmsController::class, 'banners']);
-    Route::get('homepage',        [CmsController::class, 'homepage']);
-    Route::get('settings',        [CmsController::class, 'settings']);
-});
-
-// Vendor Public Routes
-Route::prefix('vendors')->middleware('throttle:api')->group(function () {
-    Route::get('/',               [VendorController::class, 'index']);
-    Route::get('{slug}',          [VendorController::class, 'show']);
-});
-
-// Vendor passwordless login (OTP-based) — rate-limited
-Route::prefix('vendor/auth')->middleware('throttle:auth')->group(function () {
-    Route::post('otp/send',    [VendorController::class, 'vendorOtpSend']);
-    Route::post('otp/verify',  [VendorController::class, 'vendorOtpVerify']);
-});
-
-// SEO
-Route::prefix('seo')->middleware('throttle:api')->group(function () {
-    Route::get('homepage',        [SeoController::class, 'homepage']);
-    Route::get('product/{slug}',  [SeoController::class, 'product']);
-    Route::get('category/{slug}', [SeoController::class, 'category']);
-    Route::get('page/{slug}',     [SeoController::class, 'page']);
-});
-
-Route::get('sitemap.xml',         [SeoController::class, 'sitemap']);
-
-// Cart — accessible to guests via X-Session-ID header
-Route::prefix('cart')->middleware('throttle:api')->group(function () {
-    Route::get('/',                [CartController::class, 'index']);
-    Route::post('items',           [CartController::class, 'addItem']);
-    Route::put('items/{item}',     [CartController::class, 'updateItem']);
-    Route::delete('items/{item}',  [CartController::class, 'removeItem']);
-    Route::delete('/',             [CartController::class, 'clear']);
-    Route::post('coupon',          [CartController::class, 'applyCoupon']);
-    Route::delete('coupon',        [CartController::class, 'removeCoupon']);
-});
-
-// Checkout — stricter throttle to prevent order flooding
-Route::prefix('checkout')->middleware('throttle:checkout')->group(function () {
-    Route::post('/', [CheckoutController::class, 'process']);
-    Route::get('shipping-cost', [CheckoutController::class, 'shippingCost']);
-});
-
-// Checkout — authenticated routes (preview, shipping options, tax calculation)
-Route::middleware(['auth:sanctum', 'banned'])->prefix('checkout')->group(function () {
-    Route::post('preview',           [CheckoutController::class, 'preview']);
-    Route::get('shipping-options',   [CheckoutController::class, 'shippingOptions']);
-    Route::post('calculate-tax',     [CheckoutController::class, 'calculateTax']);
-});
-
-// Guest order tracking (no auth — uses token)
-Route::get('orders/track/{token}', [OrderController::class, 'trackGuest'])
-    ->middleware('throttle:api');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUTHENTICATED CUSTOMER ROUTES
@@ -132,34 +31,10 @@ Route::get('orders/track/{token}', [OrderController::class, 'trackGuest'])
 
 Route::middleware(['auth:sanctum', 'banned'])->group(function () {
 
-    // Phase 4 - Vendor management
-    Route::post('vendor/register',    [VendorController::class, 'register']);
-    Route::get('vendor/profile',      [VendorController::class, 'profile']);
-    Route::put('vendor/profile',      [VendorController::class, 'updateProfile']);
-    Route::post('vendor/documents',   [VendorController::class, 'uploadDocument']);
-
-    // Vendor Wallet & Payouts
-    Route::prefix('vendor/wallet')->group(function () {
-        Route::get('/',                   [VendorController::class, 'wallet']);
-        Route::get('transactions',        [VendorController::class, 'walletTransactions']);
-        Route::get('stats',               [VendorController::class, 'walletStats']);
-        Route::post('payouts',            [VendorController::class, 'requestPayout']);
-        Route::get('payouts',             [VendorController::class, 'payouts']);
-    });
-
-    // Orders
-    Route::get('orders', [OrderController::class, 'index']);
-    Route::get('orders/{number}', [OrderController::class, 'show']);
-    Route::post('orders/{number}/cancel', [OrderController::class, 'cancel']);
-
     // Wishlist
     Route::get('wishlist',             [WishlistController::class, 'index']);
     Route::post('wishlist',            [WishlistController::class, 'toggle']);
     Route::post('wishlist/move-to-cart', [WishlistController::class, 'moveToCart']);
-
-    // Reviews — throttled to prevent spam
-    Route::post('reviews', [ReviewController::class, 'store'])
-        ->middleware('throttle:10,1'); // 10 reviews per minute max
 
     // Chat
     Route::get('chat/room',            [ChatController::class, 'myRoom']);
