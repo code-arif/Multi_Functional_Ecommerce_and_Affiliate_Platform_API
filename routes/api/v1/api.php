@@ -56,7 +56,11 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     // Phase 2 - OTP (no auth required for password reset flow)
     Route::post('otp/send',   [OtpController::class, 'send']);
     Route::post('otp/verify', [OtpController::class, 'verify']);
-    Route::post('admin/login', [AuthController::class, 'adminLogin']); // DONE: Admin login
+    Route::post('admin/login', [AuthController::class, 'adminLogin']); // Password-based admin login
+
+    // Passwordless admin login (OTP-based)
+    Route::post('admin/otp/send',   [AuthController::class, 'adminOtpSend']);
+    Route::post('admin/otp/verify', [AuthController::class, 'adminOtpVerify']);
 });
     Route::post('otp/verify', [OtpController::class, 'verify']);
 // Products — public browsing

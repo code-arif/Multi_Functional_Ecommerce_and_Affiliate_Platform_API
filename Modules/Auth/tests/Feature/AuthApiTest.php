@@ -746,6 +746,123 @@ it('requires authentication for devices', function () {
     $response->assertStatus(401);
 });
 
+// ─── Passwordless Admin Login (OTP-based) ──────────────────────
+
+it('sends OTP for passwordless admin login', function () {
+    Mail::fake();
+    seedRoles();
+    $admin = makeUser('admin-otp-send@example.com');
+    $admin->assignRole('super-admin');
+
+    $response = $this->postJson('/api/v1/auth/admin/otp/send', [
+        'email' => 'admin-otp-send@example.com',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('message', 'Verification code sent to your email.')
+        ->assertJsonStructure(['data' => ['email']]);
+
+    $this->assertDatabaseHas('otp_codes', [
+        'user_id' => $admin->id,
+        'type'    => 'admin_passwordless',
+    ]);
+});
+
+it('rejects OTP send for non-admin user', function () {
+    seedRoles();
+    $customer = makeUser('customer-otp@example.com');
+    $customer->assignRole('customer');
+
+    $response = $this->postJson('/api/v1/auth/admin/otp/send', [
+        'email' => 'customer-otp@example.com',
+    ]);
+
+    $response->assertStatus(403);
+});
+
+it('rejects OTP send for non-existent email', function () {
+    $response = $this->postJson('/api/v1/auth/admin/otp/send', [
+        'email' => 'nobody@example.com',
+    ]);
+
+    $response->assertStatus(422);
+});
+
+it('verifies OTP and logs in admin', function () {
+    Mail::fake();
+    seedRoles();
+    $admin = makeUser('admin-otp-verify@example.com');
+    $admin->assignRole('super-admin');
+
+    // Send OTP first
+    $this->postJson('/api/v1/auth/admin/otp/send', [
+        'email' => 'admin-otp-verify@example.com',
+    ]);
+
+    // Get the OTP code from the database
+    $otp = Modules\Auth\Models\OtpCode::where('user_id', $admin->id)
+        ->where('type', 'admin_passwordless')
+        ->first();
+
+    $this->assertNotNull($otp);
+
+    // Verify with the actual OTP code
+    $response = $this->postJson('/api/v1/auth/admin/otp/verify', [
+        'email' => 'admin-otp-verify@example.com',
+        'code'  => $otp->code,
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('message', 'Login successful.')
+        ->assertJsonStructure(['data' => ['user', 'token', 'permissions']]);
+
+    // OTP should be marked as used
+    $this->assertNotNull($otp->fresh()->used_at);
+});
+
+it('rejects invalid OTP code during admin login', function () {
+    Mail::fake();
+    seedRoles();
+    $admin = makeUser('admin-bad-otp@example.com');
+    $admin->assignRole('super-admin');
+
+    $response = $this->postJson('/api/v1/auth/admin/otp/verify', [
+        'email' => 'admin-bad-otp@example.com',
+        'code'  => '000000',
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('message', 'Invalid or expired OTP code.');
+});
+
+it('rejects OTP verify for non-admin user', function () {
+    seedRoles();
+    $customer = makeUser('customer-verify@example.com');
+    $customer->assignRole('customer');
+
+    $response = $this->postJson('/api/v1/auth/admin/otp/verify', [
+        'email' => 'customer-verify@example.com',
+        'code'  => '123456',
+    ]);
+
+    $response->assertStatus(403);
+});
+
+it('rejects OTP verify for banned admin', function () {
+    Mail::fake();
+    seedRoles();
+    $admin = makeUser('banned-admin@example.com', 'banned');
+    $admin->assignRole('super-admin');
+
+    $response = $this->postJson('/api/v1/auth/admin/otp/verify', [
+        'email' => 'banned-admin@example.com',
+        'code'  => '123456',
+    ]);
+
+    $response->assertStatus(403);
+});
+
 it('banned user cannot access protected routes', function () {
     $banned = makeUser('banned-access@example.com', 'banned');
 
