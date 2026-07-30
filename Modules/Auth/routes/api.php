@@ -24,7 +24,7 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
 
     // Password-based admin login
-    Route::post('admin/login', [AuthController::class, 'adminLogin']);
+    Route::post('admin/login', [AuthController::class, 'adminLogin']); // DONE: Admin login
 
     // Password-based vendor login
     Route::post('vendor/login', [AuthController::class, 'vendorLogin']);
