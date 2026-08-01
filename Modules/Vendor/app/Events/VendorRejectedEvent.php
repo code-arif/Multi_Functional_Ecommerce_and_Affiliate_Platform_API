@@ -7,11 +7,12 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class VendorApproved
+class VendorRejectedEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(
-        public Vendor $vendor
+        public Vendor $vendor,
+        public string $reason
     ) {}
 }

@@ -26,7 +26,7 @@ class VendorController
         private PasswordlessAuthService $passwordlessAuth
     ) {}
 
-    // ─── Vendor Registration & Profile ────────────────────────────
+    // Vendor Registration & Profile
 
     /**
      * POST /api/v1/vendor/register

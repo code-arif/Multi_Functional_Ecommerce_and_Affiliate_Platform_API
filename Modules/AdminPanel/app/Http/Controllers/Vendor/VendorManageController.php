@@ -13,7 +13,7 @@ use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class AdminVendorController
+class VendorManageController
 {
     use ApiResponse;
 

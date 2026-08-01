@@ -36,6 +36,9 @@ Route::prefix('v1')->group(base_path('Modules/Affiliate/routes/api.php'));
 // Vendor module routes (public vendor, vendor management, wallet, passwordless login)
 Route::prefix('v1')->group(base_path('Modules/Vendor/routes/api.php'));
 
+// Admin panel module routes (public vendor, vendor management, wallet, passwordless login)
+Route::prefix('v1')->group(base_path('Modules/AdminPanel/routes/api.php'));
+
 // Core module public routes (locations, currencies, languages)
 Route::prefix('v1/core')->middleware('throttle:api')->group(base_path('Modules/Core/routes/api.php'));
 

@@ -3,9 +3,9 @@
 namespace Modules\Vendor\Services;
 
 use Modules\Vendor\Models\Vendor;
-use Modules\Vendor\Events\VendorRegistered;
-use Modules\Vendor\Events\VendorApproved;
-use Modules\Vendor\Events\VendorRejected;
+use Modules\Vendor\Events\VendorRegisteredEvent;
+use Modules\Vendor\Events\VendorApprovedEvent;
+use Modules\Vendor\Events\VendorRejectedEvent;
 use Modules\Auth\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -18,11 +18,11 @@ class VendorService
             $vendor = Vendor::create([
                 'user_id'  => $user->id,
                 'shop_name' => $data['shop_name'],
-                'slug'     => $this->generateUniqueSlug($data['shop_name']),
-                'email'    => $data['email'] ?? $user->email,
-                'phone'    => $data['phone'] ?? $user->phone,
+                'slug' => $this->generateUniqueSlug($data['shop_name']),
+                'email' => $data['email'] ?? $user->email,
+                'phone' => $data['phone'] ?? $user->phone,
                 'description' => $data['description'] ?? null,
-                'status'      => 'pending',
+                'status' => 'pending',
                 'commission_rate' => config('ecommerce.vendor.default_commission_rate', 10),
                 'commission_type' => 'percentage',
             ]);
@@ -48,7 +48,7 @@ class VendorService
         });
 
         // Dispatch event outside transaction
-        VendorRegistered::dispatch($vendor);
+        VendorRegisteredEvent::dispatch($vendor);
 
         return $vendor;
     }
@@ -63,7 +63,7 @@ class VendorService
 
         $vendor = $vendor->fresh();
 
-        VendorApproved::dispatch($vendor);
+        VendorApprovedEvent::dispatch($vendor);
 
         return $vendor;
     }
@@ -77,7 +77,7 @@ class VendorService
 
         $vendor = $vendor->fresh();
 
-        VendorRejected::dispatch($vendor, $reason);
+        VendorRejectedEvent::dispatch($vendor, $reason);
 
         return $vendor;
     }

@@ -23,7 +23,7 @@ use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
 use Modules\Cms\Http\Controllers\AdminCmsBlockController;
 use Modules\Cms\Http\Controllers\AdminCmsMenuController;
-use Modules\Vendor\Http\Controllers\AdminVendorController;
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AUTHENTICATED CUSTOMER ROUTES
@@ -64,9 +64,7 @@ Route::middleware(['auth:sanctum', 'banned'])->group(function () {
 // ADMIN ROUTES  — auth:sanctum + admin middleware
 // ─────────────────────────────────────────────────────────────────────────────
 
-Route::middleware(['auth:sanctum', 'admin', 'banned'])
-    ->prefix('admin')
-    ->group(function () {
+Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(function () {
 
         // Dashboard
         Route::get('dashboard',             [AdminDashboardController::class, 'index']);
@@ -131,18 +129,6 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])
         // CMS Menus
         Route::apiResource('menus', AdminCmsMenuController::class)
             ->middleware('permission:cms.manage');
-
-        // Phase 4 - Vendor Management
-        Route::prefix('vendors')->middleware('permission:vendors.view')->group(function () {
-            Route::get('/',                  [AdminVendorController::class, 'index']);
-            Route::get('pending',            [AdminVendorController::class, 'pending']);
-            Route::get('{vendor}',           [AdminVendorController::class, 'show']);
-            Route::post('{vendor}/approve',  [AdminVendorController::class, 'approve'])->middleware('permission:vendors.approve');
-            Route::post('{vendor}/reject',   [AdminVendorController::class, 'reject'])->middleware('permission:vendors.approve');
-            Route::post('{vendor}/suspend',  [AdminVendorController::class, 'suspend'])->middleware('permission:vendors.manage');
-            Route::post('documents/{document}/verify', [AdminVendorController::class, 'verifyDocument'])->middleware('permission:vendors.manage');
-            Route::post('documents/{document}/reject', [AdminVendorController::class, 'rejectDocument'])->middleware('permission:vendors.manage');
-        });
 
         // Promotions
         Route::get('promotions',                    [AdminPromotionController::class, 'index'])->middleware('permission:promotions.view');
