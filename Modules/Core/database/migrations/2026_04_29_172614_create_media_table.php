@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             $table->string('disk')->default('public'); // s3/local
             $table->string('directory')->nullable();

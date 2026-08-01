@@ -20,6 +20,7 @@ return new class extends Migration
         if (!Schema::hasTable('transactions')) {
             Schema::create('transactions', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('payment_id')->constrained('payments')->cascadeOnDelete();
                 $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
                 $table->string('transaction_id', 100)->nullable()->unique();
@@ -44,6 +45,7 @@ return new class extends Migration
         if (!Schema::hasTable('refunds')) {
             Schema::create('refunds', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('payment_id')->constrained('payments')->cascadeOnDelete();
                 $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
                 $table->string('refund_transaction_id', 100)->nullable();
@@ -66,6 +68,7 @@ return new class extends Migration
         if (!Schema::hasTable('payment_methods')) {
             Schema::create('payment_methods', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->string('gateway', 50);            // stripe, bkash, etc.
                 $table->string('gateway_method_id', 100); // stripe pm_xxx or account reference

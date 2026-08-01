@@ -57,6 +57,7 @@ return new class extends Migration
         if (!Schema::hasTable('cms_blocks')) {
             Schema::create('cms_blocks', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('name');
                 $table->string('slug')->unique();
                 $table->string('type', 50)->default('html'); // html, markdown, image, slider
@@ -76,6 +77,7 @@ return new class extends Migration
         if (!Schema::hasTable('cms_menus')) {
             Schema::create('cms_menus', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('name');
                 $table->string('slug')->unique();
                 $table->string('location', 50); // header, footer, sidebar, mobile

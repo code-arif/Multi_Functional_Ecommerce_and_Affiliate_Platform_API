@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_profiles', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete()->unique();
             $table->string('business_type', 100)->nullable();
             $table->string('business_registration_number', 100)->nullable();

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_bank_accounts', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->string('bank_name', 200)->nullable();
             $table->string('branch_name', 200)->nullable();

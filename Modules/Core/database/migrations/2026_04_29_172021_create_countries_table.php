@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('countries', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             $table->string('name', 120);
             $table->string('iso2', 2)->unique();      // BD

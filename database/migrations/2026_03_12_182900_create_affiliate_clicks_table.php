@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('affiliate_clicks', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('affiliate_product_id')
                   ->constrained('affiliate_products')
                   ->cascadeOnDelete();

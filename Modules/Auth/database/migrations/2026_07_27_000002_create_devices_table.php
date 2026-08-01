@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('device_name', 100)->nullable();
             $table->string('device_type', 50)->nullable(); // mobile, desktop, tablet

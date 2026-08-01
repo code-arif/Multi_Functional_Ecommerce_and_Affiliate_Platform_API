@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('product_attribute_id')
                 ->constrained('product_attributes')
                 ->cascadeOnDelete();

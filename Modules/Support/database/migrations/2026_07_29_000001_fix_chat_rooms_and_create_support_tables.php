@@ -39,6 +39,7 @@ return new class extends Migration
         if (!Schema::hasTable('tickets')) {
             Schema::create('tickets', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('ticket_number')->unique();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete();
@@ -64,6 +65,7 @@ return new class extends Migration
         if (!Schema::hasTable('ticket_messages')) {
             Schema::create('ticket_messages', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('ticket_id')->constrained('tickets')->cascadeOnDelete();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->text('message');
@@ -79,6 +81,7 @@ return new class extends Migration
         if (!Schema::hasTable('faq_categories')) {
             Schema::create('faq_categories', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('name', 100);
                 $table->string('slug', 120)->unique();
                 $table->text('description')->nullable();
@@ -95,6 +98,7 @@ return new class extends Migration
         if (!Schema::hasTable('faqs')) {
             Schema::create('faqs', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('category_id')->nullable()->constrained('faq_categories')->nullOnDelete();
                 $table->string('question', 500);
                 $table->text('answer');

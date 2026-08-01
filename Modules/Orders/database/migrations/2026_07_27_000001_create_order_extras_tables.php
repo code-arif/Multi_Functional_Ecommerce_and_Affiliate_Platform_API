@@ -51,6 +51,7 @@ return new class extends Migration
         if (!Schema::hasTable('invoices')) {
             Schema::create('invoices', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
                 $table->string('invoice_number', 50)->unique();
                 $table->decimal('subtotal', 12, 2);
@@ -76,6 +77,7 @@ return new class extends Migration
         if (!Schema::hasTable('cancel_requests')) {
             Schema::create('cancel_requests', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
                 $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
                 $table->text('reason');

@@ -25,6 +25,7 @@ return new class extends Migration
         if (!Schema::hasTable('review_helpful_votes')) {
             Schema::create('review_helpful_votes', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('review_id')
                     ->constrained('reviews')
                     ->cascadeOnDelete();

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
 
             $table->string('name', 100);      // Bangladeshi Taka
             $table->string('code', 10)->unique(); // BDT

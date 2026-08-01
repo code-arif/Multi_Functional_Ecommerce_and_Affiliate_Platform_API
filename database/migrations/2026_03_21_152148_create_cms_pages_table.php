@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('cms_pages', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->timestamps();
         });
     }

@@ -4,6 +4,7 @@ namespace Modules\Core\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CoreDatabaseSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class CoreDatabaseSeeder extends Seeder
 
         DB::table('countries')->insert([
             [
+                'uuid'            => (string) Str::uuid(),
                 'name'            => 'Bangladesh',
                 'iso2'            => 'BD',
                 'iso3'            => 'BGD',
@@ -32,6 +34,7 @@ class CoreDatabaseSeeder extends Seeder
                 'updated_at'      => now(),
             ],
             [
+                'uuid'            => (string) Str::uuid(),
                 'name'            => 'United States',
                 'iso2'            => 'US',
                 'iso3'            => 'USA',
@@ -44,6 +47,7 @@ class CoreDatabaseSeeder extends Seeder
                 'updated_at'      => now(),
             ],
             [
+                'uuid'            => (string) Str::uuid(),
                 'name'            => 'India',
                 'iso2'            => 'IN',
                 'iso3'            => 'IND',
@@ -64,6 +68,7 @@ class CoreDatabaseSeeder extends Seeder
 
         DB::table('currencies')->insert([
             [
+                'uuid'          => (string) Str::uuid(),
                 'name'          => 'Bangladeshi Taka',
                 'code'          => 'BDT',
                 'symbol'        => '৳',
@@ -75,6 +80,7 @@ class CoreDatabaseSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'uuid'          => (string) Str::uuid(),
                 'name'          => 'US Dollar',
                 'code'          => 'USD',
                 'symbol'        => '$',
@@ -86,6 +92,7 @@ class CoreDatabaseSeeder extends Seeder
                 'updated_at'    => now(),
             ],
             [
+                'uuid'          => (string) Str::uuid(),
                 'name'          => 'Indian Rupee',
                 'code'          => 'INR',
                 'symbol'        => '₹',
@@ -105,6 +112,7 @@ class CoreDatabaseSeeder extends Seeder
 
         DB::table('languages')->insert([
             [
+                'uuid'       => (string) Str::uuid(),
                 'name'       => 'English',
                 'code'       => 'en',
                 'direction'  => 'ltr',
@@ -114,6 +122,7 @@ class CoreDatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'uuid'       => (string) Str::uuid(),
                 'name'       => 'বাংলা',
                 'code'       => 'bn',
                 'direction'  => 'ltr',

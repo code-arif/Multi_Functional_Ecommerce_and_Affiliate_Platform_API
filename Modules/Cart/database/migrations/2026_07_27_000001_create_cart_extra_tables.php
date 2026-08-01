@@ -12,6 +12,7 @@ return new class extends Migration
         if (!Schema::hasTable('recent_views')) {
             Schema::create('recent_views', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->string('session_id', 100)->nullable()->index();
@@ -27,6 +28,7 @@ return new class extends Migration
         if (!Schema::hasTable('compare_lists')) {
             Schema::create('compare_lists', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
                 $table->string('session_id', 100)->nullable()->index();
                 $table->timestamps();
@@ -39,6 +41,7 @@ return new class extends Migration
         if (!Schema::hasTable('compare_list_items')) {
             Schema::create('compare_list_items', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('compare_list_id')->constrained('compare_lists')->cascadeOnDelete();
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->timestamps();

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_wallet_transactions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->enum('type', ['commission', 'payout', 'adjustment', 'refund', 'withdrawal'])->default('commission');
             $table->decimal('amount', 15, 2);

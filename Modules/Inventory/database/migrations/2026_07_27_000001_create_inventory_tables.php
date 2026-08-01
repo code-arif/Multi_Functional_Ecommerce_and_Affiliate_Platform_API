@@ -11,6 +11,7 @@ return new class extends Migration
         // ── Warehouses ─────────────────────────────────────────────
         Schema::create('warehouses', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('vendor_id');
             $table->string('name', 200);
             $table->string('slug', 200);
@@ -36,6 +37,7 @@ return new class extends Migration
         // ── Inventory Logs ─────────────────────────────────────────
         Schema::create('inventory_logs', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
             $table->foreignId('variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
             $table->unsignedBigInteger('vendor_id')->nullable();

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('search_logs', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('query', 200);
             $table->string('normalized_query', 200)->nullable()->index();
             $table->unsignedBigInteger('user_id')->nullable()->index();

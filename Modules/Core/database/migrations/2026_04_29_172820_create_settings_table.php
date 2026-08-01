@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('key')->unique();
             $table->text('value')->nullable();
             $table->string('type')->default('text'); // text, json, boolean, file

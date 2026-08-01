@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('otp_codes', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('code', 6);
             $table->string('type', 20); // email_verification, password_reset, phone_verification, login

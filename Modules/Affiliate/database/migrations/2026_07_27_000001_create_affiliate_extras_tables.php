@@ -34,6 +34,7 @@ return new class extends Migration
         if (!Schema::hasTable('affiliate_conversions')) {
             Schema::create('affiliate_conversions', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('affiliate_product_id')
                     ->constrained('affiliate_products')
                     ->cascadeOnDelete();
@@ -64,6 +65,7 @@ return new class extends Migration
         if (!Schema::hasTable('affiliate_earnings')) {
             Schema::create('affiliate_earnings', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('user_id')
                     ->constrained('users')
                     ->cascadeOnDelete();

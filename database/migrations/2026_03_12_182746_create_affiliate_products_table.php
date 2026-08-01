@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('affiliate_products', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('category_id')
                 ->nullable()
                 ->constrained('categories')

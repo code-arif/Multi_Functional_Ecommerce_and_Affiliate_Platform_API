@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             // Either user_id OR session_id (guest)
             $table->foreignId('user_id')
                 ->nullable()

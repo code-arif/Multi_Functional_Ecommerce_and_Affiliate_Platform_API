@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('dispute_messages', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('dispute_id')->constrained('disputes')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('message');

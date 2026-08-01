@@ -12,6 +12,7 @@ return new class extends Migration
         if (!Schema::hasTable('promotions')) {
             Schema::create('promotions', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('name');
                 $table->text('description')->nullable();
                 $table->enum('type', [
@@ -95,6 +96,7 @@ return new class extends Migration
         if (!Schema::hasTable('promotion_usages')) {
             Schema::create('promotion_usages', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('promotion_id')
                     ->constrained('promotions')
                     ->cascadeOnDelete();

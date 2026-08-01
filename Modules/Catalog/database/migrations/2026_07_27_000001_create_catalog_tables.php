@@ -12,6 +12,7 @@ return new class extends Migration
         if (!Schema::hasTable('categories')) {
             Schema::create('categories', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
                 $table->string('name');
                 $table->string('slug')->unique();
@@ -35,6 +36,7 @@ return new class extends Migration
         if (!Schema::hasTable('brands')) {
             Schema::create('brands', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->string('name');
                 $table->string('slug')->unique();
                 $table->text('description')->nullable();
@@ -54,6 +56,7 @@ return new class extends Migration
         if (!Schema::hasTable('products')) {
             Schema::create('products', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
                 $table->foreignId('brand_id')->nullable()->constrained('brands')->nullOnDelete();
                 $table->string('name');
@@ -95,6 +98,7 @@ return new class extends Migration
         if (!Schema::hasTable('product_images')) {
             Schema::create('product_images', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->string('image_path');
                 $table->string('alt_text')->nullable();
@@ -109,6 +113,7 @@ return new class extends Migration
         if (!Schema::hasTable('product_attributes')) {
             Schema::create('product_attributes', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->string('name');
                 $table->integer('sort_order')->default(0);
@@ -121,6 +126,7 @@ return new class extends Migration
         if (!Schema::hasTable('product_attribute_values')) {
             Schema::create('product_attribute_values', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('product_attribute_id')->constrained('product_attributes')->cascadeOnDelete();
                 $table->string('value');
                 $table->string('color_code')->nullable();
@@ -134,6 +140,7 @@ return new class extends Migration
         if (!Schema::hasTable('product_variants')) {
             Schema::create('product_variants', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->string('sku')->nullable()->unique();
                 $table->string('name')->nullable();
@@ -155,6 +162,7 @@ return new class extends Migration
         if (!Schema::hasTable('vendor_product_prices')) {
             Schema::create('vendor_product_prices', function (Blueprint $table) {
                 $table->id();
+                $table->uuid('uuid')->unique();
                 $table->unsignedBigInteger('vendor_id');
                 $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
                 $table->decimal('price', 12, 2)->default(0);

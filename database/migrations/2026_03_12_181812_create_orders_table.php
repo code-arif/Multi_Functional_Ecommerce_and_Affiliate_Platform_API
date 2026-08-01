@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('order_number')->unique();   // ORD-2024-000001
             $table->foreignId('user_id')
                 ->nullable()                          // null = guest order

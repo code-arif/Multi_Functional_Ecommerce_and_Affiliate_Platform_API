@@ -11,6 +11,7 @@ return new class extends Migration
         // ─── Couriers (delivery service providers) ────────────────
         Schema::create('couriers', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('name', 100);
             $table->string('slug', 120)->unique();
             $table->string('display_name', 150)->nullable();
@@ -29,6 +30,7 @@ return new class extends Migration
         // ─── Shipping Zones (geographic areas) ────────────────────
         Schema::create('shipping_zones', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->string('name', 100);
             $table->string('slug', 120)->unique();
             $table->text('description')->nullable();
@@ -44,6 +46,7 @@ return new class extends Migration
         // ─── Shipping Rates (pricing per zone/courier) ────────────
         Schema::create('shipping_rates', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('shipping_zone_id')->constrained()->cascadeOnDelete();
             $table->foreignId('courier_id')->constrained()->cascadeOnDelete();
             $table->string('name', 100);
@@ -66,6 +69,7 @@ return new class extends Migration
         // ─── Shipments (order shipments) ──────────────────────────
         Schema::create('shipments', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('vendor_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('courier_id')->nullable()->constrained()->nullOnDelete();
@@ -93,6 +97,7 @@ return new class extends Migration
         // ─── Tracking Histories ───────────────────────────────────
         Schema::create('tracking_histories', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('shipment_id')->constrained()->cascadeOnDelete();
             $table->string('status', 50);
             $table->string('location', 255)->nullable();
@@ -106,6 +111,7 @@ return new class extends Migration
         // ─── Pickup Requests ──────────────────────────────────────
         Schema::create('pickup_requests', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
             $table->foreignId('courier_id')->constrained()->cascadeOnDelete();
             $table->string('status', 50)->default('pending');

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_addresses', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->string('label', 50)->nullable();
             $table->string('address_line_1', 255);

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('shop_name', 200);
             $table->string('slug', 200)->unique();

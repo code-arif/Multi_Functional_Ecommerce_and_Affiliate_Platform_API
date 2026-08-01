@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('order_status_histories', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('order_id')
                   ->constrained('orders')
                   ->cascadeOnDelete();

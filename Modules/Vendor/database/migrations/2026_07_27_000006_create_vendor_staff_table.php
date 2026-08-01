@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_staff', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('role', 50)->default('staff');

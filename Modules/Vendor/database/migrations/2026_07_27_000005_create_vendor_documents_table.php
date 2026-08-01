@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('vendor_documents', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->enum('type', ['trade_license', 'nid', 'bin', 'tin', 'passport']);
             $table->string('document_path');
