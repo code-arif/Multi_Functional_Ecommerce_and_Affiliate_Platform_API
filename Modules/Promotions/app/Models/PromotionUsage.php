@@ -5,11 +5,14 @@ namespace Modules\Promotions\Models;
 use Modules\Promotions\Models\Promotion;
 use Modules\Auth\Models\User;
 use Modules\Orders\Models\Order;
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PromotionUsage extends Model
 {
+    use HasUuid;
+
     protected $table = 'promotion_usages';
 
     protected $fillable = [

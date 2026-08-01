@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Modules\Catalog\Traits\HasSlug;
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CmsPage extends Model
 {
-    use HasSlug, SoftDeletes;
+    use HasSlug, HasUuid, SoftDeletes;
 
     protected $table = 'pages';
 

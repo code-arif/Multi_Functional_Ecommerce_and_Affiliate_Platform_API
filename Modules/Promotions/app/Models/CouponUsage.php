@@ -2,10 +2,13 @@
 
 namespace Modules\Promotions\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class CouponUsage extends Model
 {
+    use HasUuid;
+
     protected $fillable = ['coupon_id', 'user_id', 'order_id', 'discount_amount'];
 
     protected $casts = [

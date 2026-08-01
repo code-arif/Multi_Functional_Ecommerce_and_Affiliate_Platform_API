@@ -2,10 +2,13 @@
 
 namespace Modules\Auth\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class OtpCode extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'user_id',
         'code',

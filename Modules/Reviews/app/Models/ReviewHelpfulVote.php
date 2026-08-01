@@ -4,11 +4,14 @@ namespace Modules\Reviews\Models;
 
 use Modules\Reviews\Models\Review;
 use Modules\Auth\Models\User;
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReviewHelpfulVote extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'review_id',
         'user_id',

@@ -2,10 +2,13 @@
 
 namespace Modules\Orders\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderStatusHistory extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'order_id',
         'from_status',

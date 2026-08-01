@@ -3,11 +3,14 @@
 namespace Modules\Orders\Models;
 
 use Modules\Auth\Models\User;
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CancelRequest extends Model
 {
+    use HasUuid;
+
     protected $table = 'cancel_requests';
 
     protected $fillable = [

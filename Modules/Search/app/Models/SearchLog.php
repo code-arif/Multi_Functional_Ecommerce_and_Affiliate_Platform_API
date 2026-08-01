@@ -2,10 +2,13 @@
 
 namespace Modules\Search\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 
 class SearchLog extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'query',
         'normalized_query',

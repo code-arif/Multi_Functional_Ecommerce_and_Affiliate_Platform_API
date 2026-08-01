@@ -16,6 +16,7 @@ return new class extends Migration
         // Auth
         'addresses',
         'devices',
+        'otp_codes',
         // Catalog
         'categories',
         'brands',
@@ -27,28 +28,36 @@ return new class extends Migration
         'vendor_product_prices',
         // Promotions
         'coupons',
+        'coupon_usages',
         'banners',
         'promotions',
+        'promotion_usages',
         // Cart
         'carts',
         'cart_items',
         'wishlists',
         'compare_lists',
+        'compare_list_items',
         'recent_views',
         // Orders
         'orders',
         'order_items',
         'invoices',
+        'cancel_requests',
+        'order_status_histories',
         // Reviews
         'reviews',
+        'review_helpful_votes',
         // Affiliate
         'affiliate_products',
+        'affiliate_clicks',
         'affiliate_conversions',
         'affiliate_earnings',
         // CMS
         'cms_pages',
         'cms_blocks',
         'cms_menus',
+        'pages',
         // Payments
         'payments',
         'transactions',
@@ -86,6 +95,8 @@ return new class extends Migration
         'media',
         'settings',
         'activity_logs',
+        // Search
+        'search_logs',
         // Vendor
         'vendors',
         'vendor_profiles',
@@ -134,8 +145,8 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($table, function (Blueprint $t) {
-                $t->dropUnique(["{$table}_uuid_unique"]);
+            Schema::table($table, function (Blueprint $t) use ($table) {
+                $t->dropUnique("{$table}_uuid_unique");
                 $t->dropColumn('uuid');
             });
         }
