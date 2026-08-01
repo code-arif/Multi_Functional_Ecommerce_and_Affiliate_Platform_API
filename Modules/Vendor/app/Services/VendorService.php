@@ -4,7 +4,6 @@ namespace Modules\Vendor\Services;
 
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Events\VendorRegisteredEvent;
-use Modules\Vendor\Events\VendorApprovedEvent;
 use Modules\Vendor\Events\VendorRejectedEvent;
 use Modules\Auth\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -51,45 +50,6 @@ class VendorService
         VendorRegisteredEvent::dispatch($vendor);
 
         return $vendor;
-    }
-
-    public function approve(Vendor $vendor, User $admin): Vendor
-    {
-        $vendor->update([
-            'status'      => 'active',
-            'approved_at' => now(),
-            'approved_by' => $admin->id,
-        ]);
-
-        $vendor = $vendor->fresh();
-
-        VendorApprovedEvent::dispatch($vendor);
-
-        return $vendor;
-    }
-
-    public function reject(Vendor $vendor, string $reason): Vendor
-    {
-        $vendor->update([
-            'status'            => 'rejected',
-            'rejection_reason'  => $reason,
-        ]);
-
-        $vendor = $vendor->fresh();
-
-        VendorRejectedEvent::dispatch($vendor, $reason);
-
-        return $vendor;
-    }
-
-    public function suspend(Vendor $vendor, ?string $reason = null): Vendor
-    {
-        $vendor->update([
-            'status'           => 'suspended',
-            'rejection_reason' => $reason,
-        ]);
-
-        return $vendor->fresh();
     }
 
     public function addToWallet(Vendor $vendor, int|float $amount, string $description = '', ?string $referenceType = null, ?int $referenceId = null): Vendor

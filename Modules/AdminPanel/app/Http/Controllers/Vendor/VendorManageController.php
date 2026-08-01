@@ -1,14 +1,15 @@
 <?php
 
-namespace Modules\Vendor\Http\Controllers;
+namespace Modules\AdminPanel\Http\Controllers\Vendor;
 
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Models\VendorDocument;
-use Modules\Vendor\Services\VendorService;
 use Modules\Vendor\Http\Requests\UpdateVendorStatusRequest;
 use Modules\Vendor\Http\Resources\VendorResource;
 use Modules\Vendor\Http\Resources\VendorListResource;
 use Modules\Vendor\Http\Resources\VendorDocumentResource;
+use Modules\AdminPanel\Http\Requests\StoreVendorRequest;
+use Modules\AdminPanel\Services\VendorManageService;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,23 @@ class VendorManageController
 {
     use ApiResponse;
 
-    public function __construct(private VendorService $vendorService) {}
+    public function __construct(
+        private VendorManageService $vendorManageService
+    ) {}
+
+    /**
+     * POST /api/v1/admin/vendors
+     * Create a vendor (user account + pending vendor record), then email credentials
+     */
+    public function store(StoreVendorRequest $request): JsonResponse
+    {
+        $vendor = $this->vendorManageService->create($request->validated());
+
+        return $this->createdResponse(
+            new VendorResource($vendor->load('user')),
+            'Vendor created. A welcome email has been sent to the vendor.'
+        );
+    }
 
     /**
      * GET /api/v1/admin/vendors
@@ -50,7 +67,7 @@ class VendorManageController
      */
     public function approve(Vendor $vendor, Request $request): JsonResponse
     {
-        $vendor = $this->vendorService->approve($vendor, $request->user());
+        $vendor = $this->vendorManageService->approve($vendor, $request->user());
         return $this->successResponse(
             new VendorResource($vendor->load('profile')),
             'Vendor approved.'
@@ -63,7 +80,7 @@ class VendorManageController
      */
     public function reject(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
     {
-        $vendor = $this->vendorService->reject($vendor, $request->validated('reason'));
+        $vendor = $this->vendorManageService->reject($vendor, $request->validated('reason'));
         return $this->successResponse(
             new VendorResource($vendor),
             'Vendor rejected.'
@@ -76,7 +93,7 @@ class VendorManageController
      */
     public function suspend(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
     {
-        $vendor = $this->vendorService->suspend($vendor, $request->validated('reason'));
+        $vendor = $this->vendorManageService->suspend($vendor, $request->validated('reason'));
         return $this->successResponse(
             new VendorResource($vendor),
             'Vendor suspended.'
@@ -118,7 +135,7 @@ class VendorManageController
     public function rejectDocument(VendorDocument $document, UpdateVendorStatusRequest $request): JsonResponse
     {
         $document->update([
-            'status'           => 'rejected',
+            'status' => 'rejected',
             'rejection_reason' => $request->validated('reason'),
         ]);
 

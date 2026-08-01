@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Vendor\Http\Controllers\VendorManageController;
+use Modules\AdminPanel\Http\Controllers\Vendor\VendorManageController;
 
 // ADMIN ROUTES  — auth:sanctum + admin middleware
 Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(function () {
-    // Phase 4 - Vendor Management
+    // Vendor Management
     Route::prefix('vendors')->middleware('permission:vendors.view')->group(function () {
         Route::get('/', [VendorManageController::class, 'index']);
+        Route::post('/store', [VendorManageController::class, 'store'])->middleware('permission:vendors.create');
         Route::get('pending', [VendorManageController::class, 'pending']);
         Route::get('{vendor}', [VendorManageController::class, 'show']);
         Route::post('{vendor}/approve', [VendorManageController::class, 'approve'])->middleware('permission:vendors.approve');
