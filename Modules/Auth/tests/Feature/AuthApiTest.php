@@ -59,7 +59,7 @@ it('registers a new user successfully', function () {
     $response->assertCreated()
         ->assertJsonPath('success', true)
         ->assertJsonPath('message', 'Registration successful.')
-        ->assertJsonStructure(['data' => ['user' => ['id', 'name', 'email'], 'token']]);
+        ->assertJsonStructure(['data' => ['user' => ['uuid', 'name', 'email'], 'token']]);
 
     $this->assertDatabaseHas('users', [
         'email' => 'john@example.com',
@@ -221,7 +221,7 @@ it('returns authenticated user profile', function () {
         ->getJson('/api/v1/auth/me');
 
     $response->assertOk()
-        ->assertJsonStructure(['data' => ['id', 'name', 'email']]);
+        ->assertJsonStructure(['data' => ['uuid', 'name', 'email']]);
 });
 
 it('updates user profile', function () {
@@ -557,7 +557,7 @@ it('revokes a specific device', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->deleteJson("/api/v1/auth/devices/{$device->id}");
+        ->deleteJson("/api/v1/auth/devices/{$device->uuid}");
 
     $response->assertOk();
     $this->assertDatabaseMissing('devices', ['id' => $device->id]);
@@ -567,7 +567,7 @@ it('returns 404 when revoking non-existent device', function () {
     $user = makeUser('devices-404@example.com');
 
     $response = $this->actingAs($user, 'sanctum')
-        ->deleteJson('/api/v1/auth/devices/99999');
+        ->deleteJson('/api/v1/auth/devices/00000000-0000-0000-0000-000000000000');
 
     $response->assertStatus(404);
 });
@@ -583,7 +583,7 @@ it('marks a device as trusted', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->postJson("/api/v1/auth/devices/{$device->id}/trust");
+        ->postJson("/api/v1/auth/devices/{$device->uuid}/trust");
 
     $response->assertOk()
         ->assertJsonPath('message', 'Device marked as trusted.');
@@ -654,10 +654,10 @@ it('shows a specific address', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->getJson("/api/v1/addresses/{$address->id}");
+        ->getJson("/api/v1/addresses/{$address->uuid}");
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $address->id)
+        ->assertJsonPath('data.uuid', $address->uuid)
         ->assertJsonPath('data.city', 'Dhaka');
 });
 
@@ -672,7 +672,7 @@ it('updates an address', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->putJson("/api/v1/addresses/{$address->id}", [
+        ->putJson("/api/v1/addresses/{$address->uuid}", [
             'recipient_name' => 'Updated Name',
             'city'      => 'New City',
         ]);
@@ -698,7 +698,7 @@ it('deletes an address', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->deleteJson("/api/v1/addresses/{$address->id}");
+        ->deleteJson("/api/v1/addresses/{$address->uuid}");
 
     $response->assertOk()
         ->assertJsonPath('message', 'Address deleted.');
@@ -719,7 +719,7 @@ it('prevents accessing another users address', function () {
     ]);
 
     $response = $this->actingAs($user2, 'sanctum')
-        ->getJson("/api/v1/addresses/{$address->id}");
+        ->getJson("/api/v1/addresses/{$address->uuid}");
 
     $response->assertStatus(404);
 });

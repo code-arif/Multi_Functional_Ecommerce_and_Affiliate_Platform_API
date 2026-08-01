@@ -35,7 +35,7 @@ class TicketController
         $ticket = Ticket::create([
             'ticket_number' => Ticket::generateTicketNumber(),
             'user_id'       => $request->user()->id,
-            'order_id'      => $request->order_id,
+            'order_id'      => $request->order_uuid ? \Modules\Orders\Models\Order::findByUuidOrFail($request->order_uuid)->id : null,
             'category'      => $request->category,
             'subject'       => $request->subject,
             'description'   => $request->description,

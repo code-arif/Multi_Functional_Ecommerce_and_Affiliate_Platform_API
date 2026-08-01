@@ -14,8 +14,8 @@ class UpdateRateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shipping_zone_id' => 'sometimes|exists:shipping_zones,id',
-            'courier_id'       => 'sometimes|exists:couriers,id',
+            'shipping_zone_uuid' => 'sometimes|exists:shipping_zones,uuid',
+            'courier_uuid' => 'sometimes|exists:couriers,uuid',
             'name'             => 'sometimes|string|max:100',
             'method'           => 'sometimes|string|max:50|in:standard,express,same_day,overnight,freight',
             'base_rate'        => 'sometimes|numeric|min:0',

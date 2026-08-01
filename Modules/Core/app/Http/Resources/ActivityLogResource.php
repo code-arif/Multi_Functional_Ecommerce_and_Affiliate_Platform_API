@@ -9,9 +9,9 @@ class ActivityLogResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'             => $this->id,
+            'uuid' => $this->uuid,
             'user'           => $this->whenLoaded('user', fn() => [
-                'id'   => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name' => $this->user->name,
             ]),
             'module'         => $this->module,

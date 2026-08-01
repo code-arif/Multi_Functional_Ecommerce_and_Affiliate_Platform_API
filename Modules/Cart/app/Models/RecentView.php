@@ -6,9 +6,11 @@ use Modules\Auth\Models\User;
 use Modules\Catalog\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class RecentView extends Model
 {
+    use HasUuid;
     protected $table = 'recent_views';
 
     protected $fillable = [

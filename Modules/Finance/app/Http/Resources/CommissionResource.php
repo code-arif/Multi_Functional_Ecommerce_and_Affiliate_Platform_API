@@ -9,10 +9,10 @@ class CommissionResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
-            'order_id'         => $this->order_id,
+            'uuid' => $this->uuid,
+            'order_uuid'        => optional($this->order)?->uuid,
             'order_number'     => $this->whenLoaded('order', fn() => $this->order->order_number),
-            'vendor_id'        => $this->vendor_id,
+            'vendor_uuid'        => optional($this->vendor)?->uuid,
             'order_total'      => (float) $this->order_total,
             'commission_rate'  => (float) $this->commission_rate,
             'commission_type'  => $this->commission_type,

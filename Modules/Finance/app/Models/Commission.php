@@ -6,9 +6,11 @@ use Modules\Orders\Models\Order;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class Commission extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'order_id',
         'vendor_id',

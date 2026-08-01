@@ -25,7 +25,7 @@ class ProductController
                 $q->where('name', 'like', "%{$request->search}%")
                     ->orWhere('sku', 'like', "%{$request->search}%"))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->category_uuid, fn($q) => $q->where('category_id', \Modules\Catalog\Models\Category::findByUuid($request->category_uuid)?->id))
             ->withCount('reviews')
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 20);
@@ -35,7 +35,7 @@ class ProductController
 
     public function store(StoreProductRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapProductUuids($request->validated());
 
         if ($request->hasFile('thumbnail')) {
             $data['thumbnail'] = $this->productService->uploadThumbnail($request->file('thumbnail'));
@@ -54,7 +54,7 @@ class ProductController
 
     public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapProductUuids($request->validated());
 
         if ($request->hasFile('thumbnail')) {
             $data['thumbnail'] = $this->productService->uploadThumbnail($request->file('thumbnail'));
@@ -69,6 +69,21 @@ class ProductController
     {
         $this->productService->deleteProduct($product);
         return $this->noContentResponse('Product deleted.');
+    }
+
+    /**
+     * Map public uuid references (category/brand) to internal foreign keys.
+     */
+    private function mapProductUuids(array $data): array
+    {
+        if (!empty($data['category_uuid'])) {
+            $data['category_id'] = \Modules\Catalog\Models\Category::findByUuidOrFail($data['category_uuid'])->id;
+        }
+        if (!empty($data['brand_uuid'])) {
+            $data['brand_id'] = \Modules\Catalog\Models\Brand::findByUuidOrFail($data['brand_uuid'])->id;
+        }
+        unset($data['category_uuid'], $data['brand_uuid']);
+        return $data;
     }
 
     public function uploadImage(Request $request): JsonResponse

@@ -8,9 +8,11 @@ use Modules\Catalog\Models\ProductVariant;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class InventoryLog extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'product_id',
         'variant_id',

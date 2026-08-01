@@ -95,7 +95,7 @@ it('allows customer to create and view tickets', function () {
     $response->assertCreated()
         ->assertJsonPath('success', true);
 
-    $ticketId = $response->json('data.id');
+    $ticketId = $response->json('data.uuid');
 
     // List own tickets
     $response = $this->actingAs($customer, 'sanctum')
@@ -109,7 +109,7 @@ it('allows customer to create and view tickets', function () {
         ->getJson("/api/v1/support/tickets/{$ticketId}");
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $ticketId);
+        ->assertJsonPath('data.uuid', $ticketId);
 
     // Add message
     $response = $this->actingAs($customer, 'sanctum')
@@ -137,7 +137,7 @@ it('prevents customer from seeing other customers tickets', function () {
     ]);
 
     $response = $this->actingAs($c2, 'sanctum')
-        ->getJson("/api/v1/support/tickets/{$ticket->id}");
+        ->getJson("/api/v1/support/tickets/{$ticket->uuid}");
 
     $response->assertStatus(403);
 });
@@ -168,14 +168,14 @@ it('allows admin to manage tickets', function () {
 
     // Show ticket
     $response = $this->actingAs($admin, 'sanctum')
-        ->getJson("/api/v1/admin/support/tickets/{$ticket->id}");
+        ->getJson("/api/v1/admin/support/tickets/{$ticket->uuid}");
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $ticket->id);
+        ->assertJsonPath('data.uuid', $ticket->uuid);
 
     // Reply as admin
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/support/tickets/{$ticket->id}/messages", [
+        ->postJson("/api/v1/admin/support/tickets/{$ticket->uuid}/messages", [
             'message' => 'We are looking into it.',
         ]);
 
@@ -183,7 +183,7 @@ it('allows admin to manage tickets', function () {
 
     // Update status
     $response = $this->actingAs($admin, 'sanctum')
-        ->patchJson("/api/v1/admin/support/tickets/{$ticket->id}/status", [
+        ->patchJson("/api/v1/admin/support/tickets/{$ticket->uuid}/status", [
             'status' => 'in_progress',
         ]);
 
@@ -200,7 +200,7 @@ it('allows customer to submit and track disputes', function () {
     // Submit dispute
     $response = $this->actingAs($customer, 'sanctum')
         ->postJson('/api/v1/support/disputes', [
-            'order_id'    => $order->id,
+            'order_uuid'  => $order->uuid,
             'subject'     => 'Item not as described',
             'description' => 'Color was wrong',
         ]);
@@ -208,7 +208,7 @@ it('allows customer to submit and track disputes', function () {
     $response->assertCreated()
         ->assertJsonPath('success', true);
 
-    $disputeId = $response->json('data.id');
+    $disputeId = $response->json('data.uuid');
 
     // List own disputes
     $response = $this->actingAs($customer, 'sanctum')
@@ -222,7 +222,7 @@ it('allows customer to submit and track disputes', function () {
         ->getJson("/api/v1/support/disputes/{$disputeId}");
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $disputeId);
+        ->assertJsonPath('data.uuid', $disputeId);
 });
 
 it('prevents customer from submitting dispute for others order', function () {
@@ -233,7 +233,7 @@ it('prevents customer from submitting dispute for others order', function () {
 
     $response = $this->actingAs($c2, 'sanctum')
         ->postJson('/api/v1/support/disputes', [
-            'order_id'    => $order->id,
+            'order_uuid'  => $order->uuid,
             'subject'     => 'Not mine',
             'description' => 'This is not my order',
         ]);
@@ -256,12 +256,12 @@ it('allows admin to manage FAQs and categories', function () {
 
     $response->assertCreated();
 
-    $catId = $response->json('data.id');
+    $catId = $response->json('data.uuid');
 
     // Create FAQ
     $response = $this->actingAs($admin, 'sanctum')
         ->postJson('/api/v1/admin/support/faqs', [
-            'category_id' => $catId,
+            'category_uuid' => $catId,
             'question'    => 'How long does shipping take?',
             'answer'      => '2-3 business days.',
         ]);
@@ -269,7 +269,7 @@ it('allows admin to manage FAQs and categories', function () {
     $response->assertCreated()
         ->assertJsonPath('success', true);
 
-    $faqId = $response->json('data.id');
+    $faqId = $response->json('data.uuid');
 
     // List FAQs
     $response = $this->actingAs($admin, 'sanctum')
@@ -319,7 +319,7 @@ it('allows customer to use chat', function () {
 
     $response->assertOk();
 
-    $roomId = $response->json('data.id');
+    $roomId = $response->json('data.uuid');
 
     // Send message
     $response = $this->actingAs($customer, 'sanctum')
@@ -349,7 +349,7 @@ it('requires authentication for ticket routes', function () {
 
 it('requires authentication for dispute routes', function () {
     $response = $this->postJson('/api/v1/support/disputes', [
-        'order_id'    => 1,
+        'order_uuid'  => '00000000-0000-0000-0000-000000000000',
         'subject'     => 'Test',
         'description' => 'Test',
     ]);

@@ -9,20 +9,20 @@ class InventoryLogResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'           => $this->id,
+            'uuid' => $this->uuid,
             'product'      => $this->whenLoaded('product', fn() => [
-                'id'   => $this->product->id,
+                'uuid' => $this->product?->uuid,
                 'name' => $this->product->name,
                 'slug' => $this->product->slug,
                 'sku'  => $this->product->sku,
             ]),
             'variant'      => $this->whenLoaded('variant', fn() => [
-                'id'   => $this->variant->id,
+                'uuid' => $this->variant?->uuid,
                 'name' => $this->variant->name,
                 'sku'  => $this->variant->sku,
             ]),
             'warehouse'    => $this->whenLoaded('warehouse', fn() => [
-                'id'   => $this->warehouse->id,
+                'uuid' => $this->warehouse?->uuid,
                 'name' => $this->warehouse->name,
             ]),
             'type'         => $this->type,
@@ -34,7 +34,7 @@ class InventoryLogResource extends JsonResource
             'reference_id'   => $this->reference_id,
             'notes'        => $this->notes,
             'created_by'   => $this->whenLoaded('createdBy', fn() => [
-                'id'   => $this->createdBy->id,
+                'uuid' => $this->createdBy?->uuid,
                 'name' => $this->createdBy->name,
             ]),
             'created_at'   => $this->created_at,

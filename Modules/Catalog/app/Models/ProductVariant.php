@@ -3,9 +3,11 @@
 namespace Modules\Catalog\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class ProductVariant extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'product_id',
         'sku',

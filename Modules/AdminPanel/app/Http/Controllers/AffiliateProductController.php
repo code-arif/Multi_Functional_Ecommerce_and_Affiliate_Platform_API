@@ -26,7 +26,7 @@ class AffiliateProductController
 
     public function store(StoreAffiliateProductRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapCategoryUuid($request->validated());
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('affiliate-products', 'public');
@@ -39,7 +39,7 @@ class AffiliateProductController
 
     public function update(AffiliateProduct $affiliateProduct, UpdateAffiliateProductRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapCategoryUuid($request->validated());
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('affiliate-products', 'public');
@@ -48,6 +48,20 @@ class AffiliateProductController
         $affiliateProduct->update($data);
 
         return $this->successResponse(new AffiliateProductResource($affiliateProduct->fresh()), 'Affiliate product updated.');
+    }
+
+    /**
+     * Map public category_uuid reference to internal category_id.
+     */
+    private function mapCategoryUuid(array $data): array
+    {
+        if (array_key_exists('category_uuid', $data)) {
+            $data['category_id'] = !empty($data['category_uuid'])
+                ? \Modules\Catalog\Models\Category::findByUuidOrFail($data['category_uuid'])->id
+                : null;
+        }
+        unset($data['category_uuid']);
+        return $data;
     }
 
     public function destroy(AffiliateProduct $affiliateProduct): JsonResponse

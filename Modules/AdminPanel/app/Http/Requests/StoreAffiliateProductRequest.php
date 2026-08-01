@@ -16,7 +16,7 @@ class StoreAffiliateProductRequest extends FormRequest
         return [
             'title'            => 'required|string|max:200',
             'slug'             => 'required|string|max:200|unique:affiliate_products,slug',
-            'category_id'      => 'nullable|exists:categories,id',
+            'category_uuid' => 'nullable|exists:categories,uuid',
             'description'      => 'nullable|string',
             'display_price'    => 'nullable|numeric|min:0',
             'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',

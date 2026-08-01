@@ -33,13 +33,13 @@ class UserRoleController
     public function assign(AssignRoleRequest $request): JsonResponse
     {
         $user = $this->rbacService->assignRolesToUser(
-            $request->validated('user_id'),
+            \Modules\Auth\Models\User::findByUuidOrFail($request->validated('user_uuid'))->id,
             $request->validated('roles')
         );
 
         return $this->successResponse([
             'user'  => [
-                'id'    => $user->id,
+                'uuid'  => $user->uuid,
                 'name'  => $user->name,
                 'email' => $user->email,
             ],
@@ -50,9 +50,11 @@ class UserRoleController
     /**
      * Get all permissions for a specific user.
      */
-    public function userPermissions(int $userId): JsonResponse
+    public function userPermissions(string $userId): JsonResponse
     {
-        $permissions = $this->rbacService->getUserPermissions($userId);
+        $permissions = $this->rbacService->getUserPermissions(
+            \Modules\Auth\Models\User::findByUuidOrFail($userId)->id
+        );
         return $this->successResponse($permissions->pluck('name'));
     }
 

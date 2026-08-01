@@ -9,7 +9,7 @@ class ProductResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                    => $this->id,
+            'uuid' => $this->uuid,
             'category'              => $this->whenLoaded('category'),
             'brand'                 => $this->whenLoaded('brand'),
             'name'                  => $this->name,

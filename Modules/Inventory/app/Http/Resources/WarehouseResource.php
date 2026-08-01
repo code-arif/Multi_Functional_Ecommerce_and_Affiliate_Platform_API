@@ -9,7 +9,7 @@ class WarehouseResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'            => $this->id,
+            'uuid' => $this->uuid,
             'vendor_id'     => $this->vendor_id,
             'name'          => $this->name,
             'slug'          => $this->slug,

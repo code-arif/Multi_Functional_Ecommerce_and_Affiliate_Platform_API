@@ -27,7 +27,7 @@ class DeviceController
      * DELETE /api/v1/auth/devices/{device}
      * Revoke a specific device/session
      */
-    public function destroy(int $device, Request $request): JsonResponse
+    public function destroy(string $device, Request $request): JsonResponse
     {
         $revoked = $this->deviceService->revokeDevice($request->user(), $device);
 
@@ -55,7 +55,7 @@ class DeviceController
      * POST /api/v1/auth/devices/{device}/trust
      * Mark a device as trusted
      */
-    public function trust(int $device, Request $request): JsonResponse
+    public function trust(string $device, Request $request): JsonResponse
     {
         $trusted = $this->deviceService->trustDevice($request->user(), $device);
 

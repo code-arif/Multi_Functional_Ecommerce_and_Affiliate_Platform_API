@@ -9,9 +9,9 @@ class PickupResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'             => $this->id,
-            'vendor_id'      => $this->vendor_id,
-            'courier_id'     => $this->courier_id,
+            'uuid' => $this->uuid,
+            'vendor_uuid'        => optional($this->vendor)?->uuid,
+            'courier_uuid'        => optional($this->courier)?->uuid,
             'status'         => $this->status,
             'pickup_date'    => $this->pickup_date,
             'pickup_time_from' => $this->pickup_time_from,

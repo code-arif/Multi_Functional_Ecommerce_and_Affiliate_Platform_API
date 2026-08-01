@@ -9,10 +9,10 @@ class WishlistResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
+            'uuid' => $this->uuid,
             'product_id' => $this->product_id,
             'product'    => $this->whenLoaded('product', fn() => [
-                'id'        => $this->product->id,
+                'uuid' => $this->product?->uuid,
                 'name'      => $this->product->name,
                 'slug'      => $this->product->slug,
                 'thumbnail' => $this->product->thumbnail_url,

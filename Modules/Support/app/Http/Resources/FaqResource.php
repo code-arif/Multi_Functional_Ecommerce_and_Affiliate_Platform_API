@@ -9,10 +9,10 @@ class FaqResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'          => $this->id,
+            'uuid' => $this->uuid,
             'category_id' => $this->category_id,
             'category'    => $this->whenLoaded('category', fn() => [
-                'id'   => $this->category->id,
+                'uuid' => $this->category?->uuid,
                 'name' => $this->category->name,
             ]),
             'question'    => $this->question,

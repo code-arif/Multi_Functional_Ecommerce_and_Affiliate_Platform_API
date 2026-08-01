@@ -4,9 +4,11 @@ namespace Modules\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Core\Traits\HasUuid;
 
 class FaqCategory extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'name',
         'slug',

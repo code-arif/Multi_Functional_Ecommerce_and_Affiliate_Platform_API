@@ -5,9 +5,11 @@ namespace Modules\Payments\Models;
 use Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class PaymentMethod extends Model
 {
+    use HasUuid;
     protected $table = 'payment_methods';
 
     protected $fillable = [

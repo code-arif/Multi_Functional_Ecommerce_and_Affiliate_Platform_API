@@ -38,7 +38,9 @@ class AdminAffiliateController
         $query = \Modules\Affiliate\Models\AffiliateConversion::with(['product', 'user']);
 
         if ($request->status) $query->where('status', $request->status);
-        if ($request->product_id) $query->where('affiliate_product_id', $request->product_id);
+        if ($request->product_uuid) {
+            $query->where('affiliate_product_id', \Modules\Affiliate\Models\AffiliateProduct::findByUuid($request->product_uuid)?->id);
+        }
 
         return $this->paginatedResponse(AffiliateConversionResource::collection($query->latest()->paginate($request->per_page ?? 20)));
     }
@@ -88,11 +90,11 @@ class AdminAffiliateController
     public function markAsPaid(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'earning_ids'   => 'required|array',
-            'earning_ids.*' => 'exists:affiliate_earnings,id',
+            'earning_uuids'   => 'required|array',
+            'earning_uuids.*' => 'exists:affiliate_earnings,uuid',
         ]);
 
-        $count = $this->affiliateService->markAsPaid($validated['earning_ids']);
+        $count = $this->affiliateService->markAsPaid($validated['earning_uuids']);
 
         return $this->successResponse(['marked_paid' => $count], "{$count} earnings marked as paid.");
     }

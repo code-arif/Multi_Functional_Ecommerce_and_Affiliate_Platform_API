@@ -9,7 +9,7 @@ class VendorBankAccountResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                      => $this->id,
+            'uuid' => $this->uuid,
             'bank_name'               => $this->bank_name,
             'branch_name'             => $this->branch_name,
             'account_name'            => $this->account_name,

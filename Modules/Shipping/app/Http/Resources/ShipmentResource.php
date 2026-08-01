@@ -9,10 +9,10 @@ class ShipmentResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                 => $this->id,
-            'order_id'           => $this->order_id,
-            'vendor_id'          => $this->vendor_id,
-            'courier_id'         => $this->courier_id,
+            'uuid' => $this->uuid,
+            'order_uuid'        => optional($this->order)?->uuid,
+            'vendor_uuid'        => optional($this->vendor)?->uuid,
+            'courier_uuid'        => optional($this->courier)?->uuid,
             'tracking_number'    => $this->tracking_number,
             'carrier_tracking_code' => $this->carrier_tracking_code,
             'status'             => $this->status,
@@ -28,7 +28,7 @@ class ShipmentResource extends JsonResource
             'delivered_at'       => $this->delivered_at,
             'courier'            => new CourierResource($this->whenLoaded('courier')),
             'order'              => $this->whenLoaded('order', fn() => [
-                'id'           => $this->order->id,
+                'uuid' => $this->order?->uuid,
                 'order_number' => $this->order->order_number,
             ]),
             'tracking_histories' => TrackingHistoryResource::collection($this->whenLoaded('trackingHistories')),

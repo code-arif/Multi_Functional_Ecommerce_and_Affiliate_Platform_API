@@ -9,11 +9,11 @@ class CityResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
+            'uuid' => $this->uuid,
             'state_id'   => $this->state_id,
             'country_id' => $this->country_id,
             'state'      => $this->whenLoaded('state', fn() => [
-                'id'   => $this->state->id,
+                'uuid' => $this->state?->uuid,
                 'name' => $this->state->name,
             ]),
             'name'       => $this->name,

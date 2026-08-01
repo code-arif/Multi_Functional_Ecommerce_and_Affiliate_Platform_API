@@ -16,12 +16,15 @@ class ReviewService
 
     public function createReview(User $user, array $data): Review
     {
-        $data['is_verified_purchase'] = $this->checkVerifiedPurchase($user->id, $data['product_id'], $data['order_id'] ?? null);
+        $product = Product::findByUuidOrFail($data['product_uuid']);
+        $order = !empty($data['order_uuid']) ? Order::findByUuidOrFail($data['order_uuid']) : null;
+
+        $data['is_verified_purchase'] = $this->checkVerifiedPurchase($user->id, $product->id, $order?->id);
 
         $review = Review::create([
             'user_id'    => $user->id,
-            'product_id' => $data['product_id'],
-            'order_id'   => $data['order_id'] ?? null,
+            'product_id' => $product->id,
+            'order_id'   => $order?->id,
             'rating'     => $data['rating'],
             'title'      => $data['title'] ?? null,
             'body'       => $data['body'],

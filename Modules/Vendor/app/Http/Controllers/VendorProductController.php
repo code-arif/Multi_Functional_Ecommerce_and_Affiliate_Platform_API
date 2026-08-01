@@ -36,7 +36,7 @@ class VendorProductController
                   ->orWhere('sku', 'like', "%{$request->search}%");
             }))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->when($request->category_uuid, fn($q) => $q->where('category_id', \Modules\Catalog\Models\Category::findByUuid($request->category_uuid)?->id))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 20);
 
@@ -64,13 +64,13 @@ class VendorProductController
         $vendor = $request->user()->vendor;
 
         $validated = $request->validate([
-            'product_id'  => 'nullable|exists:products,id',
-            'name'        => 'required_without:product_id|string|max:255',
+            'product_uuid' => 'nullable|exists:products,uuid',
+            'name'        => 'required_without:product_uuid|string|max:255',
             'sku'         => 'nullable|string|max:100|unique:products,sku',
             'price'       => 'nullable|numeric|min:0',
             'sale_price'  => 'nullable|numeric|min:0|lte:price',
             'stock_quantity' => 'nullable|integer|min:0',
-            'category_id' => 'nullable|exists:categories,id',
+            'category_uuid' => 'nullable|exists:categories,uuid',
             'short_description' => 'nullable|string',
             'description' => 'nullable|string',
             'thumbnail'   => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -80,9 +80,16 @@ class VendorProductController
             'is_active'    => 'nullable|boolean',
         ]);
 
+        // Map uuid references to internal ids
+        if (!empty($validated['category_uuid'])) {
+            $validated['category_id'] = \Modules\Catalog\Models\Category::findByUuidOrFail($validated['category_uuid'])->id;
+        }
+        unset($validated['category_uuid']);
+
         // If linking to an existing product
-        if (!empty($validated['product_id'])) {
-            $product = Product::findOrFail($validated['product_id']);
+        if (!empty($validated['product_uuid'])) {
+            $product = \Modules\Catalog\Models\Product::findByUuidOrFail($validated['product_uuid']);
+            unset($validated['product_uuid']);
 
             VendorProductPrice::updateOrCreate(
                 ['vendor_id' => $vendor->id, 'product_id' => $product->id],

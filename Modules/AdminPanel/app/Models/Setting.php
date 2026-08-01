@@ -3,9 +3,11 @@
 namespace Modules\AdminPanel\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class Setting extends Model
 {
+    use HasUuid;
     public $timestamps = false;
     protected $fillable = ['key', 'value', 'group', 'type', 'description', 'is_public'];
 

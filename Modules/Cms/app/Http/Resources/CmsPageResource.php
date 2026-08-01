@@ -9,7 +9,7 @@ class CmsPageResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
+            'uuid' => $this->uuid,
             'title'           => $this->title,
             'slug'            => $this->slug,
             'content'         => $this->content,

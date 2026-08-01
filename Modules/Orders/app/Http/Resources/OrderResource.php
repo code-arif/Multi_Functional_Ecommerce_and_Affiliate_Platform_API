@@ -9,10 +9,10 @@ class OrderResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
+            'uuid' => $this->uuid,
             'order_number'    => $this->order_number,
             'user'            => $this->whenLoaded('user', fn() => [
-                'id'    => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name'  => $this->user->name,
                 'email' => $this->user->email,
                 'phone' => $this->user->phone,

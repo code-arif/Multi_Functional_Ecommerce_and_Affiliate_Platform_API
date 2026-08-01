@@ -14,7 +14,7 @@ class StoreInventoryAdjustmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vendor_product_id' => 'required|integer|exists:vendor_product_prices,id',
+            'vendor_product_uuid' => 'required|exists:vendor_product_prices,uuid',
             'quantity'          => 'required|integer|not_in:0',
             'notes'             => 'nullable|string|max:500',
         ];

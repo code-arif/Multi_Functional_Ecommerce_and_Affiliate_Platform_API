@@ -4,9 +4,11 @@ namespace Modules\Orders\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class Invoice extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'order_id',
         'invoice_number',

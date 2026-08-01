@@ -65,7 +65,7 @@ class CartApiTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/cart/items', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'quantity'   => 2,
             ]);
 
@@ -78,7 +78,7 @@ class CartApiTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/cart/items', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'quantity'   => 999, // Exceeds stock of 50
             ]);
 
@@ -90,7 +90,7 @@ class CartApiTest extends TestCase
     {
         $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/cart/items', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'quantity'   => 1,
             ]);
 
@@ -98,7 +98,7 @@ class CartApiTest extends TestCase
         $item = $cart->items()->first();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/v1/cart/items/{$item->id}", [
+            ->putJson("/api/v1/cart/items/{$item->uuid}", [
                 'quantity' => 3,
             ]);
 
@@ -110,7 +110,7 @@ class CartApiTest extends TestCase
     {
         $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/cart/items', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'quantity'   => 1,
             ]);
 
@@ -118,7 +118,7 @@ class CartApiTest extends TestCase
         $item = $cart->items()->first();
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/v1/cart/items/{$item->id}");
+            ->deleteJson("/api/v1/cart/items/{$item->uuid}");
 
         $response->assertStatus(200);
     }
@@ -128,7 +128,7 @@ class CartApiTest extends TestCase
     {
         $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/cart/items', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'quantity'   => 1,
             ]);
 
@@ -144,7 +144,7 @@ class CartApiTest extends TestCase
     public function guest_can_track_recently_viewed(): void
     {
         $response = $this->withHeaders(['X-Session-ID' => 'test-session-456'])
-            ->postJson("/api/v1/recently-viewed/{$this->product->id}");
+            ->postJson("/api/v1/recently-viewed/{$this->product->uuid}");
 
         $response->assertOk();
 
@@ -159,7 +159,7 @@ class CartApiTest extends TestCase
     {
         RecentView::create([
             'user_id'    => $this->user->id,
-            'product_id' => $this->product->id,
+            'product_uuid' => $this->product->uuid,
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
@@ -174,7 +174,7 @@ class CartApiTest extends TestCase
     public function guest_can_add_to_compare_list(): void
     {
         $response = $this->withHeaders(['X-Session-ID' => 'cmp-session'])
-            ->postJson("/api/v1/compare/{$this->product->id}");
+            ->postJson("/api/v1/compare/{$this->product->uuid}");
 
         $response->assertOk();
     }
@@ -193,11 +193,11 @@ class CartApiTest extends TestCase
     {
         // Add first
         $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/v1/compare/{$this->product->id}");
+            ->postJson("/api/v1/compare/{$this->product->uuid}");
 
         // Then remove
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/v1/compare/{$this->product->id}");
+            ->deleteJson("/api/v1/compare/{$this->product->uuid}");
 
         $response->assertOk();
     }
@@ -206,7 +206,7 @@ class CartApiTest extends TestCase
     public function user_can_clear_compare_list(): void
     {
         $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/v1/compare/{$this->product->id}");
+            ->postJson("/api/v1/compare/{$this->product->uuid}");
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->deleteJson('/api/v1/compare');

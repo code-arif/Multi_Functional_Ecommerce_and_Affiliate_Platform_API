@@ -9,7 +9,7 @@ class PayoutResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
+            'uuid' => $this->uuid,
             'vendor_id'       => $this->vendor_id,
             'amount'          => (float) $this->amount,
             'balance_before'  => (float) $this->balance_before,

@@ -9,7 +9,7 @@ class WalletTransactionResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'             => $this->id,
+            'uuid' => $this->uuid,
             'type'           => $this->type,
             'amount'         => (float) $this->amount,
             'balance_before' => (float) $this->balance_before,

@@ -9,7 +9,7 @@ class CouponResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                  => $this->id,
+            'uuid' => $this->uuid,
             'code'                => $this->code,
             'type'                => $this->type,
             'value'               => (float) $this->value,

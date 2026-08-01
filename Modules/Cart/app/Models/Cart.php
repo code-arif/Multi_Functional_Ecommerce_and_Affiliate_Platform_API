@@ -5,9 +5,11 @@ namespace Modules\Cart\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Modules\Core\Traits\HasUuid;
 
 class Cart extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'user_id',
         'session_id',

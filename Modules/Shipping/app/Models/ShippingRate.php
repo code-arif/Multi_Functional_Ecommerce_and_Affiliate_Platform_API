@@ -7,9 +7,11 @@ use Modules\Shipping\Models\ShippingZone;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Traits\HasUuid;
 
 class ShippingRate extends Model
 {
+    use HasUuid;
     use SoftDeletes;
 
     protected $fillable = [

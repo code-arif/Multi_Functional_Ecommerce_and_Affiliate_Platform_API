@@ -5,9 +5,11 @@ namespace Modules\Support\Models;
 use Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class TicketMessage extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'ticket_id',
         'user_id',

@@ -19,9 +19,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Modules\Core\Traits\HasUuid;
 
 class Product extends Model
 {
+    use HasUuid;
     use HasSlug, SoftDeletes;
 
     protected $table = 'products';

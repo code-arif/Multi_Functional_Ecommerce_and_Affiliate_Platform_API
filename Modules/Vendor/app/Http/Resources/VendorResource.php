@@ -9,7 +9,7 @@ class VendorResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
+            'uuid' => $this->uuid,
             'user_id'          => $this->user_id,
             'shop_name'        => $this->shop_name,
             'slug'             => $this->slug,
@@ -34,7 +34,7 @@ class VendorResource extends JsonResource
             'documents'        => VendorDocumentResource::collection($this->whenLoaded('documents')),
             'staff'            => VendorStaffResource::collection($this->whenLoaded('staff')),
             'user'             => $this->whenLoaded('user', fn() => [
-                'id'    => $this->user->id,
+                'uuid'  => $this->user?->uuid,
                 'name'  => $this->user->name,
                 'email' => $this->user->email,
                 'phone' => $this->user->phone,

@@ -9,14 +9,14 @@ class CompareListResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'          => $this->id,
+            'uuid' => $this->uuid,
             'item_count'  => $this->item_count,
             'items'       => $this->whenLoaded('items', fn() =>
                 $this->items->map(fn($item) => [
-                    'id'           => $item->id,
-                    'product_id'   => $item->product_id,
+                    'uuid'         => $item->uuid,
+                    'product_uuid'  => optional($item->product)?->uuid,
                     'product'      => $item->relationLoaded('product') ? [
-                        'id'          => $item->product->id,
+                        'uuid'        => $item->product?->uuid,
                         'name'        => $item->product->name,
                         'slug'        => $item->product->slug,
                         'sku'         => $item->product->sku,
@@ -26,12 +26,12 @@ class CompareListResource extends JsonResource
                         'rating'      => (float) $item->product->average_rating,
                         'reviews'     => $item->product->total_reviews,
                         'brand'       => $item->product->relationLoaded('brand') && $item->product->brand ? [
-                            'id'   => $item->product->brand->id,
+                            'uuid' => $item->product->brand?->uuid,
                             'name' => $item->product->brand->name,
                             'slug' => $item->product->brand->slug,
                         ] : null,
                         'category'    => $item->product->relationLoaded('category') && $item->product->category ? [
-                            'id'   => $item->product->category->id,
+                            'uuid' => $item->product->category?->uuid,
                             'name' => $item->product->category->name,
                             'slug' => $item->product->category->slug,
                         ] : null,

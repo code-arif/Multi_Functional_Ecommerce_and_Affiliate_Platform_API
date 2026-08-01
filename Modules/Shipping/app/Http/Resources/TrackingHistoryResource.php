@@ -9,7 +9,7 @@ class TrackingHistoryResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'          => $this->id,
+            'uuid' => $this->uuid,
             'shipment_id' => $this->shipment_id,
             'status'      => $this->status,
             'location'    => $this->location,

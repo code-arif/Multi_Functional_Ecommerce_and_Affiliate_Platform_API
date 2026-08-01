@@ -8,9 +8,11 @@ use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Core\Traits\HasUuid;
 
 class Dispute extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'order_id',
         'customer_id',

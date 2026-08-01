@@ -28,9 +28,10 @@ class CompareService
     /**
      * Add a product to the compare list.
      */
-    public function add(CompareList $list, int $productId): array
+    public function add(CompareList $list, string $productUuid): array
     {
-        $product = Product::findOrFail($productId);
+        $product = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid);
+        $productId = $product->id;
 
         if ($list->items()->where('product_id', $productId)->exists()) {
             return ['success' => false, 'message' => 'Product already in compare list.'];
@@ -49,8 +50,9 @@ class CompareService
     /**
      * Remove a product from the compare list.
      */
-    public function remove(CompareList $list, int $productId): array
+    public function remove(CompareList $list, string $productUuid): array
     {
+        $productId = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid)->id;
         $list->items()->where('product_id', $productId)->delete();
 
         return ['success' => true, 'message' => 'Removed from compare list.'];

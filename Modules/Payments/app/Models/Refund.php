@@ -5,9 +5,11 @@ namespace Modules\Payments\Models;
 use Modules\Auth\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class Refund extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'payment_id',
         'order_id',

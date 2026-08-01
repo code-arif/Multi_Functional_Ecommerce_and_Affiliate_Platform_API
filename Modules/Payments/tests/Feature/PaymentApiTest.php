@@ -44,7 +44,7 @@ class PaymentApiTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/payments/process', [
-                'order_id'       => $this->order->id,
+                'order_uuid'     => $this->order->uuid,
                 'payment_method' => 'cod',
             ]);
 
@@ -57,7 +57,7 @@ class PaymentApiTest extends TestCase
     {
         $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/payments/process', [
-                'order_id'       => $this->order->id,
+                'order_uuid'     => $this->order->uuid,
                 'payment_method' => 'cod',
             ]);
 
@@ -72,7 +72,7 @@ class PaymentApiTest extends TestCase
     public function user_can_view_order_payment(): void
     {
         Payment::create([
-            'order_id'       => $this->order->id,
+            'order_uuid'     => $this->order->uuid,
             'payment_method' => 'cod',
             'payment_status' => 'pending',
             'gateway'        => 'cod',
@@ -94,7 +94,7 @@ class PaymentApiTest extends TestCase
 
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/payments/process', [
-                'order_id'       => $this->order->id,
+                'order_uuid'     => $this->order->uuid,
                 'payment_method' => 'cod',
             ]);
 
@@ -119,7 +119,7 @@ class PaymentApiTest extends TestCase
     public function refund_creates_transaction(): void
     {
         $payment = Payment::create([
-            'order_id'       => $this->order->id,
+            'order_uuid'     => $this->order->uuid,
             'payment_method' => 'stripe',
             'payment_status' => 'paid',
             'gateway'        => 'stripe',
@@ -137,7 +137,7 @@ class PaymentApiTest extends TestCase
         // Note: Full refund test would need a real/mocked gateway
         // This tests the API route exists by checking that unauthorized returns 401/403
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/v1/admin/payments/{$payment->id}/refund", [
+            ->postJson("/api/v1/admin/payments/{$payment->uuid}/refund", [
                 'amount' => 50.00,
                 'reason' => 'Customer request',
             ]);
@@ -150,7 +150,7 @@ class PaymentApiTest extends TestCase
     public function unauthenticated_user_cannot_process_payment(): void
     {
         $response = $this->postJson('/api/v1/payments/process', [
-            'order_id'       => $this->order->id,
+            'order_uuid'     => $this->order->uuid,
             'payment_method' => 'cod',
         ]);
 

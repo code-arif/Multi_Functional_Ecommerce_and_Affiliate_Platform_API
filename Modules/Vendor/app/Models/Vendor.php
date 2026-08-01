@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Traits\HasUuid;
 
 class Vendor extends Model
 {
+    use HasUuid;
     use HasFactory, SoftDeletes;
 
     protected $fillable = [

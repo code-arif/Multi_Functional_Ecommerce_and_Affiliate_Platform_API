@@ -250,12 +250,12 @@ class CheckoutService
 
     private function resolveAddress(array $data, User $user): array
     {
-        if (isset($data['address_id'])) {
-            $address = Address::where('id', $data['address_id'])
+        if (isset($data['address_uuid'])) {
+            $address = Address::where('uuid', $data['address_uuid'])
                 ->where('user_id', $user->id)->first();
             if ($address) {
                 return [
-                    'id'           => $address->id,
+                    'uuid'         => $address->uuid,
                     'label'        => $address->label,
                     'address_line' => $address->address_line ?? '',
                     'city'         => $address->city ?? '',
@@ -271,7 +271,7 @@ class CheckoutService
         $default = $user->defaultAddress;
         if ($default) {
             return [
-                'id'           => $default->id,
+                'uuid'         => $default->uuid,
                 'label'        => $default->label ?? 'Default',
                 'address_line' => $default->address_line ?? '',
                 'city'         => $default->city ?? '',

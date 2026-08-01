@@ -9,13 +9,13 @@ class ChatRoomResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
+            'uuid' => $this->uuid,
             'user'            => $this->whenLoaded('user', fn() => [
-                'id'   => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name' => $this->user->name,
                 'email' => $this->user->email,
             ]),
-            'order_id'        => $this->order_id,
+            'order_uuid'        => optional($this->order)?->uuid,
             'subject'         => $this->subject,
             'status'          => $this->status,
             'assigned_to'     => $this->assigned_to,

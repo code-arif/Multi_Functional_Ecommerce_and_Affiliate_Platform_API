@@ -117,7 +117,7 @@ it('rejects non-vendor from creating warehouse', function () {
 it('increases stock', function () {
     $response = $this->actingAs($this->vendorUser, 'sanctum')
         ->postJson('/api/v1/vendor/inventory/adjust', [
-            'vendor_product_id' => $this->vendorProduct->id,
+            'vendor_product_uuid' => $this->vendorProduct->uuid,
             'quantity'          => 10,
             'notes'             => 'Restock from supplier',
         ]);
@@ -139,7 +139,7 @@ it('increases stock', function () {
 it('decreases stock', function () {
     $response = $this->actingAs($this->vendorUser, 'sanctum')
         ->postJson('/api/v1/vendor/inventory/adjust', [
-            'vendor_product_id' => $this->vendorProduct->id,
+            'vendor_product_uuid' => $this->vendorProduct->uuid,
             'quantity'          => -5,
             'notes'             => 'Damaged item removed',
         ]);
@@ -156,7 +156,7 @@ it('decreases stock', function () {
 it('rejects zero quantity adjustment', function () {
     $response = $this->actingAs($this->vendorUser, 'sanctum')
         ->postJson('/api/v1/vendor/inventory/adjust', [
-            'vendor_product_id' => $this->vendorProduct->id,
+            'vendor_product_uuid' => $this->vendorProduct->uuid,
             'quantity'          => 0,
         ]);
 
@@ -166,7 +166,7 @@ it('rejects zero quantity adjustment', function () {
 it('rejects invalid product id', function () {
     $response = $this->actingAs($this->vendorUser, 'sanctum')
         ->postJson('/api/v1/vendor/inventory/adjust', [
-            'vendor_product_id' => 99999,
+            'vendor_product_uuid' => '00000000-0000-0000-0000-000000000000',
             'quantity'          => 10,
         ]);
 

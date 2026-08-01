@@ -4,9 +4,11 @@ namespace Modules\Core\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Core\Traits\HasUuid;
 
 class Country extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'name',
         'iso2',

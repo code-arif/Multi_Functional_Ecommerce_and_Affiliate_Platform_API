@@ -33,7 +33,7 @@ class ChatController
     public function createRoom(CreateChatRoomRequest $request): JsonResponse
     {
         $room = $this->chatService->createRoom($request->user(), [
-            'order_id' => $request->order_id,
+            'order_id' => $request->order_uuid ? \Modules\Orders\Models\Order::findByUuidOrFail($request->order_uuid)->id : null,
             'subject'  => $request->subject,
         ]);
 

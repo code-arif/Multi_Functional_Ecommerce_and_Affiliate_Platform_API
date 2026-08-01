@@ -50,8 +50,8 @@ class ReviewController
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'order_id'   => 'nullable|exists:orders,id',
+            'product_uuid' => 'required|exists:products,uuid',
+            'order_uuid'   => 'nullable|exists:orders,uuid',
             'rating'     => 'required|integer|min:1|max:5',
             'title'      => 'nullable|string|max:100',
             'body'       => 'required|string|max:5000',

@@ -46,15 +46,15 @@ class AddressController
         return $this->createdResponse($address, 'Address created.');
     }
 
-    public function show(int $id, Request $request): JsonResponse
+    public function show(string $address, Request $request): JsonResponse
     {
-        $address = $request->user()->addresses()->findOrFail($id);
+        $address = $request->user()->addresses()->where('uuid', $address)->firstOrFail();
         return $this->successResponse($address);
     }
 
-    public function update(int $id, Request $request): JsonResponse
+    public function update(string $address, Request $request): JsonResponse
     {
-        $address = $request->user()->addresses()->findOrFail($id);
+        $address = $request->user()->addresses()->where('uuid', $address)->firstOrFail();
 
         $validated = $request->validate([
             'label'          => 'nullable|string|max:50',
@@ -80,9 +80,9 @@ class AddressController
         return $this->successResponse($address->fresh(), 'Address updated.');
     }
 
-    public function destroy(int $id, Request $request): JsonResponse
+    public function destroy(string $address, Request $request): JsonResponse
     {
-        $address = $request->user()->addresses()->findOrFail($id);
+        $address = $request->user()->addresses()->where('uuid', $address)->firstOrFail();
         $address->delete();
 
         return $this->noContentResponse('Address deleted.');

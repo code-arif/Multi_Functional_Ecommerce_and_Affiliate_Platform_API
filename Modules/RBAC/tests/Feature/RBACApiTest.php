@@ -402,7 +402,7 @@ describe('POST /api/v1/admin/rbac/users/assign', function () {
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/rbac/users/assign', [
-                'user_id' => $targetUser->id,
+                'user_uuid' => $targetUser->uuid,
                 'roles'   => ['moderator', 'vendor'],
             ]);
 
@@ -416,7 +416,7 @@ describe('POST /api/v1/admin/rbac/users/assign', function () {
         $admin = createAdminUser();
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/rbac/users/assign', [
-                'user_id' => 99999,
+                'user_uuid' => '00000000-0000-0000-0000-000000000000',
                 'roles'   => ['moderator'],
             ]);
 
@@ -429,7 +429,7 @@ describe('POST /api/v1/admin/rbac/users/assign', function () {
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/rbac/users/assign', [
-                'user_id' => $targetUser->id,
+                'user_uuid' => $targetUser->uuid,
                 'roles'   => ['non-existent-role'],
             ]);
 
@@ -445,7 +445,7 @@ describe('GET /api/v1/admin/rbac/users/{userId}/permissions', function () {
         $targetUser->assignRole('moderator');
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->getJson("/api/v1/admin/rbac/users/{$targetUser->id}/permissions");
+            ->getJson("/api/v1/admin/rbac/users/{$targetUser->uuid}/permissions");
 
         $response->assertOk()
             ->assertJsonStructure(['success', 'data']);

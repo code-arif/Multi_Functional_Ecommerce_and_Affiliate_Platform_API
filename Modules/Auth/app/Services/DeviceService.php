@@ -35,10 +35,10 @@ class DeviceService
             ->get();
     }
 
-    public function revokeDevice(User $user, int $deviceId): bool
+    public function revokeDevice(User $user, string $deviceUuid): bool
     {
         $device = Device::where('user_id', $user->id)
-            ->where('id', $deviceId)
+            ->where('uuid', $deviceUuid)
             ->first();
 
         if (!$device) {
@@ -59,10 +59,10 @@ class DeviceService
         $device->updateLastActive();
     }
 
-    public function trustDevice(User $user, int $deviceId): bool
+    public function trustDevice(User $user, string $deviceUuid): bool
     {
         $device = Device::where('user_id', $user->id)
-            ->where('id', $deviceId)
+            ->where('uuid', $deviceUuid)
             ->first();
 
         if (!$device) {

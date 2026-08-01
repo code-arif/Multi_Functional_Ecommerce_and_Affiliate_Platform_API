@@ -7,9 +7,11 @@ use Modules\Auth\Models\User;
 use Modules\Orders\Models\Order;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class AffiliateEarning extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'user_id',
         'affiliate_product_id',

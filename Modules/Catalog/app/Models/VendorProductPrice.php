@@ -5,9 +5,11 @@ namespace Modules\Catalog\Models;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class VendorProductPrice extends Model
 {
+    use HasUuid;
     protected $table = 'vendor_product_prices';
 
     protected $fillable = [

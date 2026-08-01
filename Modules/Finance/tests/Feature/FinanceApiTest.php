@@ -81,7 +81,7 @@ class FinanceApiTest extends TestCase
             ->getJson('/api/v1/vendor/finance/transactions');
 
         $response->assertOk()
-            ->assertJsonStructure(['data' => [['id', 'type', 'amount', 'balance_before', 'balance_after', 'description', 'status']]]);
+            ->assertJsonStructure(['data' => [['uuid', 'type', 'amount', 'balance_before', 'balance_after', 'description', 'status']]]);
     }
 
     /** @test */
@@ -194,7 +194,7 @@ class FinanceApiTest extends TestCase
         // We'll use the route directly — middleware permissions depend on Spatie setup
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->postJson("/api/v1/admin/finance/commissions/{$commission->id}/approve");
+            ->postJson("/api/v1/admin/finance/commissions/{$commission->uuid}/approve");
 
         // May return 403 if admin lacks finance.manage permission — but the test
         // validates that the endpoint exists and the service logic works.

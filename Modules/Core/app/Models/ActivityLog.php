@@ -3,9 +3,11 @@
 namespace Modules\Core\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class ActivityLog extends Model
 {
+    use HasUuid;
     protected $table = 'activity_logs';
 
     protected $fillable = [

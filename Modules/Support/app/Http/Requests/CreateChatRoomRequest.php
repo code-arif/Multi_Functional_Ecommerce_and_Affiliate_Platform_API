@@ -14,7 +14,7 @@ class CreateChatRoomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'nullable|exists:orders,id',
+            'order_uuid' => 'nullable|exists:orders,uuid',
             'subject'  => 'required|string|max:255',
         ];
     }

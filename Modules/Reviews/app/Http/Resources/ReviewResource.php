@@ -9,14 +9,14 @@ class ReviewResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                    => $this->id,
+            'uuid' => $this->uuid,
             'user'                  => $this->whenLoaded('user', fn() => [
-                'id'     => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name'   => $this->user->name,
                 'avatar' => $this->user->avatar_url,
             ]),
-            'product_id'            => $this->product_id,
-            'order_id'              => $this->order_id,
+            'product_uuid'        => optional($this->product)?->uuid,
+            'order_uuid'        => optional($this->order)?->uuid,
             'rating'                => $this->rating,
             'title'                 => $this->title,
             'body'                  => $this->body,

@@ -4,9 +4,11 @@ namespace Modules\Core\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class City extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'country_id',
         'state_id',

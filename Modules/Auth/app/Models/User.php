@@ -19,9 +19,11 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Core\Traits\HasUuid;
 
 class User extends Authenticatable implements MustVerifyEmailContract
 {
+    use HasUuid;
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes, MustVerifyEmailTrait, HasRoles;
 
     protected $fillable = [

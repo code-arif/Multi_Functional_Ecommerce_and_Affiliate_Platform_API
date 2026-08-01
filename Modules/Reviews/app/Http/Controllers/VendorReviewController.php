@@ -35,8 +35,8 @@ class VendorReviewController
         if ($request->rating) {
             $query->where('rating', $request->rating);
         }
-        if ($request->product_id) {
-            $query->where('product_id', $request->product_id);
+        if ($request->product_uuid) {
+            $query->where('product_id', Product::findByUuid($request->product_uuid)?->id);
         }
         if ($request->has_vendor_response === 'true') {
             $query->whereNotNull('vendor_response');

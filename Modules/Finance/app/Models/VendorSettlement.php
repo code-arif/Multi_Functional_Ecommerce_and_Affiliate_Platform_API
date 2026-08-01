@@ -5,9 +5,11 @@ namespace Modules\Finance\Models;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class VendorSettlement extends Model
 {
+    use HasUuid;
     protected $table = 'vendor_settlements';
 
     protected $fillable = [

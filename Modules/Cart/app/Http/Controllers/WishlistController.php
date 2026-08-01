@@ -26,8 +26,8 @@ class WishlistController
 
     public function toggle(Request $request): JsonResponse
     {
-        $validated = $request->validate(['product_id' => 'required|exists:products,id']);
-        $result = $this->wishlistService->toggle($request->user(), $validated['product_id']);
+        $validated = $request->validate(['product_uuid' => 'required|exists:products,uuid']);
+        $result = $this->wishlistService->toggle($request->user(), $validated['product_uuid']);
 
         return $this->successResponse(
             ['wishlisted' => $result['wishlisted']],
@@ -38,7 +38,7 @@ class WishlistController
     public function moveToCart(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'product_uuid' => 'required|exists:products,uuid',
             'quantity'   => 'integer|min:1',
         ]);
 
@@ -46,7 +46,7 @@ class WishlistController
         $this->cartService->addItem($cart, $validated);
 
         // Remove from wishlist
-        $this->wishlistService->toggle($request->user(), $validated['product_id']);
+        $this->wishlistService->toggle($request->user(), $validated['product_uuid']);
 
         return $this->successResponse(null, 'Item moved to cart.');
     }

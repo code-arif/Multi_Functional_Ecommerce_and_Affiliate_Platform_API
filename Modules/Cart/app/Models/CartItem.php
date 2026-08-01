@@ -3,9 +3,11 @@
 namespace Modules\Cart\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class CartItem extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'cart_id',
         'product_id',

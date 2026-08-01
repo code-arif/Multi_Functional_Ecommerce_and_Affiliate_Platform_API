@@ -34,7 +34,7 @@ class CompareController
      * POST /api/v1/compare/{product}
      * Add a product to compare list.
      */
-    public function add(int $product, Request $request): JsonResponse
+    public function add(string $product, Request $request): JsonResponse
     {
         $list = $this->compareService->getCompareList(
             $request->user(),
@@ -54,7 +54,7 @@ class CompareController
      * DELETE /api/v1/compare/{product}
      * Remove a product from compare list.
      */
-    public function remove(int $product, Request $request): JsonResponse
+    public function remove(string $product, Request $request): JsonResponse
     {
         $list = $this->compareService->getCompareList(
             $request->user(),

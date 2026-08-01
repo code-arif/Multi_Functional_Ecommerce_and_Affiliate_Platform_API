@@ -64,7 +64,7 @@ class CatalogApiTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    '*' => ['id', 'name', 'slug'],
+                    '*' => ['uuid', 'name', 'slug'],
                 ],
             ]);
     }

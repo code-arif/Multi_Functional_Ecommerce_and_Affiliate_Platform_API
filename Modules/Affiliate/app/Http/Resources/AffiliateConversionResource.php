@@ -9,14 +9,14 @@ class AffiliateConversionResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                 => $this->id,
+            'uuid' => $this->uuid,
             'product'            => $this->whenLoaded('product', fn() => [
-                'id'    => $this->product->id,
+                'uuid' => $this->product?->uuid,
                 'title' => $this->product->title,
                 'slug'  => $this->product->slug,
             ]),
             'user'               => $this->whenLoaded('user', fn() => [
-                'id'   => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name' => $this->user->name,
             ]),
             'order_amount'       => (float) $this->order_amount,

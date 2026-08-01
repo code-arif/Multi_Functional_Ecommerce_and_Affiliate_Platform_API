@@ -9,14 +9,14 @@ class ProductListResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                  => $this->id,
+            'uuid' => $this->uuid,
             'category'            => $this->whenLoaded('category', fn() => [
-                'id'   => $this->category->id,
+                'uuid' => $this->category?->uuid,
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
             ]),
             'brand'               => $this->whenLoaded('brand', fn() => [
-                'id'   => $this->brand->id,
+                'uuid' => $this->brand?->uuid,
                 'name' => $this->brand->name,
                 'slug' => $this->brand->slug,
             ]),

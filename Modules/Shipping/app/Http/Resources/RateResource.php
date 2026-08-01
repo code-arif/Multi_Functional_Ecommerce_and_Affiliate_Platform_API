@@ -9,9 +9,9 @@ class RateResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                => $this->id,
-            'shipping_zone_id'  => $this->shipping_zone_id,
-            'courier_id'        => $this->courier_id,
+            'uuid' => $this->uuid,
+            'shipping_zone_uuid'        => optional($this->zone)?->uuid,
+            'courier_uuid'        => optional($this->courier)?->uuid,
             'name'              => $this->name,
             'method'            => $this->method,
             'base_rate'         => (float) $this->base_rate,

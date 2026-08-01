@@ -14,7 +14,7 @@ class StorePickupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'courier_id'      => 'required|exists:couriers,id',
+            'courier_uuid' => 'required|exists:couriers,uuid',
             'pickup_date'     => 'required|date|after_or_equal:today',
             'pickup_time_from' => 'required|date_format:H:i',
             'pickup_time_to'  => 'required|date_format:H:i|after:pickup_time_from',

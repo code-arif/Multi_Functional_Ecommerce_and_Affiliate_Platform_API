@@ -9,10 +9,10 @@ class AffiliateEarningResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
+            'uuid' => $this->uuid,
             'user_id'    => $this->user_id,
             'product'    => $this->whenLoaded('product', fn() => [
-                'id'    => $this->product->id,
+                'uuid' => $this->product?->uuid,
                 'title' => $this->product->title,
                 'slug'  => $this->product->slug,
             ]),

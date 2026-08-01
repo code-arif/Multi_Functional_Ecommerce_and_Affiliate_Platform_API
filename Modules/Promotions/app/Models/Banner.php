@@ -4,9 +4,11 @@ namespace Modules\Promotions\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Traits\HasUuid;
 
 class Banner extends Model
 {
+    use HasUuid;
     use SoftDeletes;
 
     protected $fillable = [

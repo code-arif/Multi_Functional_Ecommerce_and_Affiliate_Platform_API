@@ -9,8 +9,8 @@ class InvoiceResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'             => $this->id,
-            'order_id'       => $this->order_id,
+            'uuid' => $this->uuid,
+            'order_uuid'        => optional($this->order)?->uuid,
             'invoice_number' => $this->invoice_number,
             'subtotal'       => (float) $this->subtotal,
             'shipping_cost'  => (float) $this->shipping_cost,

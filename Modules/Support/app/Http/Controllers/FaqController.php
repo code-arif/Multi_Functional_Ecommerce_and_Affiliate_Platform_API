@@ -88,7 +88,13 @@ class FaqController
 
     public function store(StoreFaqRequest $request): JsonResponse
     {
-        $faq = Faq::create($request->validated());
+        $data = $request->validated();
+        if (!empty($data['category_uuid'])) {
+            $data['category_id'] = FaqCategory::findByUuidOrFail($data['category_uuid'])->id;
+        }
+        unset($data['category_uuid']);
+
+        $faq = Faq::create($data);
         return $this->createdResponse(new FaqResource($faq->load('category')), 'FAQ created.');
     }
 
@@ -99,7 +105,15 @@ class FaqController
 
     public function update(Faq $faq, UpdateFaqRequest $request): JsonResponse
     {
-        $faq->update($request->validated());
+        $data = $request->validated();
+        if (array_key_exists('category_uuid', $data)) {
+            $data['category_id'] = !empty($data['category_uuid'])
+                ? FaqCategory::findByUuidOrFail($data['category_uuid'])->id
+                : null;
+        }
+        unset($data['category_uuid']);
+
+        $faq->update($data);
         return $this->successResponse(new FaqResource($faq->fresh()->load('category')), 'FAQ updated.');
     }
 

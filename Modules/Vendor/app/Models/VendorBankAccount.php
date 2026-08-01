@@ -3,9 +3,11 @@
 namespace Modules\Vendor\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class VendorBankAccount extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'vendor_id',
         'bank_name',

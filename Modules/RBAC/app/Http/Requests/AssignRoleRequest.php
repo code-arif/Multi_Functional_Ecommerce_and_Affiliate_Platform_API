@@ -14,7 +14,7 @@ class AssignRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|integer|exists:users,id',
+            'user_uuid' => 'required|exists:users,uuid',
             'roles'   => 'required|array',
             'roles.*' => 'string|exists:roles,name',
         ];

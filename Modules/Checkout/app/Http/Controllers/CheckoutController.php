@@ -33,7 +33,7 @@ class CheckoutController
         $preview = $this->checkoutService->preview(
             $cart,
             $request->user(),
-            $request->only(['address_id', 'shipping_address', 'shipping_method'])
+            $request->only(['address_uuid', 'shipping_address', 'shipping_method'])
         );
 
         return $this->successResponse($preview, 'Order preview generated.');

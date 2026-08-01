@@ -23,7 +23,13 @@ class AdminFinanceController
 
     public function commissions(Request $request): JsonResponse
     {
-        $commissions = $this->financeService->getAllCommissions($request->only(['vendor_id', 'status', 'per_page']));
+        $filters = $request->only(['vendor_uuid', 'status', 'per_page']);
+        if (!empty($filters['vendor_uuid'])) {
+            $filters['vendor_id'] = \Modules\Vendor\Models\Vendor::findByUuid($filters['vendor_uuid'])?->id;
+        }
+        unset($filters['vendor_uuid']);
+
+        $commissions = $this->financeService->getAllCommissions($filters);
         return $this->paginatedResponse(CommissionResource::collection($commissions));
     }
 
@@ -37,7 +43,13 @@ class AdminFinanceController
 
     public function payouts(Request $request): JsonResponse
     {
-        $payouts = $this->financeService->getAllPayouts($request->only(['vendor_id', 'status', 'per_page']));
+        $filters = $request->only(['vendor_uuid', 'status', 'per_page']);
+        if (!empty($filters['vendor_uuid'])) {
+            $filters['vendor_id'] = \Modules\Vendor\Models\Vendor::findByUuid($filters['vendor_uuid'])?->id;
+        }
+        unset($filters['vendor_uuid']);
+
+        $payouts = $this->financeService->getAllPayouts($filters);
         return $this->paginatedResponse(PayoutResource::collection($payouts));
     }
 
@@ -65,12 +77,12 @@ class AdminFinanceController
     public function generateSettlement(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'vendor_id'  => 'required|exists:vendors,id',
+            'vendor_uuid' => 'required|exists:vendors,uuid',
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
         ]);
 
-        $vendor = \Modules\Vendor\Models\Vendor::findOrFail($validated['vendor_id']);
+        $vendor = \Modules\Vendor\Models\Vendor::findByUuidOrFail($validated['vendor_uuid']);
         $settlement = $this->financeService->generateSettlement($vendor, $validated['start_date'], $validated['end_date']);
 
         return $this->createdResponse(new SettlementResource($settlement), 'Settlement generated.');
@@ -85,7 +97,9 @@ class AdminFinanceController
     public function settlements(Request $request): JsonResponse
     {
         $query = VendorSettlement::with('vendor:id,shop_name');
-        if ($request->vendor_id) $query->where('vendor_id', $request->vendor_id);
+        if ($request->vendor_uuid) {
+            $query->where('vendor_id', \Modules\Vendor\Models\Vendor::findByUuid($request->vendor_uuid)?->id);
+        }
 
         return $this->paginatedResponse(SettlementResource::collection($query->latest()->paginate(20)));
     }

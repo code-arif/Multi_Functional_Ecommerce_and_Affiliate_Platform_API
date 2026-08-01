@@ -26,14 +26,14 @@ class CustomerDisputeController
 
     public function store(StoreDisputeRequest $request): JsonResponse
     {
-        $order = Order::findOrFail($request->order_id);
+        $order = Order::findByUuidOrFail($request->order_uuid);
 
         if ($order->user_id !== $request->user()->id) {
             return $this->errorResponse('Order does not belong to you.', null, 403);
         }
 
         $dispute = Dispute::create([
-            'order_id'    => $request->order_id,
+            'order_id'    => $order->id,
             'customer_id' => $request->user()->id,
             'vendor_id'   => $order->vendor_id,
             'subject'     => $request->subject,

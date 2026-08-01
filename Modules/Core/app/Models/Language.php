@@ -3,9 +3,11 @@
 namespace Modules\Core\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class Language extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'name',
         'code',

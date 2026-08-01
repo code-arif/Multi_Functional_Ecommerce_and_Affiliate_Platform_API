@@ -5,9 +5,11 @@ namespace Modules\Finance\Models;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class VendorPayoutRequest extends Model
 {
+    use HasUuid;
     protected $table = 'vendor_payout_requests';
 
     protected $fillable = [

@@ -9,8 +9,8 @@ class AffiliateProductResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
-            'category_id'      => $this->category_id,
+            'uuid' => $this->uuid,
+            'category_uuid'        => optional($this->category)?->uuid,
             'title'            => $this->title,
             'slug'             => $this->slug,
             'description'      => $this->description,

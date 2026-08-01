@@ -98,7 +98,7 @@ class ReviewApiTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'sanctum')
             ->postJson('/api/v1/reviews', [
-                'product_id' => $this->product->id,
+                'product_uuid' => $this->product->uuid,
                 'rating'     => 5,
                 'title'      => 'Amazing!',
                 'body'       => 'This product is amazing!',
@@ -130,7 +130,7 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/v1/reviews/{$pendingReview->id}", [
+            ->putJson("/api/v1/reviews/{$pendingReview->uuid}", [
                 'rating' => 4,
                 'body'   => 'Updated: Better than I thought!',
             ]);
@@ -143,7 +143,7 @@ class ReviewApiTest extends TestCase
     public function user_cannot_update_approved_review(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->putJson("/api/v1/reviews/{$this->review->id}", [
+            ->putJson("/api/v1/reviews/{$this->review->uuid}", [
                 'rating' => 5,
             ]);
 
@@ -164,7 +164,7 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($otherUser, 'sanctum')
-            ->putJson("/api/v1/reviews/{$pendingReview->id}", [
+            ->putJson("/api/v1/reviews/{$pendingReview->uuid}", [
                 'body' => 'Hacked!',
             ]);
 
@@ -183,7 +183,7 @@ class ReviewApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/v1/reviews/{$ownReview->id}");
+            ->deleteJson("/api/v1/reviews/{$ownReview->uuid}");
 
         $response->assertOk();
         $this->assertSoftDeleted($ownReview);
@@ -193,7 +193,7 @@ class ReviewApiTest extends TestCase
     public function user_can_mark_review_helpful(): void
     {
         $response = $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/v1/reviews/{$this->review->id}/helpful");
+            ->postJson("/api/v1/reviews/{$this->review->uuid}/helpful");
 
         $response->assertOk()
             ->assertJsonPath('data.action', 'voted')
@@ -205,11 +205,11 @@ class ReviewApiTest extends TestCase
     {
         // First mark as helpful
         $this->actingAs($this->user, 'sanctum')
-            ->postJson("/api/v1/reviews/{$this->review->id}/helpful");
+            ->postJson("/api/v1/reviews/{$this->review->uuid}/helpful");
 
         // Then unmark
         $response = $this->actingAs($this->user, 'sanctum')
-            ->deleteJson("/api/v1/reviews/{$this->review->id}/helpful");
+            ->deleteJson("/api/v1/reviews/{$this->review->uuid}/helpful");
 
         $response->assertOk()
             ->assertJsonPath('data.action', 'unvoted')
@@ -220,7 +220,7 @@ class ReviewApiTest extends TestCase
     public function vendor_can_respond_to_review(): void
     {
         $response = $this->actingAs($this->vendorUser, 'sanctum')
-            ->postJson("/api/v1/vendor/reviews/{$this->review->id}/respond", [
+            ->postJson("/api/v1/vendor/reviews/{$this->review->uuid}/respond", [
                 'response' => 'Thank you for your feedback!',
             ]);
 
@@ -234,7 +234,7 @@ class ReviewApiTest extends TestCase
         $regularUser = User::factory()->create(['email' => 'regular@example.com', 'status' => 'active']);
 
         $response = $this->actingAs($regularUser, 'sanctum')
-            ->postJson("/api/v1/vendor/reviews/{$this->review->id}/respond", [
+            ->postJson("/api/v1/vendor/reviews/{$this->review->uuid}/respond", [
                 'response' => 'Spam response.',
             ]);
 
@@ -284,7 +284,7 @@ class ReviewApiTest extends TestCase
     public function unauthenticated_user_cannot_create_review(): void
     {
         $response = $this->postJson('/api/v1/reviews', [
-            'product_id' => $this->product->id,
+            'product_uuid' => $this->product->uuid,
             'rating'     => 5,
             'body'       => 'Unauthenticated!',
         ]);

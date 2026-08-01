@@ -26,7 +26,7 @@ class CategoryController
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapParentUuid($request->validated());
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('categories', 'public');
@@ -42,7 +42,7 @@ class CategoryController
 
     public function update(Category $category, UpdateCategoryRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        $data = $this->mapParentUuid($request->validated());
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('categories', 'public');
@@ -54,6 +54,20 @@ class CategoryController
         $category->update($data);
 
         return $this->successResponse(new CategoryResource($category->fresh()->load('parent')), 'Category updated.');
+    }
+
+    /**
+     * Map public parent_uuid reference to internal parent_id.
+     */
+    private function mapParentUuid(array $data): array
+    {
+        if (array_key_exists('parent_uuid', $data)) {
+            $data['parent_id'] = !empty($data['parent_uuid'])
+                ? Category::findByUuidOrFail($data['parent_uuid'])->id
+                : null;
+        }
+        unset($data['parent_uuid']);
+        return $data;
     }
 
     public function destroy(Category $category): JsonResponse

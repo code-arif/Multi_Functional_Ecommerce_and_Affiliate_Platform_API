@@ -5,9 +5,11 @@ namespace Modules\Shipping\Models;
 use Modules\Shipping\Models\Shipment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class TrackingHistory extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'shipment_id',
         'status',

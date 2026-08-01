@@ -21,7 +21,7 @@ class PromotionController
     public function index(Request $request): JsonResponse
     {
         $promotions = $this->promotionService->getActivePromotions(
-            $request->only(['type', 'product_id'])
+            $request->only(['type', 'product_uuid'])
         );
 
         return $this->successResponse(PromotionResource::collection($promotions));

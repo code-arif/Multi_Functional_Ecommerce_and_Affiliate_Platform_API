@@ -20,8 +20,8 @@ class RateController
     public function index(Request $request): JsonResponse
     {
         $rates = ShippingRate::with(['courier', 'zone'])
-            ->when($request->shipping_zone_id, fn($q, $v) => $q->where('shipping_zone_id', $v))
-            ->when($request->courier_id, fn($q, $v) => $q->where('courier_id', $v))
+            ->when($request->shipping_zone_uuid, fn($q, $v) => $q->where('shipping_zone_id', \Modules\Shipping\Models\ShippingZone::findByUuid($v)?->id))
+            ->when($request->courier_uuid, fn($q, $v) => $q->where('courier_id', \Modules\Shipping\Models\Courier::findByUuid($v)?->id))
             ->when($request->method, fn($q, $v) => $q->byMethod($v))
             ->when($request->boolean('active_only'), fn($q) => $q->active())
             ->orderBy('base_rate')
@@ -38,14 +38,31 @@ class RateController
 
     public function store(StoreRateRequest $request): JsonResponse
     {
-        $rate = ShippingRate::create($request->validated());
+        $data = $this->mapUuids($request->validated());
+        $rate = ShippingRate::create($data);
         return $this->createdResponse(new RateResource($rate->load('courier', 'zone')), 'Rate created.');
     }
 
     public function update(UpdateRateRequest $request, ShippingRate $rate): JsonResponse
     {
-        $rate->update($request->validated());
+        $data = $this->mapUuids($request->validated());
+        $rate->update($data);
         return $this->successResponse(new RateResource($rate->fresh()->load('courier', 'zone')), 'Rate updated.');
+    }
+
+    /**
+     * Map public uuid references to internal foreign keys.
+     */
+    private function mapUuids(array $data): array
+    {
+        if (!empty($data['shipping_zone_uuid'])) {
+            $data['shipping_zone_id'] = \Modules\Shipping\Models\ShippingZone::findByUuidOrFail($data['shipping_zone_uuid'])->id;
+        }
+        if (!empty($data['courier_uuid'])) {
+            $data['courier_id'] = \Modules\Shipping\Models\Courier::findByUuidOrFail($data['courier_uuid'])->id;
+        }
+        unset($data['shipping_zone_uuid'], $data['courier_uuid']);
+        return $data;
     }
 
     public function destroy(ShippingRate $rate): JsonResponse
@@ -60,13 +77,13 @@ class RateController
     public function calculate(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'rate_id'    => 'required|exists:shipping_rates,id',
+            'rate_uuid'  => 'required|exists:shipping_rates,uuid',
             'weight'     => 'nullable|numeric|min:0',
             'item_count' => 'nullable|integer|min:1',
         ]);
 
         $cost = $this->shippingService->calculateCost(
-            $validated['rate_id'],
+            \Modules\Shipping\Models\ShippingRate::findByUuidOrFail($validated['rate_uuid'])->id,
             $validated['weight'] ?? 0,
             $validated['item_count'] ?? 1
         );

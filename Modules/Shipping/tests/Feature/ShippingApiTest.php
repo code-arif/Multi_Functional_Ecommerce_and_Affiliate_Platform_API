@@ -101,7 +101,7 @@ describe('Courier CRUD', function () {
         $courier = shippingCreateCourier();
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->putJson("/api/v1/admin/shipping/couriers/{$courier->id}", [
+            ->putJson("/api/v1/admin/shipping/couriers/{$courier->uuid}", [
                 'display_name' => 'Updated Name',
             ]);
 
@@ -114,7 +114,7 @@ describe('Courier CRUD', function () {
         $courier = shippingCreateCourier();
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->deleteJson("/api/v1/admin/shipping/couriers/{$courier->id}");
+            ->deleteJson("/api/v1/admin/shipping/couriers/{$courier->uuid}");
 
         $response->assertOk();
         $this->assertSoftDeleted('couriers', ['id' => $courier->id]);
@@ -163,7 +163,7 @@ describe('Zone CRUD', function () {
         $zone = shippingCreateZone();
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->putJson("/api/v1/admin/shipping/zones/{$zone->id}", [
+            ->putJson("/api/v1/admin/shipping/zones/{$zone->uuid}", [
                 'description' => 'Updated description',
             ]);
 
@@ -175,7 +175,7 @@ describe('Zone CRUD', function () {
         $zone = shippingCreateZone();
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->deleteJson("/api/v1/admin/shipping/zones/{$zone->id}");
+            ->deleteJson("/api/v1/admin/shipping/zones/{$zone->uuid}");
 
         $response->assertOk();
         $this->assertSoftDeleted('shipping_zones', ['id' => $zone->id]);
@@ -195,8 +195,8 @@ describe('Rate CRUD', function () {
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/shipping/rates', [
-                'shipping_zone_id'   => $zone->id,
-                'courier_id'         => $courier->id,
+                'shipping_zone_uuid' => $zone->uuid,
+                'courier_uuid'       => $courier->uuid,
                 'name'               => 'Express Delivery',
                 'method'             => 'express',
                 'base_rate'          => 150.00,
@@ -233,7 +233,7 @@ describe('Rate CRUD', function () {
 
         $response = $this->actingAs($admin, 'sanctum')
             ->postJson('/api/v1/admin/shipping/rates/calculate', [
-                'rate_id'    => $rate->id,
+                'rate_uuid'  => $rate->uuid,
                 'weight'     => 5,
                 'item_count' => 2,
             ]);
@@ -293,7 +293,7 @@ describe('Shipment Management', function () {
         $shipment = app(\Modules\Shipping\Services\ShippingService::class)->createShipmentFromOrder($order);
 
         $response = $this->actingAs($admin, 'sanctum')
-            ->postJson("/api/v1/admin/shipping/shipments/{$shipment->id}/status", [
+            ->postJson("/api/v1/admin/shipping/shipments/{$shipment->uuid}/status", [
                 'status'      => 'in_transit',
                 'description' => 'Package shipped via air.',
                 'location'    => 'Dhaka Hub',

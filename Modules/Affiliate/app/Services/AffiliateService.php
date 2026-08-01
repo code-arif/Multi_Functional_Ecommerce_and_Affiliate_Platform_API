@@ -136,9 +136,9 @@ class AffiliateService
     /**
      * Mark earnings as paid.
      */
-    public function markAsPaid(array $earningIds): int
+    public function markAsPaid(array $earningUuids): int
     {
-        return AffiliateEarning::whereIn('id', $earningIds)
+        return AffiliateEarning::whereIn('uuid', $earningUuids)
             ->where('status', 'available')
             ->update([
                 'status'  => 'paid',

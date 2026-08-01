@@ -21,17 +21,25 @@ class SearchController
     public function search(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'q'           => 'nullable|string|min:2|max:200',
-            'category_id' => 'nullable|integer|exists:categories,id',
-            'brand_id'    => 'nullable|integer|exists:brands,id',
-            'min_price'   => 'nullable|numeric|min:0',
-            'max_price'   => 'nullable|numeric|min:0',
-            'in_stock'    => 'nullable|boolean',
-            'rating'      => 'nullable|numeric|min:1|max:5',
-            'sort'        => 'nullable|in:relevance,price_asc,price_desc,newest,popular,rating',
-            'per_page'    => 'nullable|integer|min:1|max:100',
-            'page'        => 'nullable|integer|min:1',
+            'q'             => 'nullable|string|min:2|max:200',
+            'category_uuid' => 'nullable|exists:categories,uuid',
+            'brand_uuid'    => 'nullable|exists:brands,uuid',
+            'min_price'     => 'nullable|numeric|min:0',
+            'max_price'     => 'nullable|numeric|min:0',
+            'in_stock'      => 'nullable|boolean',
+            'rating'        => 'nullable|numeric|min:1|max:5',
+            'sort'          => 'nullable|in:relevance,price_asc,price_desc,newest,popular,rating',
+            'per_page'      => 'nullable|integer|min:1|max:100',
+            'page'          => 'nullable|integer|min:1',
         ]);
+
+        // Map public uuid filters to internal integer ids for the search service
+        if (!empty($validated['category_uuid'])) {
+            $validated['category_id'] = \Modules\Catalog\Models\Category::findByUuidOrFail($validated['category_uuid'])->id;
+        }
+        if (!empty($validated['brand_uuid'])) {
+            $validated['brand_id'] = \Modules\Catalog\Models\Brand::findByUuidOrFail($validated['brand_uuid'])->id;
+        }
 
         $results = $this->searchService->search(
             $validated['q'] ?? '',
@@ -77,7 +85,9 @@ class SearchController
     public function priceRange(Request $request): JsonResponse
     {
         $range = $this->searchService->priceRange(
-            $request->only(['category_id'])
+            $request->filled('category_uuid')
+                ? ['category_id' => \Modules\Catalog\Models\Category::findByUuid($request->category_uuid)?->id]
+                : []
         );
 
         return $this->successResponse($range, 'Price range');

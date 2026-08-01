@@ -16,8 +16,8 @@ class UpdateProductRequest extends FormRequest
         $productId = $this->route('product')?->id ?? $this->route('product');
 
         return [
-            'category_id' => 'sometimes|exists:categories,id',
-            'brand_id'    => 'nullable|exists:brands,id',
+            'category_uuid' => 'sometimes|exists:categories,uuid',
+            'brand_uuid' => 'nullable|exists:brands,uuid',
             'name'        => 'sometimes|string|max:200',
             'sku'         => 'sometimes|string|max:100|unique:products,sku,' . $productId,
             'type'        => 'sometimes|string|in:simple,variable',

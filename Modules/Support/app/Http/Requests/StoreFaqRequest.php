@@ -14,7 +14,7 @@ class StoreFaqRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => 'nullable|exists:faq_categories,id',
+            'category_uuid' => 'nullable|exists:faq_categories,uuid',
             'question'    => 'required|string|max:500',
             'answer'      => 'required|string',
             'sort_order'  => 'nullable|integer|min:0',

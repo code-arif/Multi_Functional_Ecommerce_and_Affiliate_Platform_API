@@ -3,9 +3,11 @@
 namespace Modules\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class ChatMessage extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'chat_room_id',
         'sender_id',

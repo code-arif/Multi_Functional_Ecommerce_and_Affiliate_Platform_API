@@ -51,12 +51,12 @@ class AdminPromotionController
             'tiers.*.from'      => 'required|integer|min:1',
             'tiers.*.value'     => 'required|numeric|min:0',
             'applies_to'        => 'required|in:all,products,categories,vendors',
-            'product_ids'       => 'nullable|array',
-            'product_ids.*'     => 'exists:products,id',
-            'category_ids'      => 'nullable|array',
-            'category_ids.*'    => 'exists:categories,id',
-            'vendor_ids'        => 'nullable|array',
-            'vendor_ids.*'      => 'exists:vendors,id',
+            'product_uuids'     => 'nullable|array',
+            'product_uuids.*'   => 'exists:products,uuid',
+            'category_uuids'    => 'nullable|array',
+            'category_uuids.*'  => 'exists:categories,uuid',
+            'vendor_uuids'      => 'nullable|array',
+            'vendor_uuids.*'    => 'exists:vendors,uuid',
             'usage_limit'       => 'nullable|integer|min:1',
             'usage_per_user'    => 'nullable|integer|min:1',
             'is_active'         => 'boolean',
@@ -67,7 +67,7 @@ class AdminPromotionController
             'sort_order'        => 'nullable|integer|min:0',
         ]);
 
-        $promotion = $this->promotionService->createPromotion($validated);
+        $promotion = $this->promotionService->createPromotion($this->mapUuids($validated));
 
         return $this->createdResponse(new PromotionResource($promotion), 'Promotion created.');
     }
@@ -100,9 +100,9 @@ class AdminPromotionController
             'discount_on'       => 'nullable|in:cheapest,all',
             'tiers'             => 'nullable|array',
             'applies_to'        => 'sometimes|in:all,products,categories,vendors',
-            'product_ids'       => 'nullable|array',
-            'category_ids'      => 'nullable|array',
-            'vendor_ids'        => 'nullable|array',
+            'product_uuids'     => 'nullable|array',
+            'category_uuids'    => 'nullable|array',
+            'vendor_uuids'      => 'nullable|array',
             'usage_limit'       => 'nullable|integer|min:1',
             'usage_per_user'    => 'nullable|integer|min:1',
             'is_active'         => 'boolean',
@@ -113,7 +113,7 @@ class AdminPromotionController
             'sort_order'        => 'nullable|integer|min:0',
         ]);
 
-        $promotion = $this->promotionService->updatePromotion($promotion, $validated);
+        $promotion = $this->promotionService->updatePromotion($promotion, $this->mapUuids($validated));
 
         return $this->successResponse(new PromotionResource($promotion), 'Promotion updated.');
     }
@@ -139,6 +139,26 @@ class AdminPromotionController
         $this->promotionService->deletePromotion($promotion);
 
         return $this->successResponse(null, 'Promotion deleted.');
+    }
+
+    /**
+     * Map public uuid arrays to internal id arrays (products/categories/vendors).
+     */
+    private function mapUuids(array $data): array
+    {
+        if (isset($data['product_uuids'])) {
+            $data['product_ids'] = \Modules\Catalog\Models\Product::whereIn('uuid', $data['product_uuids'])->pluck('id')->all();
+            unset($data['product_uuids']);
+        }
+        if (isset($data['category_uuids'])) {
+            $data['category_ids'] = \Modules\Catalog\Models\Category::whereIn('uuid', $data['category_uuids'])->pluck('id')->all();
+            unset($data['category_uuids']);
+        }
+        if (isset($data['vendor_uuids'])) {
+            $data['vendor_ids'] = \Modules\Vendor\Models\Vendor::whereIn('uuid', $data['vendor_uuids'])->pluck('id')->all();
+            unset($data['vendor_uuids']);
+        }
+        return $data;
     }
 
     /**

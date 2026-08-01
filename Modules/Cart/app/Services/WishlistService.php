@@ -15,8 +15,10 @@ class WishlistService
             ->get();
     }
 
-    public function toggle(User $user, int $productId): array
+    public function toggle(User $user, string $productUuid): array
     {
+        $productId = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid)->id;
+
         $existing = Wishlist::where('user_id', $user->id)
             ->where('product_id', $productId)
             ->first();

@@ -33,9 +33,9 @@ class RecentlyViewedController
      * POST /api/v1/recently-viewed/{product}
      * Track a product view.
      */
-    public function track(int $product, Request $request): JsonResponse
+    public function track(string $product, Request $request): JsonResponse
     {
-        $productModel = \Modules\Catalog\Models\Product::findOrFail($product);
+        $productModel = \Modules\Catalog\Models\Product::findByUuidOrFail($product);
 
         $this->recentlyViewedService->track(
             $productModel,

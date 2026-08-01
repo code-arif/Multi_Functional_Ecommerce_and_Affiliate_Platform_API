@@ -14,7 +14,7 @@ class AssignCourierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'courier_id'        => 'required|exists:couriers,id',
+            'courier_uuid' => 'required|exists:couriers,uuid',
             'tracking_number'   => 'nullable|string|max:100',
             'carrier_tracking_code' => 'nullable|string|max:100',
             'shipping_cost'     => 'nullable|numeric|min:0',

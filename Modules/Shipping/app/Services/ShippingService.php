@@ -187,7 +187,7 @@ class ShippingService
     {
         $pickup = PickupRequest::create([
             'vendor_id'       => $vendorId,
-            'courier_id'      => $data['courier_id'],
+            'courier_id'      => Courier::findByUuidOrFail($data['courier_uuid'])->id,
             'status'          => PickupRequest::STATUS_PENDING,
             'pickup_date'     => $data['pickup_date'],
             'pickup_time_from' => $data['pickup_time_from'],

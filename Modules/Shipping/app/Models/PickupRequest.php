@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Modules\Core\Traits\HasUuid;
 
 class PickupRequest extends Model
 {
+    use HasUuid;
     use SoftDeletes;
 
     protected $fillable = [

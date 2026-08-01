@@ -9,7 +9,7 @@ class SettlementResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
+            'uuid' => $this->uuid,
             'vendor_id'        => $this->vendor_id,
             'period_label'     => $this->period_label,
             'period_start'     => $this->period_start,

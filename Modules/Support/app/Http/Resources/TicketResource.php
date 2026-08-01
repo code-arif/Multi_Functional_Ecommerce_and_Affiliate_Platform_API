@@ -9,7 +9,7 @@ class TicketResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'             => $this->id,
+            'uuid' => $this->uuid,
             'ticket_number'  => $this->ticket_number,
             'subject'        => $this->subject,
             'description'    => $this->description,
@@ -17,17 +17,17 @@ class TicketResource extends JsonResource
             'priority'       => $this->priority,
             'status'         => $this->status,
             'user'           => $this->whenLoaded('user', fn() => [
-                'id'   => $this->user->id,
+                'uuid' => $this->user?->uuid,
                 'name' => $this->user->name,
                 'email' => $this->user->email,
             ]),
-            'order_id'       => $this->order_id,
+            'order_uuid'        => optional($this->order)?->uuid,
             'vendor'         => $this->whenLoaded('vendor', fn() => [
-                'id'   => $this->vendor->id,
+                'uuid' => $this->vendor?->uuid,
                 'name' => $this->vendor->name,
             ]),
             'assigned_to'    => $this->whenLoaded('assignedTo', fn() => [
-                'id'   => $this->assignedTo->id,
+                'uuid' => $this->assignedTo?->uuid,
                 'name' => $this->assignedTo->name,
             ]),
             'messages'       => TicketMessageResource::collection($this->whenLoaded('messages')),

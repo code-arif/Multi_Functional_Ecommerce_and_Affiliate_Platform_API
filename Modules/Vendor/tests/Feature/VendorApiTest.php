@@ -78,7 +78,7 @@ it('lists active vendors for guests', function () {
 
     $response->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonStructure(['data' => [['id', 'shop_name', 'slug']]]);
+        ->assertJsonStructure(['data' => [['uuid', 'shop_name', 'slug']]]);
 });
 
 it('shows a public vendor page by slug', function () {
@@ -304,10 +304,10 @@ it('shows vendor details to admin', function () {
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->getJson("/api/v1/admin/vendors/{$vendor->id}");
+        ->getJson("/api/v1/admin/vendors/{$vendor->uuid}");
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $vendor->id);
+        ->assertJsonPath('data.uuid', $vendor->uuid);
 });
 
 it('allows admin to approve a pending vendor', function () {
@@ -317,7 +317,7 @@ it('allows admin to approve a pending vendor', function () {
     $pendingVendor = makeVendor($pendingUser, 'pending', 'Approve Shop');
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/approve");
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->uuid}/approve");
 
     $response->assertOk()
         ->assertJsonPath('data.status', 'active');
@@ -335,7 +335,7 @@ it('allows admin to reject a pending vendor', function () {
     $pendingVendor = makeVendor($pendingUser, 'pending', 'Reject Shop');
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/reject", [
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->uuid}/reject", [
             'reason' => 'Incomplete KYC documents',
         ]);
 
@@ -356,7 +356,7 @@ it('requires reason when rejecting', function () {
     $pendingVendor = makeVendor($pendingUser, 'pending', 'No Reason');
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/reject", []);
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->uuid}/reject", []);
 
     $response->assertStatus(422);
 });
@@ -368,7 +368,7 @@ it('allows admin to suspend an active vendor', function () {
     $vendor = makeVendor($vendorUser);
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/{$vendor->id}/suspend", [
+        ->postJson("/api/v1/admin/vendors/{$vendor->uuid}/suspend", [
             'reason' => 'Violation of terms',
         ]);
 
@@ -396,7 +396,7 @@ it('allows admin to verify a document', function () {
     ]);
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/documents/{$document->id}/verify");
+        ->postJson("/api/v1/admin/vendors/documents/{$document->uuid}/verify");
 
     $response->assertOk()
         ->assertJsonPath('data.status', 'verified');
@@ -422,7 +422,7 @@ it('allows admin to reject a document', function () {
     ]);
 
     $response = $this->actingAs($admin, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/documents/{$document->id}/reject", [
+        ->postJson("/api/v1/admin/vendors/documents/{$document->uuid}/reject", [
             'reason' => 'Document is illegible',
         ]);
 
@@ -449,7 +449,7 @@ it('prevents vendor from self-approving via admin endpoint', function () {
     $pendingVendor = makeVendor($vendorUser, 'pending', 'Self Approve');
 
     $response = $this->actingAs($vendorUser, 'sanctum')
-        ->postJson("/api/v1/admin/vendors/{$pendingVendor->id}/approve");
+        ->postJson("/api/v1/admin/vendors/{$pendingVendor->uuid}/approve");
 
     $response->assertStatus(403);
 });

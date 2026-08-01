@@ -3,9 +3,11 @@
 namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
 
 class Device extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'user_id',
         'device_name',

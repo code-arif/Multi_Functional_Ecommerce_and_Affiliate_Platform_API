@@ -22,8 +22,8 @@ class ShipmentController
     {
         $shipments = Shipment::with(['courier', 'order'])
             ->when($request->status, fn($q, $v) => $q->byStatus($v))
-            ->when($request->order_id, fn($q, $v) => $q->where('order_id', $v))
-            ->when($request->vendor_id, fn($q, $v) => $q->where('vendor_id', $v))
+            ->when($request->order_uuid, fn($q, $v) => $q->where('order_id', \Modules\Orders\Models\Order::findByUuid($v)?->id))
+            ->when($request->vendor_uuid, fn($q, $v) => $q->where('vendor_id', \Modules\Vendor\Models\Vendor::findByUuid($v)?->id))
             ->when($request->tracking, fn($q, $v) =>
                 $q->where('tracking_number', 'like', "%{$v}%")
             )
@@ -48,7 +48,7 @@ class ShipmentController
         $shipments = Shipment::with(['courier', 'order'])
             ->where('vendor_id', $vendor->id)
             ->when($request->status, fn($q, $v) => $q->byStatus($v))
-            ->when($request->order_id, fn($q, $v) => $q->where('order_id', $v))
+            ->when($request->order_uuid, fn($q, $v) => $q->where('order_id', \Modules\Orders\Models\Order::findByUuid($v)?->id))
             ->when($request->tracking, fn($q, $v) =>
                 $q->where('tracking_number', 'like', "%{$v}%")
             )
@@ -128,7 +128,7 @@ class ShipmentController
     {
         $shipment = $this->shippingService->assignCourier(
             $shipment->id,
-            $request->validated('courier_id'),
+            \Modules\Shipping\Models\Courier::findByUuidOrFail($request->validated('courier_uuid'))->id,
             $request->validated('tracking_number')
         );
 

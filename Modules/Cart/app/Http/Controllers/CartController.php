@@ -23,8 +23,8 @@ class CartController
     public function addItem(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'variant_id' => 'nullable|exists:product_variants,id',
+            'product_uuid' => 'required|exists:products,uuid',
+            'variant_uuid' => 'nullable|exists:product_variants,uuid',
             'quantity'   => 'integer|min:1|max:' . config('ecommerce.cart.max_quantity', 100),
             'unit_price' => 'nullable|numeric|min:0',
         ]);
@@ -40,14 +40,14 @@ class CartController
         return $this->createdResponse(new CartResource($cart->fresh()->load('items.product', 'items.variant')));
     }
 
-    public function updateItem(int $item, Request $request): JsonResponse
+    public function updateItem(string $item, Request $request): JsonResponse
     {
         $validated = $request->validate([
             'quantity' => 'required|integer|min:0|max:' . config('ecommerce.cart.max_quantity', 100),
         ]);
 
         $cart = $this->cartService->getCart($request->user(), $request->header('X-Session-ID'));
-        $cartItem = $cart->items()->findOrFail($item);
+        $cartItem = $cart->items()->where('uuid', $item)->firstOrFail();
 
         $this->cartService->updateItem($cartItem, $validated);
 
@@ -57,10 +57,10 @@ class CartController
         );
     }
 
-    public function removeItem(int $item, Request $request): JsonResponse
+    public function removeItem(string $item, Request $request): JsonResponse
     {
         $cart = $this->cartService->getCart($request->user(), $request->header('X-Session-ID'));
-        $cartItem = $cart->items()->findOrFail($item);
+        $cartItem = $cart->items()->where('uuid', $item)->firstOrFail();
         $this->cartService->removeItem($cartItem);
 
         return $this->noContentResponse('Item removed from cart.');

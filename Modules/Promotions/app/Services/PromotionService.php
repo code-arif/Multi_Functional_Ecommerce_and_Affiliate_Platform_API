@@ -21,8 +21,8 @@ class PromotionService
         if (!empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
-        if (!empty($filters['product_id'])) {
-            $product = Product::find($filters['product_id']);
+        if (!empty($filters['product_uuid'])) {
+            $product = Product::findByUuid($filters['product_uuid']);
             if ($product) {
                 $query->where(function ($q) use ($product) {
                     $q->where('applies_to', 'all')

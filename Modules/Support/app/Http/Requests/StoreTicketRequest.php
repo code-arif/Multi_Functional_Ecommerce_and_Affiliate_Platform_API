@@ -14,7 +14,7 @@ class StoreTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id'   => 'nullable|exists:orders,id',
+            'order_uuid' => 'nullable|exists:orders,uuid',
             'category'   => 'required|string|in:general,order,payment,shipping,refund,technical,other',
             'subject'    => 'required|string|max:255',
             'description' => 'required|string|max:5000',

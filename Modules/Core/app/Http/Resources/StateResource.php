@@ -9,10 +9,10 @@ class StateResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
+            'uuid' => $this->uuid,
             'country_id' => $this->country_id,
             'country'    => $this->whenLoaded('country', fn() => [
-                'id'   => $this->country->id,
+                'uuid' => $this->country?->uuid,
                 'name' => $this->country->name,
                 'iso2' => $this->country->iso2,
             ]),

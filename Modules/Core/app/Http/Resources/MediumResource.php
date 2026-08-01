@@ -9,7 +9,7 @@ class MediumResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'            => $this->id,
+            'uuid' => $this->uuid,
             'url'           => $this->url,
             'file_name'     => $this->file_name,
             'original_name' => $this->original_name,

@@ -22,13 +22,14 @@ class PaymentController
     public function process(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'order_id'       => 'required|exists:orders,id',
+            'order_uuid'     => 'required|exists:orders,uuid',
             'payment_method' => 'required|string|in:cod,stripe',
             'token'          => 'required_if:payment_method,stripe|string',
         ]);
 
-        $order = \Modules\Orders\Models\Order::where('user_id', $request->user()->id)
-            ->findOrFail($validated['order_id']);
+        $order = \Modules\Orders\Models\Order::where('uuid', $validated['order_uuid'])
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
 
         if ($order->payment_status === 'paid') {
             return $this->errorResponse('Order is already paid.', null, 400);
@@ -92,9 +93,9 @@ class PaymentController
      * DELETE /api/v1/payments/methods/{method}
      * Delete a saved payment method.
      */
-    public function destroyMethod(int $method, Request $request): JsonResponse
+    public function destroyMethod(string $method, Request $request): JsonResponse
     {
-        $methodModel = \Modules\Payments\Models\PaymentMethod::findOrFail($method);
+        $methodModel = \Modules\Payments\Models\PaymentMethod::findByUuidOrFail($method);
         $this->paymentService->deletePaymentMethod($methodModel, $request->user());
 
         return $this->noContentResponse('Payment method removed.');

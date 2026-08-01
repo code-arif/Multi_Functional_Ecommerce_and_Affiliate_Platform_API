@@ -54,7 +54,7 @@ it('shows a country with its states', function () {
     $country = Country::create(['name' => 'Bangladesh', 'iso2' => 'BD', 'iso3' => 'BGD', 'phone_code' => '880', 'is_active' => true]);
     $state = $country->states()->create(['name' => 'Dhaka', 'is_active' => true]);
 
-    $response = $this->getJson("/api/v1/core/countries/{$country->id}");
+    $response = $this->getJson("/api/v1/core/countries/{$country->uuid}");
 
     $response->assertOk()
         ->assertJsonPath('success', true);
@@ -65,7 +65,7 @@ it('lists states for a country', function () {
     $country->states()->create(['name' => 'Dhaka', 'is_active' => true]);
     $country->states()->create(['name' => 'Chittagong', 'is_active' => true]);
 
-    $response = $this->getJson("/api/v1/core/countries/{$country->id}/states");
+    $response = $this->getJson("/api/v1/core/countries/{$country->uuid}/states");
 
     $response->assertOk()
         ->assertJsonPath('success', true);
@@ -76,7 +76,7 @@ it('shows a state with cities', function () {
     $state = $country->states()->create(['name' => 'Dhaka', 'country_id' => $country->id, 'is_active' => true]);
     $state->cities()->create(['name' => 'Dhaka City', 'state_id' => $state->id, 'country_id' => $country->id, 'is_active' => true]);
 
-    $response = $this->getJson("/api/v1/core/states/{$state->id}");
+    $response = $this->getJson("/api/v1/core/states/{$state->uuid}");
 
     $response->assertOk()
         ->assertJsonPath('success', true);
@@ -88,7 +88,7 @@ it('lists cities for a state', function () {
     $state->cities()->create(['name' => 'Dhaka City', 'state_id' => $state->id, 'country_id' => $country->id, 'is_active' => true]);
     $state->cities()->create(['name' => 'Gazipur', 'state_id' => $state->id, 'country_id' => $country->id, 'is_active' => true]);
 
-    $response = $this->getJson("/api/v1/core/states/{$state->id}/cities");
+    $response = $this->getJson("/api/v1/core/states/{$state->uuid}/cities");
 
     $response->assertOk()
         ->assertJsonPath('success', true);
@@ -99,7 +99,7 @@ it('shows a city', function () {
     $state = $country->states()->create(['name' => 'Dhaka', 'country_id' => $country->id, 'is_active' => true]);
     $city = $state->cities()->create(['name' => 'Dhaka City', 'state_id' => $state->id, 'country_id' => $country->id, 'is_active' => true]);
 
-    $response = $this->getJson("/api/v1/core/cities/{$city->id}");
+    $response = $this->getJson("/api/v1/core/cities/{$city->uuid}");
 
     $response->assertOk()
         ->assertJsonPath('success', true)
@@ -116,7 +116,7 @@ it('lists active currencies', function () {
 
     $response->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonStructure(['data' => [['id', 'name', 'code', 'symbol']]]);
+        ->assertJsonStructure(['data' => [['uuid', 'name', 'code', 'symbol']]]);
 });
 
 it('allows admin to create currency', function () {
@@ -175,7 +175,7 @@ it('lists active languages', function () {
 
     $response->assertOk()
         ->assertJsonPath('success', true)
-        ->assertJsonStructure(['data' => [['id', 'name', 'code']]]);
+        ->assertJsonStructure(['data' => [['uuid', 'name', 'code']]]);
 });
 
 it('allows admin to create language', function () {
@@ -256,7 +256,7 @@ it('allows user to delete their own media', function () {
     ]);
 
     $response = $this->actingAs($user, 'sanctum')
-        ->deleteJson("/api/v1/core/media/{$medium->id}");
+        ->deleteJson("/api/v1/core/media/{$medium->uuid}");
 
     $response->assertOk()
         ->assertJsonPath('message', 'File deleted.');

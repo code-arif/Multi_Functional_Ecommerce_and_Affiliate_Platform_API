@@ -9,7 +9,7 @@ class VendorPayoutResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
+            'uuid' => $this->uuid,
             'amount'          => (float) $this->amount,
             'balance_before'  => (float) $this->balance_before,
             'balance_after'   => (float) $this->balance_after,

@@ -9,21 +9,21 @@ class DisputeResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'               => $this->id,
-            'order_id'         => $this->order_id,
+            'uuid' => $this->uuid,
+            'order_uuid'        => optional($this->order)?->uuid,
             'order'            => $this->whenLoaded('order', fn() => [
-                'id'           => $this->order->id,
+                'uuid' => $this->order?->uuid,
                 'order_number' => $this->order->order_number,
                 'total_amount' => $this->order->total_amount,
                 'status'       => $this->order->status,
             ]),
             'customer'         => $this->whenLoaded('customer', fn() => [
-                'id'   => $this->customer->id,
+                'uuid' => $this->customer?->uuid,
                 'name' => $this->customer->name,
                 'email' => $this->customer->email,
             ]),
             'vendor'           => $this->whenLoaded('vendor', fn() => [
-                'id'   => $this->vendor->id,
+                'uuid' => $this->vendor?->uuid,
                 'name' => $this->vendor->name,
             ]),
             'subject'          => $this->subject,
@@ -31,7 +31,7 @@ class DisputeResource extends JsonResource
             'status'           => $this->status,
             'resolution_notes' => $this->resolution_notes,
             'resolved_by'      => $this->whenLoaded('resolvedBy', fn() => [
-                'id'   => $this->resolvedBy->id,
+                'uuid' => $this->resolvedBy?->uuid,
                 'name' => $this->resolvedBy->name,
             ]),
             'resolved_at'      => $this->resolved_at,

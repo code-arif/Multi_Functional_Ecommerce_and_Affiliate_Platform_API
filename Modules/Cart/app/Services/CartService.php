@@ -38,7 +38,8 @@ class CartService
      */
     public function addItem(Cart $cart, array $data): CartItem
     {
-        $product = Product::findOrFail($data['product_id']);
+        $product = Product::findByUuidOrFail($data['product_uuid']);
+        $variant = !empty($data['variant_uuid']) ? ProductVariant::findByUuidOrFail($data['variant_uuid']) : null;
         $requestedQty = $data['quantity'] ?? 1;
         $maxQty = config('ecommerce.cart.max_quantity', 100);
 
@@ -47,14 +48,13 @@ class CartService
         }
 
         // Stock validation: variable products check variant stock, simple products check product stock
-        if ($data['variant_id'] ?? null) {
-            $variant = ProductVariant::findOrFail($data['variant_id']);
+        if ($variant) {
             if ($variant->stock_quantity < $requestedQty) {
                 abort(400, "Only {$variant->stock_quantity} units available for this variant.");
             }
         } elseif ($product->manage_stock) {
             $existing = $cart->items()
-                ->where('product_id', $data['product_id'])
+                ->where('product_id', $product->id)
                 ->whereNull('variant_id')
                 ->first();
 
@@ -64,13 +64,13 @@ class CartService
             }
         }
 
-        $unitPrice = $data['unit_price'] ?? ($data['variant_id'] ?? false
-            ? ($product->variants()->find($data['variant_id'])?->sale_price ?? $product->current_price)
+        $unitPrice = $data['unit_price'] ?? ($variant
+            ? ($variant->sale_price ?? $product->current_price)
             : $product->current_price);
 
         $existing = $cart->items()
-            ->where('product_id', $data['product_id'])
-            ->where('variant_id', $data['variant_id'] ?? null)
+            ->where('product_id', $product->id)
+            ->where('variant_id', $variant?->id)
             ->first();
 
         if ($existing) {
@@ -84,8 +84,8 @@ class CartService
         }
 
         $item = $cart->items()->create([
-            'product_id'  => $data['product_id'],
-            'variant_id'  => $data['variant_id'] ?? null,
+            'product_id'  => $product->id,
+            'variant_id'  => $variant?->id,
             'quantity'    => $requestedQty,
             'unit_price'  => $unitPrice,
             'total_price' => $unitPrice * $requestedQty,

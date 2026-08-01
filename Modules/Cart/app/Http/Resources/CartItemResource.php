@@ -9,11 +9,11 @@ class CartItemResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
-            'product_id' => $this->product_id,
-            'variant_id' => $this->variant_id,
+            'uuid' => $this->uuid,
+            'product_uuid'        => optional($this->product)?->uuid,
+            'variant_uuid'        => optional($this->variant)?->uuid,
             'product'    => $this->whenLoaded('product', fn() => [
-                'id'       => $this->product->id,
+                'uuid' => $this->product?->uuid,
                 'name'     => $this->product->name,
                 'slug'     => $this->product->slug,
                 'sku'      => $this->product->sku,

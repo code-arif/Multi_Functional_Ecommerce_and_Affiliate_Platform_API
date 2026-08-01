@@ -42,14 +42,14 @@ class AdminInventoryController
             'vendor:id,shop_name', 'createdBy:id,name',
         ]);
 
-        if ($request->vendor_id) {
-            $query->where('vendor_id', $request->vendor_id);
+        if ($request->vendor_uuid) {
+            $query->where('vendor_id', \Modules\Vendor\Models\Vendor::findByUuid($request->vendor_uuid)?->id);
         }
         if ($request->type) {
             $query->where('type', $request->type);
         }
-        if ($request->product_id) {
-            $query->where('product_id', $request->product_id);
+        if ($request->product_uuid) {
+            $query->where('product_id', \Modules\Catalog\Models\Product::findByUuid($request->product_uuid)?->id);
         }
 
         $logs = $query->latest()->paginate($request->per_page ?? 20);
