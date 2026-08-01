@@ -1,0 +1,44 @@
+<?php
+
+namespace Modules\Vendor\Models;
+
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Core\Traits\HasUuid;
+
+class VendorStaff extends Model
+{
+    use HasUuid;
+    protected $fillable = [
+        'vendor_id',
+        'user_id',
+        'role',
+        'permissions',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'permissions' => 'array',
+        'is_active'   => 'boolean',
+    ];
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        return in_array($permission, $this->permissions ?? []);
+    }
+}
