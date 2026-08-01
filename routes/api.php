@@ -33,9 +33,6 @@ Route::prefix('v1')->group(base_path('Modules/Cms/routes/api.php'));
 // Affiliate module routes
 Route::prefix('v1')->group(base_path('Modules/Affiliate/routes/api.php'));
 
-// Vendor module routes (public vendor, vendor management, wallet, passwordless login)
-Route::prefix('v1')->group(base_path('Modules/Vendor/routes/api.php'));
-
 // Admin panel module routes (public vendor, vendor management, wallet, passwordless login)
 Route::prefix('v1')->group(base_path('Modules/AdminPanel/routes/api.php'));
 
