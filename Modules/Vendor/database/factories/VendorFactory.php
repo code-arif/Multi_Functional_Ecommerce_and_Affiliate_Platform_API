@@ -2,10 +2,10 @@
 
 namespace Modules\Vendor\Database\Factories;
 
-use Modules\Vendor\Models\Vendor;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Modules\Vendor\Models\Vendor;
 
 class VendorFactory extends Factory
 {

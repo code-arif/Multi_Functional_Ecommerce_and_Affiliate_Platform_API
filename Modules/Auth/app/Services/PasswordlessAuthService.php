@@ -2,10 +2,10 @@
 
 namespace Modules\Auth\Services;
 
-use Modules\Auth\Models\User;
-use Modules\Auth\Models\OtpCode;
-use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Modules\Auth\Models\OtpCode;
 
 /**
  * PasswordlessAuthService — reusable OTP-based authentication.

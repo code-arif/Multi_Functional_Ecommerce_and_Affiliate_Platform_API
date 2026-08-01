@@ -16,7 +16,7 @@ use Modules\Auth\Http\Controllers\DeviceController;
 |--------------------------------------------------------------------------
 */
 
-// ─── Public Auth Routes (no authentication required) ────────────
+// Public Auth Routes (no authentication required)
 // Rate-limited to prevent brute force attacks
 Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     // Registration & Login

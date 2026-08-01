@@ -118,7 +118,6 @@ class User extends Authenticatable implements MustVerifyEmailContract
     }
 
     // Accessors
-
     public function getAvatarUrlAttribute(): ?string
     {
         if (!$this->avatar) return null;
