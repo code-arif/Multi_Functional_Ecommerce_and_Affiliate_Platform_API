@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Modules\Catalog\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +13,7 @@ use Illuminate\Support\Str;
 
 class Product extends Model
 {
+    use HasUuid;
     use HasSlug, SoftDeletes;
 
     protected $fillable = [

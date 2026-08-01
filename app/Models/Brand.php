@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Modules\Catalog\Traits\HasSlug;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Brand extends Model
 {
+    use HasUuid;
     use HasSlug, SoftDeletes;
 
     protected $fillable = [

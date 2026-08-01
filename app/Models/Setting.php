@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
+    use HasUuid;
     protected $fillable = ['key', 'value', 'type', 'group', 'label', 'description'];
 
     public static function get(string $key, mixed $default = null): mixed

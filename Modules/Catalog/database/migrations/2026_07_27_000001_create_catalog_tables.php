@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -185,7 +186,7 @@ return new class extends Migration
         Schema::dropIfExists('vendor_product_prices');
 
         // Only drop if we created them (check if tables exist in the main migration)
-        if (!Schema::hasTable('migrations') || !\DB::table('migrations')->where('migration', 'like', '%create_products_table%')->exists()) {
+        if (!Schema::hasTable('migrations') || !DB::table('migrations')->where('migration', 'like', '%create_products_table%')->exists()) {
             Schema::dropIfExists('product_variants');
             Schema::dropIfExists('product_attribute_values');
             Schema::dropIfExists('product_attributes');

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductAttribute extends Model
 {
+    use HasUuid;
     protected $fillable = ['product_id', 'name', 'sort_order'];
 
     public function product(): BelongsTo

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductAttributeValue extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'product_attribute_id',
         'value',
