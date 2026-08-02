@@ -13,9 +13,19 @@ return new class extends Migration
     {
         Schema::create('shipping_zones', function (Blueprint $table) {
             $table->id();
-            
+            $table->uuid('uuid')->unique();
+            $table->string('name', 100);
+            $table->string('slug', 120)->unique();
+            $table->text('description')->nullable();
+            $table->json('countries')->nullable();
+            $table->json('states')->nullable();
+            $table->json('cities')->nullable();
+            $table->json('postal_codes')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
+
     }
 
     /**

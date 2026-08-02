@@ -13,8 +13,15 @@ return new class extends Migration
     {
         Schema::create('tracking_histories', function (Blueprint $table) {
             $table->id();
-            
+            $table->uuid('uuid')->unique();
+            $table->foreignId('shipment_id')->constrained()->cascadeOnDelete();
+            $table->string('status', 50);
+            $table->string('location', 255)->nullable();
+            $table->text('description')->nullable();
+            $table->timestamp('tracked_at')->useCurrent();
             $table->timestamps();
+
+            $table->index(['shipment_id', 'tracked_at']);
         });
     }
 
