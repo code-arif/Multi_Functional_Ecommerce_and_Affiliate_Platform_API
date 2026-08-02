@@ -1,9 +1,9 @@
 {
     "name": "Support",
     "alias": "support",
-    "description": "Ticketing system, live chat, FAQs, complaint/dispute workflow between customer and vendor",
-    "keywords": ["support", "ticket", "chat", "dispute", "faq"],
-    "priority": 160,
+    "description": "",
+    "keywords": [],
+    "priority": 0,
     "providers": [
         "Modules\\Support\\Providers\\SupportServiceProvider"
     ],

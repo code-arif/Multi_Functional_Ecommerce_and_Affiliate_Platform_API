@@ -48,9 +48,6 @@ Route::prefix('v1')->group(base_path('Modules/Inventory/routes/api.php'));
 // Search module routes (public + admin)
 Route::prefix('v1')->group(base_path('Modules/Search/routes/api.php'));
 
-// Support module routes (FAQs, tickets, customer disputes, chat)
-Route::prefix('v1')->group(base_path('Modules/Support/routes/api.php'));
-
 // Finance module routes (wallet, transactions, commissions, payouts, settlements)
 Route::prefix('v1')->group(base_path('Modules/Finance/routes/api.php'));
 

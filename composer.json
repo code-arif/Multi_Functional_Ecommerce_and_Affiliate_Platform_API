@@ -77,8 +77,8 @@
             "Modules\\RBAC\\Tests\\": "Modules/RBAC/tests/",
             "Modules\\Reviews\\Tests\\": "Modules/Reviews/tests/",
             "Modules\\Search\\Tests\\": "Modules/Search/tests/",
-            "Modules\\Shipping\\Tests\\": "Modules/Shipping/tests/",
-            "Modules\\Support\\Tests\\": "Modules/Support/tests/"
+            "Modules\\Shipping\\Tests\\": "Modules/Shipping/tests/"
+
         }
     },
     "scripts": {
