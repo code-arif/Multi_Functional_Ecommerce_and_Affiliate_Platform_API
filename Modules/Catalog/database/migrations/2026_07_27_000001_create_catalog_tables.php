@@ -11,47 +11,12 @@ return new class extends Migration
     {
         // Categories
         if (!Schema::hasTable('categories')) {
-            Schema::create('categories', function (Blueprint $table) {
-                $table->id();
-                $table->uuid('uuid')->unique();
-                $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
-                $table->string('name');
-                $table->string('slug')->unique();
-                $table->text('description')->nullable();
-                $table->string('image')->nullable();
-                $table->string('banner')->nullable();
-                $table->string('icon')->nullable();
 
-                $table->string('meta_title')->nullable();
-                $table->text('meta_description')->nullable();
-                $table->string('meta_keywords')->nullable();
-                $table->boolean('is_featured')->default(false);
-                $table->boolean('is_active')->default(true);
-                $table->integer('sort_order')->default(0);
-                $table->timestamps();
-                $table->softDeletes();
-                $table->index(['slug', 'is_active', 'parent_id', 'sort_order']);
-            });
         }
 
         // ── Brands ─────────────────────────────────────────────────
         if (!Schema::hasTable('brands')) {
-            Schema::create('brands', function (Blueprint $table) {
-                $table->id();
-                $table->uuid('uuid')->unique();
-                $table->string('name');
-                $table->string('slug')->unique();
-                $table->text('description')->nullable();
-                $table->string('logo')->nullable();
-                $table->string('website')->nullable();
-                $table->string('meta_title')->nullable();
-                $table->text('meta_description')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->integer('sort_order')->default(0);
-                $table->timestamps();
-                $table->softDeletes();
-                $table->index(['slug', 'is_active']);
-            });
+           
         }
 
         // ── Products ───────────────────────────────────────────────
