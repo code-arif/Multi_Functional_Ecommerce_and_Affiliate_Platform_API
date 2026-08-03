@@ -2,14 +2,15 @@
 
 namespace Modules\Support\Models;
 
-use Modules\Auth\Models\User;
-use Modules\Orders\Models\Order;
-use Modules\Vendor\Models\Vendor;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Core\Traits\HasUuid;
+use Modules\Orders\Models\Order;
+use Modules\Vendor\Models\Vendor;
+use Pest\Support\Str;
 
 class Ticket extends Model
 {
@@ -106,6 +107,6 @@ class Ticket extends Model
 
     public static function generateTicketNumber(): string
     {
-        return 'TKT-' . now()->format('Ymd') . '-' . strtoupper(\Str::random(6));
+        return 'TKT-' . now()->format('Ymd') . '-' . strtoupper(Str::random(6));
     }
 }
