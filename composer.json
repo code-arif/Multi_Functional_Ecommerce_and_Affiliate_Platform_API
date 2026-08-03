@@ -54,7 +54,8 @@
             "Modules\\AdminPanel\\": "Modules/AdminPanel/app/",
             "Modules\\Affiliate\\": "Modules/Affiliate/app/",
             "Modules\\Cms\\": "Modules/Cms/app/",
-            "Modules\\Vendor\\": "Modules/Vendor/app/"
+            "Modules\\Vendor\\": "Modules/Vendor/app/",
+            "Modules\\Product\\": "Modules/Product/app/"
         }
     },
     "autoload-dev": {

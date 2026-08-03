@@ -18,5 +18,6 @@
     "Search": true,
     "Shipping": true,
     "Support": true,
-    "Vendor": true
+    "Vendor": true,
+    "Product": true
 }

@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ── Categories ─────────────────────────────────────────────
+        // Categories
         if (!Schema::hasTable('categories')) {
             Schema::create('categories', function (Blueprint $table) {
                 $table->id();
@@ -21,6 +21,7 @@ return new class extends Migration
                 $table->string('image')->nullable();
                 $table->string('banner')->nullable();
                 $table->string('icon')->nullable();
+
                 $table->string('meta_title')->nullable();
                 $table->text('meta_description')->nullable();
                 $table->string('meta_keywords')->nullable();
