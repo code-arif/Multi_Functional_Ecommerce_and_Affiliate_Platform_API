@@ -11,20 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_images', function (Blueprint $table) {
+        Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('product_id')
-                ->constrained('products')
-                ->cascadeOnDelete();
-            $table->string('image_path');
-            $table->string('alt_text')->nullable();
-            $table->boolean('is_primary')->default(false);
+            $table->foreignId('product_attribute_id')->constrained('product_attributes')->cascadeOnDelete();
+            $table->string('value');
+            $table->string('color_code')->nullable();
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-
-            $table->index('product_id');
-            $table->index(['product_id', 'is_primary']);
+            $table->index('product_attribute_id');
         });
     }
 
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_images');
+        Schema::dropIfExists('product_attribute_values');
     }
 };

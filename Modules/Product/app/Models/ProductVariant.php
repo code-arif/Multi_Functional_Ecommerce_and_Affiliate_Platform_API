@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Catalog\Models;
+namespace Modules\Product\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\Core\Traits\HasUuid;
@@ -32,3 +32,4 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 }
+

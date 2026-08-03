@@ -1,10 +1,9 @@
 <?php
 
-namespace Modules\Catalog\Models;
+namespace Modules\Product\Models;
 
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Catalog\Models\ProductImage;
 use Modules\Catalog\Models\ProductVariant;
 use Modules\Catalog\Models\ProductAttribute;
 use Modules\Reviews\Models\Review;
@@ -313,4 +312,3 @@ class Product extends Model
         ]);
     }
 }
-

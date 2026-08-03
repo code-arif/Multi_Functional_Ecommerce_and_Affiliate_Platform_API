@@ -1,6 +1,5 @@
 <?php
-
-namespace Modules\Catalog\Models;
+namespace Modules\Product\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
