@@ -1,14 +1,14 @@
 <?php
 
-namespace Modules\AdminPanel\Models;
+namespace Modules\Support\Models;
 
-use Modules\Auth\Models\User;
-use Modules\Orders\Models\Order;
-use Modules\Vendor\Models\Vendor;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Core\Traits\HasUuid;
+use Modules\Orders\Models\Order;
+use Modules\Vendor\Models\Vendor;
 
 class Dispute extends Model
 {

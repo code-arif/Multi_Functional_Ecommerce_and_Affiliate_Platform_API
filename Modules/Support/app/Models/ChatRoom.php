@@ -1,18 +1,22 @@
 <?php
+namespace Modules\Support\Models;
 
-namespace App\Models;
-
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Traits\HasUuid;
 
 class ChatRoom extends Model
 {
+    use HasUuid;
+    use SoftDeletes;
+
     protected $fillable = [
         'user_id',
-        'guest_name',
-        'guest_email',
+        'order_id',
+        'subject',
         'status',
+        'assigned_to',
         'last_message_at',
     ];
 
@@ -20,14 +24,19 @@ class ChatRoom extends Model
         'last_message_at' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function messages(): HasMany
+    public function messages()
     {
-        return $this->hasMany(ChatMessage::class)->orderBy('created_at');
+        return $this->hasMany(ChatMessage::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'open');
     }
 
     public function latestMessage(): \Illuminate\Database\Eloquent\Relations\HasOne

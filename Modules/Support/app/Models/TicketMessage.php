@@ -1,29 +1,31 @@
 <?php
 
-namespace Modules\AdminPanel\Models;
+namespace Modules\Support\Models;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Core\Traits\HasUuid;
 
-class DisputeMessage extends Model
+class TicketMessage extends Model
 {
     use HasUuid;
     protected $fillable = [
-        'dispute_id',
+        'ticket_id',
         'user_id',
         'message',
         'attachments',
+        'is_staff_reply',
     ];
 
     protected $casts = [
-        'attachments' => 'array',
+        'attachments'   => 'array',
+        'is_staff_reply' => 'boolean',
     ];
 
-    public function dispute(): BelongsTo
+    public function ticket(): BelongsTo
     {
-        return $this->belongsTo(Dispute::class);
+        return $this->belongsTo(Ticket::class);
     }
 
     public function user(): BelongsTo

@@ -6,21 +6,30 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('dispute_messages', function (Blueprint $table) {
+        Schema::create('ticket_messages', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('dispute_id')->constrained('disputes')->cascadeOnDelete();
+            $table->foreignId('ticket_id')->constrained('tickets')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->text('message');
             $table->json('attachments')->nullable();
+            $table->boolean('is_staff_reply')->default(false);
             $table->timestamps();
+
+            $table->index('ticket_id');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('dispute_messages');
+        Schema::dropIfExists('ticket_messages');
     }
 };

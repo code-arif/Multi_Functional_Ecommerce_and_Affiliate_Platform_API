@@ -11,20 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chat_messages', function (Blueprint $table) {
+          Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('chat_room_id')
-                ->constrained('chat_rooms')
-                ->cascadeOnDelete();
-            $table->foreignId('sender_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
+            $table->foreignId('chat_room_id')->constrained('chat_rooms')->cascadeOnDelete();
+            $table->foreignId('sender_id')->constrained('users')->cascadeOnDelete();
+
             $table->text('message')->nullable();
+            $table->string('type', 20)->default('text');
             $table->string('attachment')->nullable();
-            $table->enum('attachment_type', ['image', 'file', 'none'])
-                ->default('none');
+            $table->enum('attachment_type', ['image', 'file', 'none'])->default('none');
             $table->boolean('is_read')->default(false);
+
+            $table->softDeletes();
             $table->timestamps();
 
             $table->index('chat_room_id');
