@@ -21,9 +21,6 @@ Route::prefix('v1')->group(base_path('Modules/Cart/routes/api.php'));
 // Checkout module routes
 Route::prefix('v1')->group(base_path('Modules/Checkout/routes/api.php'));
 
-// Orders module routes
-Route::prefix('v1')->group(base_path('Modules/Orders/routes/api.php'));
-
 // Reviews module routes
 Route::prefix('v1')->group(base_path('Modules/Reviews/routes/api.php'));
 

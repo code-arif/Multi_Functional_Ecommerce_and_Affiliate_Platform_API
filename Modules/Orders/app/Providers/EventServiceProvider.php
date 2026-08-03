@@ -3,29 +3,25 @@
 namespace Modules\Orders\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Modules\Orders\Events\OrderPlaced;
-use Modules\Orders\Events\OrderStatusUpdated;
-use Modules\Orders\Listeners\SendOrderNotification;
-use Modules\Orders\Models\Order;
-use Modules\Orders\Observers\OrderObserver;
-use Modules\Orders\Policies\OrderPolicy;
 
 class EventServiceProvider extends ServiceProvider
 {
-    protected $listen = [
-        OrderPlaced::class => [
-            SendOrderNotification::class,
-        ],
-        OrderStatusUpdated::class => [
-            // Future: SendStatusUpdateNotification::class,
-        ],
-    ];
+    /**
+     * The event handler mappings for the application.
+     *
+     * @var array<string, array<int, string>>
+     */
+    protected $listen = [];
 
-    protected $policies = [
-        Order::class => OrderPolicy::class,
-    ];
+    /**
+     * Indicates if events should be discovered.
+     *
+     * @var bool
+     */
+    protected static $shouldDiscoverEvents = true;
 
-    protected $observers = [
-        Order::class => [OrderObserver::class],
-    ];
+    /**
+     * Configure the proper event listeners for email verification.
+     */
+    protected function configureEmailVerification(): void {}
 }

@@ -1,9 +1,9 @@
 {
     "name": "Orders",
     "alias": "orders",
-    "description": "Order splitting by vendor, order status machine, order items, status history, cancellation, invoices",
-    "keywords": ["order", "invoice", "cancellation", "fulfillment"],
-    "priority": 80,
+    "description": "",
+    "keywords": [],
+    "priority": 0,
     "providers": [
         "Modules\\Orders\\Providers\\OrdersServiceProvider"
     ],
