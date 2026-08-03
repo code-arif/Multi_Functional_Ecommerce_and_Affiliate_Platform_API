@@ -1,28 +1,37 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Orders\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Traits\HasUuid;
+use Modules\Payments\Models\Payment;
+use Modules\Vendor\Models\Vendor;
 
 class Order extends Model
 {
+    use HasUuid;
     use SoftDeletes;
 
     protected $fillable = [
-        'order_number',
         'user_id',
-        'status',
+        'vendor_id',
+        'order_number',
         'subtotal',
-        'shipping_charge',
+        'shipping_cost',
         'discount_amount',
         'tax_amount',
         'total_amount',
-        'coupon_id',
         'coupon_code',
+        'coupon_discount',
+        'payment_method',
+        'payment_status',
+        'shipping_method',
+        'shipping_address',
         'shipping_name',
         'shipping_phone',
         'shipping_email',
@@ -32,40 +41,44 @@ class Order extends Model
         'shipping_state',
         'shipping_postal_code',
         'shipping_country',
-        'payment_method',
-        'payment_status',
-        'customer_note',
+        'billing_address',
+        'notes',
         'admin_note',
-        'tracking_number',
-        'shipping_carrier',
+        'status',
+        'tracking_token',
+        'paid_at',
         'shipped_at',
         'delivered_at',
         'cancelled_at',
-        'guest_email',
-        'guest_token',
+        'cancel_reason',
     ];
 
     protected $casts = [
         'subtotal'        => 'decimal:2',
-        'shipping_charge' => 'decimal:2',
+        'shipping_cost'   => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'tax_amount'      => 'decimal:2',
         'total_amount'    => 'decimal:2',
+        'coupon_discount' => 'decimal:2',
+        'paid_at'         => 'datetime',
         'shipped_at'      => 'datetime',
         'delivered_at'    => 'datetime',
         'cancelled_at'    => 'datetime',
     ];
-
-    // ─── Relationships ────────────────────────────────────────────
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function coupon(): BelongsTo
+        public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(Vendor::class);
     }
 
     public function items(): HasMany
@@ -73,21 +86,24 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(OrderStatusHistory::class);
+    }
+
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class);
     }
 
-    public function statusHistories(): HasMany
+    public function invoice(): HasOne
     {
-        return $this->hasMany(OrderStatusHistory::class)->orderBy('created_at', 'desc');
+        return $this->hasOne(Invoice::class);
     }
 
-    // ─── Scopes ───────────────────────────────────────────────────
-
-    public function scopeForUser($query, int $userId)
+    public function cancelRequests(): HasMany
     {
-        return $query->where('user_id', $userId);
+        return $this->hasMany(CancelRequest::class);
     }
 
     public function scopeByStatus($query, string $status)
@@ -95,14 +111,33 @@ class Order extends Model
         return $query->where('status', $status);
     }
 
-    // ─── Accessors ────────────────────────────────────────────────
 
-    public function getIsGuestOrderAttribute(): bool
+    public function scopeForUser($query, int $userId)
     {
-        return is_null($this->user_id);
+        return $query->where('user_id', $userId);
     }
 
-    public function getCanBeCancelledAttribute(): bool
+    public function scopeByUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeByVendor($query, $vendorId)
+    {
+        return $query->where('vendor_id', $vendorId);
+    }
+
+    public function getTotalAttribute(): float
+    {
+        return (float) ($this->total_amount ?? 0);
+    }
+
+    public function getIsPaidAttribute(): bool
+    {
+        return $this->payment_status === 'paid';
+    }
+
+     public function getCanBeCancelledAttribute(): bool
     {
         return in_array($this->status, ['pending', 'confirmed']);
     }
@@ -116,6 +151,26 @@ class Order extends Model
             $this->shipping_state,
             $this->shipping_country,
         ]));
+    }
+
+    public function getIsGuestOrderAttribute(): bool
+    {
+        return is_null($this->user_id);
+    }
+
+    public function getIsShippedAttribute(): bool
+    {
+        return $this->status === 'shipped';
+    }
+
+    public function getIsDeliveredAttribute(): bool
+    {
+        return $this->status === 'delivered';
+    }
+
+    public function getIsCancelledAttribute(): bool
+    {
+        return $this->status === 'cancelled';
     }
 
     // ─── Static Helpers ───────────────────────────────────────────
