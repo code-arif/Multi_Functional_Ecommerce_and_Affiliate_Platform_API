@@ -33,11 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // ─── Global Middleware (every request) ───────────────────
+        // Global Middleware (every request)
         $middleware->append(SecurityHeaders::class);
         $middleware->append(SanitizeInput::class);
 
-        // ─── API Middleware Group ─────────────────────────────────
+        // API Middleware Group
         $middleware->api(append: [
             ForceJsonResponse::class,
             ThrottleRequests::class . ':api',
@@ -45,32 +45,32 @@ return Application::configure(basePath: dirname(__DIR__))
             MaintenanceModeMiddleware::class,
         ]);
 
-        // ─── Authenticated Routes ─────────────────────────────────
+        // Authenticated Routes
         $middleware->alias([
-            'auth'       => Authenticate::class,
-            'admin'      => AdminMiddleware::class,
-            'vendor'     => VendorMiddleware::class,
-            'role'       => RoleMiddleware::class,
+            'auth' => Authenticate::class,
+            'admin' => AdminMiddleware::class,
+            'vendor' => VendorMiddleware::class,
+            'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
-            'banned'     => BannedUserMiddleware::class,
-            'throttle'   => ThrottleRequests::class,
-            'verified'   => EnsureEmailIsVerified::class,
+            'banned' => BannedUserMiddleware::class,
+            'throttle' => ThrottleRequests::class,
+            'verified' => EnsureEmailIsVerified::class,
         ]);
 
-        // ─── CORS ─────────────────────────────────────────────────
+        // CORS
         $middleware->validateCsrfTokens(except: ['api/*']);
 
-        // ─── Sanctum Token Auth ───────────────────────────────────
+        // Sanctum Token Auth
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+
     })->withProviders([
         AppServiceProvider::class,
         EventServiceProvider::class,
     ])
     ->withSchedule(function (Schedule $schedule) {
-        // ─── Reports ─────────────────────────────────────────────
+        // Reports
         $schedule->job(new GenerateDailyReport(), 'reports')
             ->dailyAt('00:05')
             ->withoutOverlapping()
@@ -78,33 +78,33 @@ return Application::configure(basePath: dirname(__DIR__))
                 Log::error('GenerateDailyReport schedule failed');
             });
 
-        // ─── Cart Cleanup ────────────────────────────────────────
+        // Cart Cleanup
         $schedule->job(new CleanExpiredCarts(), 'default')
             ->dailyAt('00:15')
             ->withoutOverlapping();
 
-        // ─── Sitemap ─────────────────────────────────────────────
+        // Sitemap
         $schedule->command('sitemap:generate')
             ->dailyAt('00:30')
             ->withoutOverlapping();
 
-        // ─── Cache Warm ───────────────────────────────────────────
+        // Cache Warm
         $schedule->job(new WarmCacheJob(), 'default')
             ->hourly()
             ->withoutOverlapping();
 
-        // ─── Rating Recalculation ─────────────────────────────────
+        // Rating Recalculation
         $schedule->command('products:recalculate-ratings')
             ->weekly()
             ->sundays()
             ->at('02:00')
             ->withoutOverlapping();
 
-        // ─── Queue Monitor ────────────────────────────────────────
+        // Queue Monitor
         $schedule->command('queue:prune-failed --hours=168') // 7 days
             ->weekly();
 
-        // ─── Log cleanup ─────────────────────────────────────────
+        // Log cleanup
         $schedule->command('log:clear')
             ->monthly();
     })
