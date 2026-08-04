@@ -132,7 +132,7 @@ class VendorInventoryController
 
         $logs = \Modules\Inventory\Models\InventoryLog::with(['product', 'createdBy', 'warehouse'])
             ->where('vendor_id', $vendor->id)
-            ->when($request->product_uuid, fn($q, $uuid) => $q->where('product_id', \Modules\Catalog\Models\Product::findByUuid($uuid)?->id))
+            ->when($request->product_uuid, fn($q, $uuid) => $q->where('product_id', \Modules\Product\Models\Product;::findByUuid($uuid)?->id))
             ->when($request->type, fn($q, $t) => $q->where('type', $t))
             ->latest()
             ->paginate($request->per_page ?? 20);

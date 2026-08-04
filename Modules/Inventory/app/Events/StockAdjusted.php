@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Events;
 
-use Modules\Catalog\Models\Product;
-use Modules\Catalog\Models\ProductVariant;
+use Modules\Product\Models\Product;;
+use Modules\Product\Models\Product;Variant;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

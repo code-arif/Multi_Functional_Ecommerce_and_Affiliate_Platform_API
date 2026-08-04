@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Modules\Search\Models\SearchLog;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
 use Modules\Auth\Models\User;

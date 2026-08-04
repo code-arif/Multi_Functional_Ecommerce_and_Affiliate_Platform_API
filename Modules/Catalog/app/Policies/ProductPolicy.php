@@ -3,7 +3,7 @@
 namespace Modules\Catalog\Policies;
 
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 
 class ProductPolicy
 {

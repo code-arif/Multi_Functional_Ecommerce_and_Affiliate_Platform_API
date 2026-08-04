@@ -4,7 +4,7 @@ namespace Modules\Search\Services;
 
 use Elastic\Elasticsearch\ClientBuilder;
 use Elastic\Elasticsearch\Client;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Illuminate\Support\Facades\Log;
 
 class ElasticsearchService

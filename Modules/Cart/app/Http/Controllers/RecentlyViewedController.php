@@ -35,7 +35,7 @@ class RecentlyViewedController
      */
     public function track(string $product, Request $request): JsonResponse
     {
-        $productModel = \Modules\Catalog\Models\Product::findByUuidOrFail($product);
+        $productModel = \Modules\Product\Models\Product::findByUuidOrFail($product);
 
         $this->recentlyViewedService->track(
             $productModel,

@@ -2,7 +2,7 @@
 
 namespace Modules\Cms\Services;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\Category;
 use Modules\Cms\Models\CmsPage;
 

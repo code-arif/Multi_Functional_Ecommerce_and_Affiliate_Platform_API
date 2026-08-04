@@ -17,7 +17,7 @@ use Modules\AdminPanel\Policies\ReviewPolicy;
 use Modules\AdminPanel\Policies\SettingPolicy;
 use Modules\AdminPanel\Policies\UserPolicy;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
 use Modules\Orders\Models\Order;

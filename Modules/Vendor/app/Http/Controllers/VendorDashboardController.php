@@ -4,7 +4,7 @@ namespace Modules\Vendor\Http\Controllers;
 
 use Modules\Vendor\Models\Vendor;
 use Modules\Orders\Models\Order;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Reviews\Models\Review;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;

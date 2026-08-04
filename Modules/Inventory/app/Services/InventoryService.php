@@ -2,8 +2,8 @@
 
 namespace Modules\Inventory\Services;
 
-use Modules\Catalog\Models\Product;
-use Modules\Catalog\Models\ProductVariant;
+use Modules\Product\Models\Product;;
+use Modules\Product\Models\Product;Variant;
 use Modules\Catalog\Models\VendorProductPrice;
 use Modules\Inventory\Models\InventoryLog;
 use Modules\Inventory\Models\Warehouse;

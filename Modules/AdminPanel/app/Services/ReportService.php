@@ -4,7 +4,7 @@ namespace Modules\AdminPanel\Services;
 
 use Modules\Orders\Models\Order;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;
 use Illuminate\Support\Facades\DB;
 
 class ReportService

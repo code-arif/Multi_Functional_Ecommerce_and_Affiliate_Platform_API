@@ -4,8 +4,6 @@ namespace Modules\Product\Models;
 
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Catalog\Models\ProductVariant;
-use Modules\Catalog\Models\ProductAttribute;
 use Modules\Reviews\Models\Review;
 use Modules\Orders\Models\OrderItem;
 use Modules\Catalog\Models\Wishlist;

@@ -3,7 +3,7 @@
 namespace Modules\Cart\Models;
 
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Core\Traits\HasUuid;

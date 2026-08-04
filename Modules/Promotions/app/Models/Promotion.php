@@ -2,7 +2,7 @@
 
 namespace Modules\Promotions\Models;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\Category;
 use Modules\Vendor\Models\Vendor;
 use Modules\Orders\Models\OrderItem;

@@ -9,7 +9,7 @@ use Modules\Catalog\Events\ProductDeleted;
 use Modules\Catalog\Listeners\LogProductActivity;
 use Modules\Catalog\Models\Brand;
 use Modules\Catalog\Models\Category;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Observers\BrandObserver;
 use Modules\Catalog\Observers\CategoryObserver;
 use Modules\Catalog\Observers\ProductObserver;

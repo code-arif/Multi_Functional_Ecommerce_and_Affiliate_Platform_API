@@ -29,12 +29,12 @@ class CartItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(\Modules\Catalog\Models\Product::class);
+        return $this->belongsTo(\Modules\Product\Models\Product::class);
     }
 
     public function variant()
     {
-        return $this->belongsTo(\Modules\Catalog\Models\ProductVariant::class);
+        return $this->belongsTo(\Modules\Product\Models\ProductVariant::class);
     }
 
     public function getTotalAttribute()

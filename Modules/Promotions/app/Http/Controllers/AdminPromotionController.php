@@ -147,7 +147,7 @@ class AdminPromotionController
     private function mapUuids(array $data): array
     {
         if (isset($data['product_uuids'])) {
-            $data['product_ids'] = \Modules\Catalog\Models\Product::whereIn('uuid', $data['product_uuids'])->pluck('id')->all();
+            $data['product_ids'] = \Modules\Product\Models\Product;::whereIn('uuid', $data['product_uuids'])->pluck('id')->all();
             unset($data['product_uuids']);
         }
         if (isset($data['category_uuids'])) {

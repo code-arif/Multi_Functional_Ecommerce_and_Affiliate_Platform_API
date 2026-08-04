@@ -6,7 +6,7 @@ use Tests\TestCase;
 use Modules\Auth\Models\User;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

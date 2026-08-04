@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Events;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

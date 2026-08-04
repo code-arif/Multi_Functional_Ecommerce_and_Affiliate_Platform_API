@@ -5,7 +5,7 @@ namespace Modules\Cart\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Auth\Models\User;
 use Modules\Cart\Models\CompareList;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 
 class CartDatabaseSeeder extends Seeder
 {

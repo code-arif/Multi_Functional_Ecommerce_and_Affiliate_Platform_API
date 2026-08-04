@@ -5,7 +5,7 @@ namespace Modules\Cart\Services;
 use Modules\Cart\Models\CompareList;
 use Modules\Cart\Models\CompareListItem;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;
 
 class CompareService
 {
@@ -30,7 +30,7 @@ class CompareService
      */
     public function add(CompareList $list, string $productUuid): array
     {
-        $product = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid);
+        $product = \Modules\Product\Models\Product::findByUuidOrFail($productUuid);
         $productId = $product->id;
 
         if ($list->items()->where('product_id', $productId)->exists()) {
@@ -52,7 +52,7 @@ class CompareService
      */
     public function remove(CompareList $list, string $productUuid): array
     {
-        $productId = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid)->id;
+        $productId = \Modules\Product\Models\Product::findByUuidOrFail($productUuid)->id;
         $list->items()->where('product_id', $productId)->delete();
 
         return ['success' => true, 'message' => 'Removed from compare list.'];

@@ -2,7 +2,7 @@
 
 namespace Modules\Cart\Models;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;
 use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

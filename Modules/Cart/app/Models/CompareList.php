@@ -29,7 +29,7 @@ class CompareList extends Model
     public function products()
     {
         return $this->belongsToMany(
-            \Modules\Catalog\Models\Product::class,
+            \Modules\Product\Models\Product::class,
             'compare_list_items'
         )->withTimestamps();
     }

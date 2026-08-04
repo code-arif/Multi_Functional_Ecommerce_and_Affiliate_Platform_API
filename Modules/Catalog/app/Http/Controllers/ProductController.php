@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Http\Controllers;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Http\Resources\ProductResource;
 use Modules\Catalog\Http\Resources\ProductListResource;
 use Modules\Reviews\Http\Resources\ReviewResource;

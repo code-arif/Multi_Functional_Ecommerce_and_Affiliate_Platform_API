@@ -2,7 +2,7 @@
 
 namespace Modules\Notifications\Notifications;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 

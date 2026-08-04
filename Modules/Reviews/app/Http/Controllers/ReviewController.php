@@ -5,7 +5,7 @@ namespace Modules\Reviews\Http\Controllers;
 use Modules\Reviews\Services\ReviewService;
 use Modules\Reviews\Models\Review;
 use Modules\Reviews\Http\Resources\ReviewResource;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

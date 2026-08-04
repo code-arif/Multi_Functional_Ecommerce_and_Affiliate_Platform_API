@@ -5,8 +5,8 @@ namespace Modules\Catalog\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Catalog\Models\Product;
-use Modules\Catalog\Models\ProductImage;
+use Modules\Product\Models\Product;;
+use Modules\Product\Models\Product;Image;
 use Modules\Vendor\Models\Vendor;
 
 class CatalogDatabaseSeeder extends Seeder

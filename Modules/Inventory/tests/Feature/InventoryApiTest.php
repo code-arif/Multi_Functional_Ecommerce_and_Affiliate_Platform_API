@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\VendorProductPrice;
 use Modules\Inventory\Models\InventoryLog;
 use Modules\Inventory\Models\Warehouse;

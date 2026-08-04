@@ -27,7 +27,7 @@ class VendorReviewController
             ->whereHas('product.vendorProductPrices', fn($q) => $q->where('vendor_id', $vendor->id))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->rating, fn($q) => $q->where('rating', $request->rating))
-            ->when($request->product_uuid, fn($q) => $q->where('product_id', \Modules\Catalog\Models\Product::findByUuid($request->product_uuid)?->id))
+            ->when($request->product_uuid, fn($q) => $q->where('product_id', \Modules\Product\Models\Product;::findByUuid($request->product_uuid)?->id))
             ->when($request->search, fn($q) => $q->whereHas('product', fn($q) => $q->where('name', 'like', "%{$request->search}%")))
             ->latest()
             ->paginate($request->per_page ?? 20);

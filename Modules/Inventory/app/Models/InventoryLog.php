@@ -3,8 +3,8 @@
 namespace Modules\Inventory\Models;
 
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
-use Modules\Catalog\Models\ProductVariant;
+use Modules\Product\Models\Product;;
+use Modules\Product\Models\Product;Variant;
 use Modules\Vendor\Models\Vendor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

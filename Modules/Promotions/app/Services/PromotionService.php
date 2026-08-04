@@ -4,7 +4,7 @@ namespace Modules\Promotions\Services;
 
 use Modules\Promotions\Models\Promotion;
 use Modules\Promotions\Models\PromotionUsage;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Cart\Models\CartItem;
 use Modules\Auth\Models\User;
 use Illuminate\Support\Facades\DB;

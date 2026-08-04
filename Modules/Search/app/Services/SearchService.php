@@ -2,7 +2,7 @@
 
 namespace Modules\Search\Services;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
 use Modules\Search\Models\SearchLog;

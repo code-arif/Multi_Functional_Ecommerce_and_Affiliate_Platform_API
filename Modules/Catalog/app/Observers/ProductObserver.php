@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Observers;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 
 class ProductObserver
 {

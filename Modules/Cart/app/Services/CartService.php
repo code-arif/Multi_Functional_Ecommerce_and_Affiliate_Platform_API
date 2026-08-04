@@ -5,8 +5,8 @@ namespace Modules\Cart\Services;
 use Modules\Cart\Models\Cart;
 use Modules\Cart\Models\CartItem;
 use Modules\Cart\Events\CartUpdated;
-use Modules\Catalog\Models\Product;
-use Modules\Catalog\Models\ProductVariant;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductVariant;
 use Modules\Auth\Models\User;
 use Illuminate\Support\Str;
 

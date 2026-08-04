@@ -17,7 +17,7 @@ class WishlistService
 
     public function toggle(User $user, string $productUuid): array
     {
-        $productId = \Modules\Catalog\Models\Product::findByUuidOrFail($productUuid)->id;
+        $productId = \Modules\Product\Models\Product;::findByUuidOrFail($productUuid)->id;
 
         $existing = Wishlist::where('user_id', $user->id)
             ->where('product_id', $productId)

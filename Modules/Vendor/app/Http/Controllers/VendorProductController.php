@@ -2,7 +2,7 @@
 
 namespace Modules\Vendor\Http\Controllers;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\VendorProductPrice;
 use Modules\Catalog\Services\ProductService;
 use Modules\Catalog\Http\Resources\ProductResource;
@@ -88,7 +88,7 @@ class VendorProductController
 
         // If linking to an existing product
         if (!empty($validated['product_uuid'])) {
-            $product = \Modules\Catalog\Models\Product::findByUuidOrFail($validated['product_uuid']);
+            $product = \Modules\Product\Models\Product;::findByUuidOrFail($validated['product_uuid']);
             unset($validated['product_uuid']);
 
             VendorProductPrice::updateOrCreate(

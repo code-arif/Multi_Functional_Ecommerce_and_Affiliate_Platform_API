@@ -2,14 +2,14 @@
 
 namespace Modules\AdminPanel\Http\Controllers;
 
-use Modules\Orders\Models\Order;
+use Illuminate\Http\JsonResponse;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Finance\Models\Commission;
+use Modules\Orders\Models\Order;
+use Modules\Product\Models\Product;
 use Modules\Reviews\Models\Review;
 use Modules\Vendor\Models\Vendor;
-use Modules\Finance\Models\Commission;
-use Modules\Core\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
 
 class DashboardController
 {

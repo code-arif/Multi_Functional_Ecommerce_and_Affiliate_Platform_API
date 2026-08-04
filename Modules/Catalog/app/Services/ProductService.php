@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Services;
 
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;

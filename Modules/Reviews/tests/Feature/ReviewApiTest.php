@@ -4,7 +4,7 @@ namespace Modules\Reviews\Tests\Feature;
 
 use Tests\TestCase;
 use Modules\Auth\Models\User;
-use Modules\Catalog\Models\Product;
+use Modules\Product\Models\Product;;
 use Modules\Catalog\Models\Category;
 use Modules\Vendor\Models\Vendor;
 use Modules\Orders\Models\Order;
