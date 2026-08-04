@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Catalog\Http\Controllers\ProductController;
 use Modules\Catalog\Http\Controllers\CategoryController;
+use Modules\Catalog\Http\Controllers\CategoryManageController;
 use Modules\Reviews\Http\Controllers\ReviewController;
 
 /*
@@ -29,3 +30,19 @@ Route::prefix('categories')->middleware('throttle:api')->group(function () {
     Route::get('/',             [CategoryController::class, 'index']);
     Route::get('{slug}',        [CategoryController::class, 'show']);
 });
+
+
+Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(function () {
+
+        // Categories Management
+        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view');
+        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.manage');
+        Route::put('categories/{category}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.manage');
+        Route::delete('categories/{category}/delete', [CategoryManageController::class, 'destroy'])->middleware('permission:categories.manage');
+
+        // Brands
+        // Route::get('brands', [AdminBrandController::class, 'index'])->middleware('permission:brands.view');
+        // Route::post('brands/store', [AdminBrandController::class, 'store'])->middleware('permission:brands.manage');
+        // Route::put('brands/{brand}/update', [AdminBrandController::class, 'update'])->middleware('permission:brands.manage');
+        // Route::delete('brands/{brand}/delete', [AdminBrandController::class, 'destroy'])->middleware('permission:brands.manage');
+    });

@@ -2,12 +2,12 @@
 
 namespace Modules\Auth\Services;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthService
 {
+    // User Registration
     public function register(array $data): array
     {
         $user = User::create([
@@ -22,6 +22,7 @@ class AuthService
         return ['user' => $user, 'token' => $token];
     }
 
+    // User Login (password-based)
     public function login(array $credentials, string $deviceName = 'api', ?string $ip = null): array
     {
         $user = User::where('email', $credentials['email'])->first();
@@ -39,6 +40,7 @@ class AuthService
         return ['user' => $user, 'token' => $token];
     }
 
+    // Admin Login (password-based)
     public function adminLogin(array $credentials, ?string $ip = null): array
     {
         $user = User::where('email', $credentials['email'])->first();
@@ -60,6 +62,7 @@ class AuthService
         return ['user' => $user, 'token' => $token];
     }
 
+    // Vendor Login (password-based)
     public function vendorLogin(array $credentials, ?string $ip = null): array
     {
         $user = User::where('email', $credentials['email'])->first();
@@ -87,16 +90,19 @@ class AuthService
         return ['user' => $user, 'token' => $token, 'vendor' => $vendor];
     }
 
+    // Logout current session
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
     }
 
+    // Logout all devices (invalidate all tokens)
     public function logoutAll(User $user): void
     {
         $user->tokens()->delete();
     }
 
+    // Update user profile
     public function updateProfile(User $user, array $data): User
     {
         if (isset($data['password'])) {
@@ -107,6 +113,7 @@ class AuthService
         return $user->fresh();
     }
 
+    // Update user avatar
     public function updateAvatar(User $user, string $path): User
     {
         $user->update(['avatar' => $path]);

@@ -9,7 +9,7 @@ use Modules\Auth\Http\Requests\RegisterRequest;
 use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Services\AuthService;
 use Modules\Core\Traits\ApiResponse;
-use Modules\Vendor\Http\Resources\VendorResource;
+use Modules\Vendor\Transformers\VendorResource;
 
 class AuthController
 {
@@ -51,8 +51,8 @@ class AuthController
             $request->ip()
         );
         return $this->successResponse([
-            'user'        => new UserResource($result['user']),
-            'token'       => $result['token'],
+            'user' => new UserResource($result['user']),
+            'token' => $result['token'],
             'permissions' => $result['user']->roles
                 ->flatMap(fn($r) => $r->permissions)
                 ->pluck('name')
