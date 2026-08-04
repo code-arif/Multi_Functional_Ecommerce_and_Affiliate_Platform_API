@@ -2,55 +2,83 @@
 
 namespace Modules\Catalog\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use Modules\Catalog\Http\Requests\StoreCategoryRequest;
+use Modules\Catalog\Http\Requests\UpdateCategoryRequest;
+use Modules\Catalog\Models\Category;
+use Modules\Catalog\Http\Resources\CategoryResource;
+use Modules\Core\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CategoryManageController extends Controller
+class CategoryManageController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ApiResponse;
+
+    // List all categories with optional search and pagination
+    public function index(Request $request): JsonResponse
     {
-        return view('catalog::index');
+        $categories = Category::with(['parent', 'children' => fn($q) => $q->orderBy('sort_order')])
+            ->when($request->search, fn($q) => $q->where('name', 'like', "%{$request->search}%"))
+            ->orderBy('sort_order')
+            ->paginate($request->per_page ?? 50);
+
+        return $this->paginatedResponse(CategoryResource::collection($categories));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // Store a new category
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        return view('catalog::create');
+        $data = $this->mapParentUuid($request->validated());
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('categories', 'public');
+        }
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('categories/banners', 'public');
+        }
+
+        $category = Category::create($data);
+
+        return $this->createdResponse(new CategoryResource($category->load('parent')), 'Category created.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    // Update an existing category
+    public function update(Category $category, UpdateCategoryRequest $request): JsonResponse
     {
-        return view('catalog::show');
+        $data = $this->mapParentUuid($request->validated());
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('categories', 'public');
+        }
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('categories/banners', 'public');
+        }
+
+        $category->update($data);
+
+        return $this->successResponse(new CategoryResource($category->fresh()->load('parent')), 'Category updated.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+
+    // Map public parent_uuid reference to internal parent_id.
+    private function mapParentUuid(array $data): array
     {
-        return view('catalog::edit');
+        if (array_key_exists('parent_uuid', $data)) {
+            $data['parent_id'] = !empty($data['parent_uuid'])
+                ? Category::findByUuidOrFail($data['parent_uuid'])->id
+                : null;
+        }
+        unset($data['parent_uuid']);
+        return $data;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+    // Delete a category, ensuring it has no associated products
+    public function destroy(Category $category): JsonResponse
+    {
+        if ($category->products()->exists()) {
+            return $this->errorResponse('Cannot delete category with associated products.', null, 400);
+        }
+        $category->delete();
+        return $this->noContentResponse('Category deleted.');
+    }
 }

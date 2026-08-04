@@ -2,10 +2,11 @@
 
 namespace Modules\RBAC\Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
-use Modules\Auth\Models\User;
+use Spatie\Permission\Models\Role;
 
 class RBACSeeder extends Seeder
 {
@@ -194,8 +195,8 @@ class RBACSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
             [
-                'name'     => 'Super Admin',
-                'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                'name' => 'Super Admin',
+                'password' => Hash::make('12345678'),
                 'status'   => 'active',
                 'email_verified_at' => now(),
             ]

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\RBAC\Database\Seeders\RBACSeeder;
 use Modules\Vendor\Database\Seeders\VendorDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,18 +12,18 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // Core module: countries, currencies, languages
-            \Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,
+            // \Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,
             // RBAC: 39 permissions, 6 roles + admin user
-            \Modules\RBAC\Database\Seeders\RBACSeeder::class,
+            RBACSeeder::class,
             // Other seeders
-            SettingSeeder::class,
-            CategorySeeder::class,
-            BrandSeeder::class,
-            BannerSeeder::class,
-            AffiliateProductSeeder::class,
-            ProductSeeder::class,
+            // SettingSeeder::class,
+            // CategorySeeder::class,
+            // BrandSeeder::class,
+            // BannerSeeder::class,
+            // AffiliateProductSeeder::class,
+            // ProductSeeder::class,
             // Vendor: demo vendor account with shop
-            VendorDatabaseSeeder::class,
+            // VendorDatabaseSeeder::class,
         ]);
     }
 }

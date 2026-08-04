@@ -1,28 +1,26 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Modules\Cart\Http\Controllers\WishlistController;
-use Modules\Support\Http\Controllers\ChatController;
-
-// ─── Admin Panel Controllers ──────────────────────
-use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;
-use Modules\AdminPanel\Http\Controllers\ProductController as AdminProductController;
-use Modules\AdminPanel\Http\Controllers\CategoryController as AdminCategoryController;
-use Modules\AdminPanel\Http\Controllers\BrandController as AdminBrandController;
-use Modules\AdminPanel\Http\Controllers\OrderController as AdminOrderController;
-use Modules\AdminPanel\Http\Controllers\CouponController as AdminCouponController;
-use Modules\AdminPanel\Http\Controllers\ReviewController as AdminReviewController;
-use Modules\AdminPanel\Http\Controllers\BannerController as AdminBannerController;
 use Modules\AdminPanel\Http\Controllers\AffiliateProductController as AdminAffiliateProductController;
+use Modules\AdminPanel\Http\Controllers\BannerController as AdminBannerController;
+use Modules\AdminPanel\Http\Controllers\BrandController as AdminBrandController;
 use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageController;
+use Modules\AdminPanel\Http\Controllers\CouponController as AdminCouponController;
+use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;
+use Modules\AdminPanel\Http\Controllers\DisputeController as AdminDisputeController;
+use Modules\AdminPanel\Http\Controllers\OrderController as AdminOrderController;
+use Modules\AdminPanel\Http\Controllers\ProductController as AdminProductController;
+use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
+use Modules\AdminPanel\Http\Controllers\ReviewController as AdminReviewController;
 use Modules\AdminPanel\Http\Controllers\SettingController as AdminSettingController;
 use Modules\AdminPanel\Http\Controllers\UserController as AdminUserController;
-use Modules\AdminPanel\Http\Controllers\DisputeController as AdminDisputeController;
-use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
-use Modules\Promotions\Http\Controllers\AdminPromotionController;
 use Modules\Affiliate\Http\Controllers\AdminAffiliateController;
+use Modules\Cart\Http\Controllers\WishlistController;
 use Modules\Cms\Http\Controllers\AdminCmsBlockController;
 use Modules\Cms\Http\Controllers\AdminCmsMenuController;
+use Modules\Promotions\Http\Controllers\AdminPromotionController;
+use Modules\Support\Http\Controllers\ChatController;
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -77,18 +75,6 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
         Route::get('products/{product}', [AdminProductController::class, 'show'])->middleware('permission:products.view');
         Route::put('products/{product}', [AdminProductController::class, 'update'])->middleware('permission:products.edit');
         Route::delete('products/{product}', [AdminProductController::class, 'destroy'])->middleware('permission:products.delete');
-
-        // Categories
-        Route::get('categories', [AdminCategoryController::class, 'index'])->middleware('permission:categories.view');
-        Route::post('categories/store', [AdminCategoryController::class, 'store'])->middleware('permission:categories.manage');
-        Route::put('categories/{category}/update', [AdminCategoryController::class, 'update'])->middleware('permission:categories.manage');
-        Route::delete('categories/{category}/delete', [AdminCategoryController::class, 'destroy'])->middleware('permission:categories.manage');
-
-        // Brands
-        Route::get('brands', [AdminBrandController::class, 'index'])->middleware('permission:brands.view');
-        Route::post('brands/store', [AdminBrandController::class, 'store'])->middleware('permission:brands.manage');
-        Route::put('brands/{brand}/update', [AdminBrandController::class, 'update'])->middleware('permission:brands.manage');
-        Route::delete('brands/{brand}/delete', [AdminBrandController::class, 'destroy'])->middleware('permission:brands.manage');
 
         // Orders
         Route::get('orders',[AdminOrderController::class, 'index'])->middleware('permission:orders.view');
@@ -196,7 +182,7 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
                     ->blockIp($req->ip_address, $req->duration ?? 3600, $req->reason ?? '');
                 return response()->json(['success' => true, 'message' => 'IP blocked.']);
             });
-            Route::post('revoke-tokens/{user}', function (\Modules\Auth\Models\User $user) {
+            Route::post('revoke-tokens/{user}', function (User $user) {
                 app(\Modules\Core\Services\Security\SecurityService::class)->revokeAllTokens($user->id);
                 return response()->json(['success' => true, 'message' => 'All tokens revoked.']);
             });
