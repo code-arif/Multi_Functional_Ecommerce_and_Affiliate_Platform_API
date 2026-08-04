@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Resources;
+namespace Modules\Product\Transformers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductListResource extends JsonResource

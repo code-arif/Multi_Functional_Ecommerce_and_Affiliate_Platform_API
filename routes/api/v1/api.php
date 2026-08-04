@@ -66,15 +66,6 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
         // Dashboard
         Route::get('dashboard',             [AdminDashboardController::class, 'index']);
 
-        // Products — permission-gated
-        Route::post('products/upload-image', [AdminProductController::class, 'uploadImage'])->middleware('permission:products.create');
-
-        Route::get('products', [AdminProductController::class, 'index'])->middleware('permission:products.view');
-        Route::post('products', [AdminProductController::class, 'store'])->middleware('permission:products.create');
-        Route::get('products/{product}', [AdminProductController::class, 'show'])->middleware('permission:products.view');
-        Route::put('products/{product}', [AdminProductController::class, 'update'])->middleware('permission:products.edit');
-        Route::delete('products/{product}', [AdminProductController::class, 'destroy'])->middleware('permission:products.delete');
-
         // Orders
         Route::get('orders',[AdminOrderController::class, 'index'])->middleware('permission:orders.view');
         Route::get('orders/{order}',[AdminOrderController::class, 'show'])->middleware('permission:orders.view');

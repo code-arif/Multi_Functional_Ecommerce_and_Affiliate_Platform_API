@@ -3,54 +3,107 @@
 namespace Modules\Product\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductListResource;
+use App\Http\Resources\ProductResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Product\Models\Product;
+use Modules\Product\Services\ProductService;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ApiResponse;
+
+    public function __construct(private ProductService $productService) {}
+
+    public function index(Request $request): JsonResponse
     {
-        return view('product::index');
+        $products = Product::with(['category', 'brand', 'variants'])
+            ->when($request->search, fn($q) =>
+            $q->where('name', 'like', "%{$request->search}%")
+                ->orWhere('sku', 'like', "%{$request->search}%"))
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->category_id, fn($q) => $q->where('category_id', $request->category_id))
+            ->withCount('reviews')
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->per_page ?? 20);
+
+        return $this->paginatedResponse(
+            ProductListResource::collection($products)
+        );
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store product form admin dashboard
      */
-    public function create()
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        return view('product::create');
+        $data = $request->validated();
+
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $this->productService->uploadThumbnail($request->file('thumbnail'));
+        }
+
+        $product = $this->productService->createProduct($data);
+
+        return $this->createdResponse(new ProductResource($product), 'Product created successfully.');
+    }
+
+    public function show(Product $product): JsonResponse
+    {
+        $product->load(['images', 'variants', 'attributes.values', 'category', 'brand', 'reviews.user']);
+        return $this->successResponse(new ProductResource($product));
+    }
+
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    {
+        $data = $request->validated();
+
+        if ($request->hasFile('thumbnail')) {
+            $data['thumbnail'] = $this->productService->uploadThumbnail($request->file('thumbnail'));
+        }
+
+        $product = $this->productService->updateProduct($product, $data);
+
+        return $this->successResponse(new ProductResource($product), 'Product updated successfully.');
+    }
+
+    public function destroy(Product $product): JsonResponse
+    {
+        $this->productService->deleteProduct($product);
+        return $this->noContentResponse('Product deleted.');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * POST /api/v1/admin/products/upload-image
+     * Handles both gallery images AND thumbnail uploads
      */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function uploadImage(Request $request): JsonResponse
     {
-        return view('product::show');
+        $request->validate([
+            'image'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $path = $this->productService->uploadThumbnail($request->file('thumbnail'));
+            return $this->successResponse([
+                'path' => $path,
+                'url'  => asset('storage/' . $path),
+            ], 'Thumbnail uploaded.');
+        }
+
+        if ($request->hasFile('image')) {
+            $path = $this->productService->uploadImage($request->file('image'));
+            return $this->successResponse([
+                'path' => $path,
+                'url'  => asset('storage/' . $path),
+            ], 'Image uploaded.');
+        }
+
+        return response()->json(['message' => 'No file provided.'], 422);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('product::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

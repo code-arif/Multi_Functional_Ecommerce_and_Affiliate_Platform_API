@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Services;
+namespace Modules\Product\Services;
 
-use App\Models\Product;
-use App\Models\ProductImage;
-use App\Models\ProductAttribute;
-use App\Models\ProductAttributeValue;
-use App\Models\ProductVariant;
+
 use App\Repositories\Interfaces\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductAttribute;
+use Modules\Product\Models\ProductAttributeValue;
+use Modules\Product\Models\ProductImage;
+use Modules\Product\Models\ProductVariant;
 
 class ProductService
 {

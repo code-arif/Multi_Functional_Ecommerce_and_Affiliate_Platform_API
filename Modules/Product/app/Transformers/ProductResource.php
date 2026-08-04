@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace Modules\Product\Transformers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -101,8 +101,9 @@ class ProductResource extends JsonResource
             'reviews'    => $this->whenLoaded(
                 'reviews',
                 fn() =>
-                ReviewResource::collection($this->reviews)
+                // ReviewResource::collection($this->reviews)
             ),
         ];
     }
 }
+

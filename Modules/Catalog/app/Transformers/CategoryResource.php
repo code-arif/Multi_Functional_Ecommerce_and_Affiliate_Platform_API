@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Resources;
+namespace Modules\Catalog\Transformers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
