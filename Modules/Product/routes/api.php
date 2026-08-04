@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Product\Http\Controllers\NewProductController;
 use Modules\Product\Http\Controllers\ProductController;
 
 Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(function () {
@@ -11,3 +12,16 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('permission:products.delete');
     Route::post('products/upload-image', [ProductController::class, 'uploadImage'])->middleware('permission:products.create');
 });
+
+// Products — public browsing
+Route::prefix('products')->middleware('throttle:api')->group(function () {
+    Route::get('/',                     [NewProductController::class, 'index']);
+    Route::get('featured',              [NewProductController::class, 'featured']);
+    Route::get('new-arrivals',          [NewProductController::class, 'newArrivals']);
+    Route::get('bestsellers',           [NewProductController::class, 'bestsellers']);
+    // Route::get('{slug}/reviews/stats',  [ReviewController::class, 'stats']);
+    // Route::get('{slug}/reviews',        [ReviewController::class, 'index']);
+    Route::get('{slug}/related',        [NewProductController::class, 'related']);
+    Route::get('{slug}',                [NewProductController::class, 'show']);
+});
+
