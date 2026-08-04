@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Catalog\Http\Controllers;
+namespace Modules\Product\Http\Controllers;
 
 use Modules\Product\Models\Product;;
 use Modules\Catalog\Http\Resources\ProductResource;
@@ -10,7 +10,7 @@ use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ProductController
+class NewProductController
 {
     use ApiResponse;
 

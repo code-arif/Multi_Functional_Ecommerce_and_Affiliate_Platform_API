@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests;
+namespace Modules\Product\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
 
 class StoreProductRequest extends FormRequest
 {

@@ -3,15 +3,15 @@
 namespace Modules\Product\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
-use App\Http\Resources\ProductListResource;
-use App\Http\Resources\ProductResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Core\Traits\ApiResponse;
+use Modules\Product\Http\Requests\StoreProductRequest;
+use Modules\Product\Http\Requests\UpdateProductRequest;
 use Modules\Product\Models\Product;
 use Modules\Product\Services\ProductService;
+use Modules\Product\Transformers\ProductListResource;
+use Modules\Product\Transformers\ProductResource;
 
 class ProductController extends Controller
 {
