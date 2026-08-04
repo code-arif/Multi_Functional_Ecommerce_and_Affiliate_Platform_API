@@ -4,7 +4,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Modules\AdminPanel\Http\Controllers\AffiliateProductController as AdminAffiliateProductController;
 use Modules\AdminPanel\Http\Controllers\BannerController as AdminBannerController;
-use Modules\AdminPanel\Http\Controllers\BrandController as AdminBrandController;
 use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageController;
 use Modules\AdminPanel\Http\Controllers\CouponController as AdminCouponController;
 use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;

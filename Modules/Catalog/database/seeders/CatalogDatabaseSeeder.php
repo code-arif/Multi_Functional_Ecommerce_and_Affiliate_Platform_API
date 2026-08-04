@@ -3,17 +3,16 @@
 namespace Modules\Catalog\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Product\Models\Product;;
-use Modules\Product\Models\Product;Image;
+use Modules\Catalog\Models\Category;
+use Modules\Product\Models\Product;
 use Modules\Vendor\Models\Vendor;
 
 class CatalogDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // ── Categories ─────────────────────────────────────────────
+        // Categories
         $electronics = Category::firstOrCreate(
             ['slug' => 'electronics'],
             [
@@ -70,7 +69,7 @@ class CatalogDatabaseSeeder extends Seeder
             ]
         );
 
-        // ── Brands ─────────────────────────────────────────────────
+        // Brands
         $apple = Brand::firstOrCreate(
             ['slug' => 'apple'],
             [
@@ -101,7 +100,7 @@ class CatalogDatabaseSeeder extends Seeder
             ]
         );
 
-        // ── Products ───────────────────────────────────────────────
+        // Products
         $phoneCat = Category::where('slug', 'mobile-phones')->first();
         $laptopCat = Category::where('slug', 'laptops')->first();
         $mensCat = Category::where('slug', 'mens-fashion')->first();
