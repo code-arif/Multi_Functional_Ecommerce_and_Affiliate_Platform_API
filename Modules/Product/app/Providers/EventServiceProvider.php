@@ -3,6 +3,8 @@
 namespace Modules\Product\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Modules\Product\Models\Product;
+use Modules\Product\Observers\ProductObserver;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -12,6 +14,15 @@ class EventServiceProvider extends ServiceProvider
      * @var array<string, array<int, string>>
      */
     protected $listen = [];
+
+    /**
+     * The model observers for the application.
+     *
+     * @var array
+     */
+    protected $observers = [
+        Product::class => [ProductObserver::class],
+    ];
 
     /**
      * Indicates if events should be discovered.
