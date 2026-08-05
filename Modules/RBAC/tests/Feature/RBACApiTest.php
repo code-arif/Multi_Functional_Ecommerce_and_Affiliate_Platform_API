@@ -1,11 +1,11 @@
 <?php
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Tests\TestCase::class)->use(DatabaseTransactions::class);
+uses(\Tests\TestCase::class)->use(RefreshDatabase::class);
 
 // ─── Helpers ─────────────────────────────────────────────────────
 

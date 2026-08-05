@@ -20,17 +20,18 @@ return new class extends Migration
             $table->foreignId('product_id')
                 ->constrained('products')
                 ->cascadeOnDelete();
-            $table->foreignId('product_variant_id')
+            $table->foreignId('variant_id')
                 ->nullable()
                 ->constrained('product_variants')
                 ->nullOnDelete();
             $table->integer('quantity')->default(1);
             $table->decimal('unit_price', 12, 2);
+            $table->decimal('total_price', 12, 2);
             $table->timestamps();
 
             $table->index('cart_id');
             $table->index('product_id');
-            $table->unique(['cart_id', 'product_id', 'product_variant_id']);
+            $table->unique(['cart_id', 'product_id', 'variant_id']);
         });
     }
 

@@ -2,7 +2,7 @@
 
 namespace Modules\RBAC\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 class RolePolicy

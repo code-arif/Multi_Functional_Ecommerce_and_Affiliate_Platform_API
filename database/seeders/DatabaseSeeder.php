@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Orders\Database\Seeders\OrdersDatabaseSeeder;
 use Modules\RBAC\Database\Seeders\RBACSeeder;
 use Modules\Vendor\Database\Seeders\VendorDatabaseSeeder;
 
@@ -15,6 +16,8 @@ class DatabaseSeeder extends Seeder
             // \Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,
             // RBAC: 39 permissions, 6 roles + admin user
             RBACSeeder::class,
+            // Orders: demo orders (requires users + products, otherwise skipped)
+            OrdersDatabaseSeeder::class,
             // Other seeders
             // SettingSeeder::class,
             // CategorySeeder::class,

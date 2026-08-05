@@ -2,7 +2,7 @@
 
 namespace Modules\Promotions\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Promotions\Models\Promotion;
 
 class PromotionPolicy

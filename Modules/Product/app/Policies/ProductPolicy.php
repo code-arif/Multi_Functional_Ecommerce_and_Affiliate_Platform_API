@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;;
 
 class ProductPolicy

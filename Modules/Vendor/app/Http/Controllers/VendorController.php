@@ -10,7 +10,7 @@ use Modules\Vendor\Http\Requests\UploadDocumentRequest;
 use Modules\Vendor\Http\Resources\VendorResource;
 use Modules\Vendor\Http\Resources\VendorListResource;
 use Modules\Vendor\Http\Resources\VendorDocumentResource;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Services\PasswordlessAuthService;
 use Modules\Core\Traits\ApiResponse;

@@ -2,7 +2,7 @@
 
 namespace Modules\Cart\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Cart\Models\Cart;
 
 class CartPolicy

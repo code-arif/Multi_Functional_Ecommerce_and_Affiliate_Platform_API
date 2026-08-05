@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\ChatRoom;
-use App\Models\Order;
 use Illuminate\Support\Facades\Broadcast;
+use Modules\Orders\Models\Order;
+use Modules\Support\Models\ChatRoom;
 
 // User's private notification channel
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {

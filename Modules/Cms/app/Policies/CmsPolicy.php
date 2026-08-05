@@ -2,7 +2,7 @@
 
 namespace Modules\Cms\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Cms\Models\CmsPage;
 
 class CmsPolicy

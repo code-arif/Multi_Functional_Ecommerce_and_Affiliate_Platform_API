@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Order;
-use App\Models\Product;
+use Modules\Orders\Models\Order;
+use Modules\Orders\Models\OrderItem;
+use Modules\Product\Models\Product;
 use App\Models\User;
-use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 

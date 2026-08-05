@@ -3,7 +3,7 @@
 namespace Modules\Cart\Services;
 
 use Modules\Cart\Models\RecentView;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;
 
 class RecentlyViewedService

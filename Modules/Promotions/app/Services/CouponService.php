@@ -4,7 +4,7 @@ namespace Modules\Promotions\Services;
 
 use Modules\Promotions\Models\Coupon;
 use Modules\Promotions\Models\CouponUsage;
-use Modules\Auth\Models\User;
+use App\Models\User;
 
 class CouponService
 {

@@ -40,7 +40,7 @@ class Medium extends Model
 
     public function uploader()
     {
-        return $this->belongsTo(\Modules\Auth\Models\User::class, 'uploaded_by');
+        return $this->belongsTo(\App\Models\User::class, 'uploaded_by');
     }
 
     public function scopePublic($query)

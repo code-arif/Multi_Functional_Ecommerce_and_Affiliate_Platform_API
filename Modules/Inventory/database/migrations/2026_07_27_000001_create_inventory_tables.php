@@ -38,8 +38,9 @@ return new class extends Migration
         Schema::create('inventory_logs', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
-            $table->foreignId('variant_id')->nullable()->constrained('product_variants')->nullOnDelete();
+            // product_id / variant_id have no FK constraints (product tables are created later in the chain)
+            $table->unsignedBigInteger('product_id')->nullable()->index();
+            $table->unsignedBigInteger('variant_id')->nullable()->index();
             $table->unsignedBigInteger('vendor_id')->nullable();
             $table->foreignId('warehouse_id')->nullable()->constrained('warehouses')->nullOnDelete();
             $table->enum('type', [

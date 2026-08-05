@@ -3,7 +3,7 @@
 namespace Modules\Payments\Tests\Feature;
 
 use Tests\TestCase;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Orders\Models\Order;
 use Modules\Payments\Models\Payment;
 use Modules\Payments\Models\Transaction;

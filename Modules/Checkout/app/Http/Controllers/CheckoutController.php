@@ -60,7 +60,8 @@ class CheckoutController
         return $this->createdResponse([
             'orders'         => collect($orders)->map(fn($o) => [
                 'order_number'  => $o->order_number,
-                'total'         => $o->total,
+                'group_id'      => $o->group_id,
+                'total'         => $o->total_amount,
                 'tracking_token' => $o->tracking_token,
             ]),
             'message' => count($orders) > 1

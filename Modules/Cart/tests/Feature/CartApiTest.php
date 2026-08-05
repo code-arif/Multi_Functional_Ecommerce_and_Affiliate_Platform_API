@@ -3,7 +3,7 @@
 namespace Modules\Cart\Tests\Feature;
 
 use Tests\TestCase;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;;
 use Modules\Cart\Models\Cart;
 use Modules\Cart\Models\RecentView;

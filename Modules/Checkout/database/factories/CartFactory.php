@@ -3,7 +3,7 @@
 namespace Modules\Checkout\Database\Factories;
 
 use Modules\Cart\Models\Cart;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

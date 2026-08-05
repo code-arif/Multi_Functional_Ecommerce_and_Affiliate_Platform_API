@@ -22,7 +22,7 @@ class CouponUsage extends Model
 
     public function user()
     {
-        return $this->belongsTo(\Modules\Auth\Models\User::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 
     public function order()

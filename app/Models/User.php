@@ -61,10 +61,10 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasOne(Address::class)->where('is_default', true);
     }
 
-    // public function orders(): HasMany
-    // {
-    //     return $this->hasMany(Order::class);
-    // }
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 
     public function cart(): HasOne
     {
@@ -95,13 +95,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
     public function vendorStaff(): HasMany
     {
         return $this->hasMany(VendorStaff::class);
-    }
-
-    // Role Helpers (bridge from Spatie)
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class, 'role_users');
-    }
+    }    // Role Helpers (Spatie's HasRoles provides the roles() relation)
     public function isAdmin(): bool
     {
         return $this->hasRole(['super-admin', 'admin']);

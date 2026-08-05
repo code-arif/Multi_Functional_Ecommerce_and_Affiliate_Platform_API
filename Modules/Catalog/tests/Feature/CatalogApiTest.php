@@ -3,7 +3,7 @@
 namespace Modules\Catalog\Tests\Feature;
 
 use Tests\TestCase;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
 use Modules\Product\Models\Product;;

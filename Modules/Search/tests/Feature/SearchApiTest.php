@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Search\Models\SearchLog;
-use Modules\Product\Models\Product;;
+use Modules\Product\Models\Product;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
-use Modules\Auth\Models\User;
+use App\Models\User;
 
-uses(Tests\TestCase::class)->use(DatabaseTransactions::class);
+uses(Tests\TestCase::class)->use(RefreshDatabase::class);
 
 // ─── Helpers ─────────────────────────────────────────────────────
 

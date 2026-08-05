@@ -33,7 +33,7 @@ class UserRoleController
     public function assign(AssignRoleRequest $request): JsonResponse
     {
         $user = $this->rbacService->assignRolesToUser(
-            \Modules\Auth\Models\User::findByUuidOrFail($request->validated('user_uuid'))->id,
+            \App\Models\User::findByUuidOrFail($request->validated('user_uuid'))->id,
             $request->validated('roles')
         );
 
@@ -53,7 +53,7 @@ class UserRoleController
     public function userPermissions(string $userId): JsonResponse
     {
         $permissions = $this->rbacService->getUserPermissions(
-            \Modules\Auth\Models\User::findByUuidOrFail($userId)->id
+            \App\Models\User::findByUuidOrFail($userId)->id
         );
         return $this->successResponse($permissions->pluck('name'));
     }

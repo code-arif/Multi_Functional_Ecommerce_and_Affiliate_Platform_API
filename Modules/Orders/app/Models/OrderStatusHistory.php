@@ -2,8 +2,10 @@
 
 namespace Modules\Orders\Models;
 
-use Modules\Core\Traits\HasUuid;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class OrderStatusHistory extends Model
 {
@@ -11,15 +13,26 @@ class OrderStatusHistory extends Model
 
     protected $fillable = [
         'order_id',
-        'from_status',
-        'to_status',
+        'old_status',
+        'new_status',
+        'actor_type',
         'changed_by',
         'changed_by_name',
         'notes',
+        'notify_customer',
     ];
 
-    public function order()
+    protected $casts = [
+        'notify_customer' => 'boolean',
+    ];
+
+    public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function changedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'changed_by');
     }
 }

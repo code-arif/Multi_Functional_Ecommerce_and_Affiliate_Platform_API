@@ -34,7 +34,7 @@ return [
          * The user model used by the application. This is required for the
          * Role->users() relationship to resolve correctly.
          */
-        'user' => \Modules\Auth\Models\User::class,
+        'user' => \App\Models\User::class,
 
         /*
          * When using the "Teams" feature from this package, we need to know which

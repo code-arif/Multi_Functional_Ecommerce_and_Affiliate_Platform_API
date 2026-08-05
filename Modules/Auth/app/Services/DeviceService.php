@@ -3,7 +3,7 @@
 namespace Modules\Auth\Services;
 
 use Modules\Auth\Models\Device;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DeviceService

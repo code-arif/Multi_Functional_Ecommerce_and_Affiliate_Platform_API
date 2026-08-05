@@ -3,7 +3,7 @@
 namespace Modules\Auth\Http\Controllers;
 
 use Modules\Auth\Services\OtpService;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

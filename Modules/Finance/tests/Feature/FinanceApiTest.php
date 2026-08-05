@@ -3,7 +3,7 @@
 namespace Modules\Finance\Tests\Feature;
 
 use Tests\TestCase;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Vendor\Models\Vendor;
 use Modules\Orders\Models\Order;
 use Modules\Finance\Models\Commission;

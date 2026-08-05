@@ -6,7 +6,7 @@ use Modules\Affiliate\Models\AffiliateProduct;
 use Modules\Affiliate\Models\AffiliateClick;
 use Modules\Affiliate\Models\AffiliateConversion;
 use Modules\Affiliate\Models\AffiliateEarning;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Orders\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

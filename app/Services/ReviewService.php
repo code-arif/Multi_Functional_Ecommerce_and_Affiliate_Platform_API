@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Review;
-use App\Models\Order;
-use App\Models\Product;
+use Modules\Orders\Models\Order;
+use Modules\Product\Models\Product;
+use Modules\Reviews\Models\Review;
 
 class ReviewService
 {

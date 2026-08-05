@@ -5,7 +5,7 @@ namespace Modules\Reviews\Services;
 use Modules\Reviews\Models\Review;
 use Modules\Reviews\Models\ReviewHelpfulVote;
 use Modules\Product\Models\Product;;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Orders\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

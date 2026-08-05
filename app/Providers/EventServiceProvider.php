@@ -2,17 +2,12 @@
 
 namespace App\Providers;
 
-use App\Events\OrderPlaced;
-use App\Listeners\SendOrderNotification;
 use Illuminate\Support\ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
-    protected $listen = [
-        OrderPlaced::class => [
-            SendOrderNotification::class,
-        ],
-    ];
-
-    public function boot(): void {}
+    public function boot(): void
+    {
+        // Order events are registered by the Orders module (Modules\Orders\Providers\EventServiceProvider).
+    }
 }

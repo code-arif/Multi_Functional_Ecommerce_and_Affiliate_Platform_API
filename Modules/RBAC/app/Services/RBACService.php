@@ -4,7 +4,7 @@ namespace Modules\RBAC\Services;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -31,7 +31,7 @@ class RBACService
 
     public function getRole(int $id): Role
     {
-        return Role::with('permissions')->findOrFail($id);
+        return Role::with('permissions')->withCount('users')->findOrFail($id);
     }
 
     public function createRole(array $data): Role

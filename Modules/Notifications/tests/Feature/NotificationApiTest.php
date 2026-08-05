@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
-use Modules\Auth\Models\User;
+use App\Models\User;
 
 uses(Tests\TestCase::class)->use(RefreshDatabase::class);
 

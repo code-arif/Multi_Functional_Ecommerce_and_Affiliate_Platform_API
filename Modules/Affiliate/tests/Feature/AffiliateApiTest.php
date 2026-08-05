@@ -3,7 +3,7 @@
 namespace Modules\Affiliate\Tests\Feature;
 
 use Tests\TestCase;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Affiliate\Models\AffiliateProduct;
 use Modules\Affiliate\Models\AffiliateConversion;
 use Modules\Affiliate\Models\AffiliateEarning;

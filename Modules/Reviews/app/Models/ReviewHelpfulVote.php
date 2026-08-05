@@ -3,7 +3,7 @@
 namespace Modules\Reviews\Models;
 
 use Modules\Reviews\Models\Review;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

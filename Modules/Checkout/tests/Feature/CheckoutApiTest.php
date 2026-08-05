@@ -2,9 +2,9 @@
 
 namespace Modules\Checkout\Tests\Feature;
 
+use App\Models\User;
+use Modules\Product\Models\Product;
 use Tests\TestCase;
-use Modules\Auth\Models\User;
-use Modules\Product\Models\Product;;
 use Modules\Cart\Models\Cart;
 use Modules\Cart\Models\CartItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,15 +27,18 @@ class CheckoutApiTest extends TestCase
             'status' => 'active',
         ]);
 
-        $this->product = Product::factory()->create([
-            'name'           => 'Checkout Test Product',
-            'slug'           => 'checkout-test',
-            'sku'            => 'CHK-001',
-            'type'           => 'simple',
-            'price'          => 100.00,
-            'stock_quantity' => 50,
-            'stock_status'   => 'in_stock',
-            'status'         => 'active',
+        $this->product = Product::create([
+            'name'               => 'Checkout Test Product',
+            'slug'               => 'checkout-test',
+            'sku'                => 'CHK-001',
+            'type'               => 'simple',
+            'price'              => 100.00,
+            'sale_price'         => null,
+            'stock_quantity'     => 50,
+            'low_stock_threshold'=> 5,
+            'manage_stock'       => true,
+            'stock_status'       => 'in_stock',
+            'status'             => 'active',
         ]);
 
         // Create cart directly (avoid auto-discovery issues with module-intersecting factories)

@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Models;
 
+use App\Models\User;
 use Modules\Core\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 

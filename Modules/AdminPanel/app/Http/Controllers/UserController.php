@@ -3,7 +3,7 @@
 namespace Modules\AdminPanel\Http\Controllers;
 
 use Modules\AdminPanel\Http\Requests\UpdateUserStatusRequest;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Auth\Http\Resources\UserResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;

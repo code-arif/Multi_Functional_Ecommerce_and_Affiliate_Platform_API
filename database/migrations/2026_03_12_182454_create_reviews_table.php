@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('product_id')
-                ->constrained('products')
-                ->cascadeOnDelete();
+            // product_id has no FK constraint (products table is created later in the migration chain)
+            $table->unsignedBigInteger('product_id')->index();
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
@@ -34,7 +33,6 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('product_id');
             $table->index('user_id');
             $table->index('status');
             $table->index('rating');

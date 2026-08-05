@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Testing\File;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Core\Models\Country;
 use Modules\Core\Models\State;
 use Modules\Core\Models\City;

@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Services;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;

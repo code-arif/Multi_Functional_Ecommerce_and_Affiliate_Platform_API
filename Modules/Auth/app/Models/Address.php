@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Core\Traits\HasUuid;
 
@@ -32,6 +33,6 @@ class Address extends Model
 
     public function user()
     {
-        return $this->belongsTo(Modules\Auth\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 }

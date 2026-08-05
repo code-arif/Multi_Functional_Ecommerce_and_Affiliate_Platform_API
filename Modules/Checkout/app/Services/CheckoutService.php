@@ -2,16 +2,19 @@
 
 namespace Modules\Checkout\Services;
 
-use Modules\Cart\Models\Cart;
-use Modules\Cart\Services\CartService;
-use Modules\Auth\Models\User;
-use Modules\Auth\Models\Address;
-use Modules\Orders\Models\Order;
-use Modules\Checkout\Events\CheckoutProcessed;
-use Modules\Promotions\Models\Coupon;
-use Illuminate\Support\Str;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Modules\Auth\Models\Address;
+use Modules\Cart\Models\Cart;
+use Modules\Cart\Services\CartService;
+use Modules\Checkout\Events\CheckoutProcessed;
+use Modules\Orders\Enums\OrderStatus;
+use Modules\Orders\Enums\PaymentStatus;
+use Modules\Orders\Models\Order;
+use Modules\Orders\Services\OrderService;
+use Modules\Promotions\Models\Coupon;
 
 class CheckoutService
 {
@@ -73,6 +76,9 @@ class CheckoutService
 
     /**
      * Process checkout and create order(s). Supports split-by-vendor.
+     *
+     * Order creation, invoices and status history are delegated to the
+     * Orders module (Modules\Orders\Services\OrderService::placeOrder).
      */
     public function processCheckout(Cart $cart, User $user, array $data): array
     {
@@ -84,6 +90,12 @@ class CheckoutService
             $billingAddrJson = isset($data['billing_address'])
                 ? (is_string($data['billing_address']) ? $data['billing_address'] : json_encode($data['billing_address']))
                 : $shippingAddrJson;
+
+            // Structured shipping snapshot (orders.shipping_* columns)
+            $shipping = is_array($shippingAddress) ? $shippingAddress : [];
+            $shippingName  = $shipping['recipient_name'] ?? $shipping['name'] ?? $user->name;
+            $shippingPhone = $shipping['phone'] ?? $user->phone;
+            $shippingEmail = $shipping['email'] ?? $user->email;
 
             $paymentMethod = $data['payment_method'] ?? 'cod';
             $notes = $data['notes'] ?? null;
@@ -97,10 +109,13 @@ class CheckoutService
                 Coupon::where('code', $cart->coupon_code)->increment('used_count');
             }
 
+            /** @var OrderService $orderService */
+            $orderService = app(OrderService::class);
+            $groupId = Order::generateGroupId();
             $orders = [];
 
             foreach ($itemsByVendor as $vendorGroup) {
-                $vendorSubtotal = collect($vendorGroup['items'])->sum(fn($item) => $item->total);
+                $vendorSubtotal = round(collect($vendorGroup['items'])->sum(fn($item) => $item->total), 2);
                 $vendorShipping = $this->calculateShippingCost($vendorSubtotal, $vendorGroup['vendor_id']);
                 $vendorTax = round($vendorSubtotal * $taxRate, 2);
                 $vendorDiscount = $couponDiscount > 0
@@ -108,38 +123,21 @@ class CheckoutService
                     : 0;
                 $vendorTotal = round($vendorSubtotal + $vendorShipping + $vendorTax - $vendorDiscount, 2);
 
-                $order = Order::create([
-                    'user_id'          => $user->id,
-                    'vendor_id'        => $vendorGroup['vendor_id'] > 0 ? $vendorGroup['vendor_id'] : null,
-                    'order_number'     => 'ORD-' . strtoupper(Str::random(10)),
-                    'subtotal'         => round($vendorSubtotal, 2),
-                    'shipping_cost'    => $vendorShipping,
-                    'discount_amount'  => $vendorDiscount,
-                    'tax_amount'       => $vendorTax,
-                    'total'            => $vendorTotal,
-                    'coupon_code'      => $cart->coupon_code,
-                    'coupon_discount'  => $vendorDiscount,
-                    'payment_method'   => $paymentMethod,
-                    'payment_status'   => 'pending',
-                    'shipping_method'  => $data['shipping_method'] ?? 'standard',
-                    'shipping_address' => $shippingAddrJson,
-                    'billing_address'  => $billingAddrJson,
-                    'notes'            => $notes,
-                    'status'           => 'pending',
-                    'tracking_token'   => Str::random(32),
-                ]);
-
+                // Build order items + deduct stock
+                $items = [];
                 foreach ($vendorGroup['items'] as $item) {
-                    $order->items()->create([
-                        'product_id'    => $item->product_id,
-                        'variant_id'    => $item->variant_id,
-                        'product_name'  => $item->product->name,
-                        'product_sku'   => $item->product->sku,
-                        'product_image' => $item->product->thumbnail,
-                        'quantity'      => $item->quantity,
-                        'unit_price'    => $item->unit_price,
-                        'total_price'   => $item->total_price,
-                    ]);
+                    $items[] = [
+                        'product_id'         => $item->product_id,
+                        'product_variant_id' => $item->variant_id,
+                        'vendor_id'          => $vendorGroup['vendor_id'] > 0 ? $vendorGroup['vendor_id'] : null,
+                        'product_name'       => $item->product->name,
+                        'product_sku'        => $item->product->sku,
+                        'variant_attributes' => $item->variant?->attributes ?? null,
+                        'product_image'      => $item->product->thumbnail,
+                        'unit_price'         => $item->unit_price,
+                        'quantity'           => $item->quantity,
+                        'subtotal'           => round($item->unit_price * $item->quantity, 2),
+                    ];
 
                     if ($item->variant_id) {
                         $item->variant->decrement('stock_quantity', $item->quantity);
@@ -148,12 +146,39 @@ class CheckoutService
                     }
                 }
 
-                $order->statusHistories()->create([
-                    'from_status'      => null,
-                    'to_status'        => 'pending',
-                    'changed_by'       => $user->id,
-                    'changed_by_name'  => $user->name,
-                    'notes'            => 'Order placed.',
+                // Delegate order creation to the Orders module
+                $order = $orderService->placeOrder([
+                    'user_id'          => $user->id,
+                    'vendor_id'        => $vendorGroup['vendor_id'] > 0 ? $vendorGroup['vendor_id'] : null,
+                    'group_id'         => $groupId,
+                    'order_number'     => Order::generateOrderNumber(),
+                    'status'           => OrderStatus::Pending->value,
+                    'subtotal'         => $vendorSubtotal,
+                    'shipping_charge'  => $vendorShipping,
+                    'discount_amount'  => $vendorDiscount,
+                    'coupon_discount'  => $vendorDiscount,
+                    'tax_amount'       => $vendorTax,
+                    'total_amount'     => $vendorTotal,
+                    'coupon_code'      => $cart->coupon_code,
+                    'payment_method'   => $paymentMethod,
+                    'payment_status'   => PaymentStatus::Pending->value,
+                    'shipping_method'  => $data['shipping_method'] ?? 'standard',
+                    'shipping_name'    => $shippingName,
+                    'shipping_phone'   => $shippingPhone,
+                    'shipping_email'   => $shippingEmail,
+                    'shipping_address_line1' => $shipping['address_line'] ?? $shipping['address_line1'] ?? $shipping['full'] ?? '',
+                    'shipping_address_line2' => $shipping['address_line2'] ?? null,
+                    'shipping_city'    => $shipping['city'] ?? '',
+                    'shipping_state'   => $shipping['state'] ?? null,
+                    'shipping_postal_code' => $shipping['postal_code'] ?? null,
+                    'shipping_country' => $shipping['country'] ?? 'Bangladesh',
+                    'shipping_address' => $shippingAddrJson,
+                    'billing_address'  => $billingAddrJson,
+                    'customer_note'    => $notes,
+                    'tracking_token'   => Str::random(32),
+                    'items'            => $items,
+                    'actor_type'       => 'customer',
+                    'actor_name'       => $user->name,
                 ]);
 
                 $orders[] = $order;
@@ -166,7 +191,7 @@ class CheckoutService
             Log::info('Checkout completed', [
                 'user_id' => $user->id,
                 'orders'  => collect($orders)->pluck('order_number')->toArray(),
-                'total'   => collect($orders)->sum('total'),
+                'total'   => collect($orders)->sum('total_amount'),
             ]);
 
             return $orders;

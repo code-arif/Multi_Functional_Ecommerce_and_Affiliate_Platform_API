@@ -3,7 +3,7 @@
 namespace Modules\AdminPanel\Services;
 
 use Modules\Orders\Models\Order;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;
 use Illuminate\Support\Facades\DB;
 

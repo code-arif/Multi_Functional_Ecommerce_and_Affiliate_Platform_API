@@ -3,7 +3,7 @@
 namespace Modules\Reviews\Models;
 
 use Modules\Reviews\Models\ReviewHelpfulVote;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;;
 use Modules\Orders\Models\Order;
 use Illuminate\Database\Eloquent\Model;

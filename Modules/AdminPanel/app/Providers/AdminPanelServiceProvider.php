@@ -10,13 +10,12 @@ use Modules\AdminPanel\Policies\CategoryPolicy;
 use Modules\AdminPanel\Policies\CmsPagePolicy;
 use Modules\AdminPanel\Policies\CouponPolicy;
 use Modules\AdminPanel\Policies\DashboardPolicy;
-use Modules\AdminPanel\Policies\OrderPolicy;
 use Modules\AdminPanel\Policies\ProductPolicy;
 use Modules\AdminPanel\Policies\ReportPolicy;
 use Modules\AdminPanel\Policies\ReviewPolicy;
 use Modules\AdminPanel\Policies\SettingPolicy;
 use Modules\AdminPanel\Policies\UserPolicy;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Product\Models\Product;
 use Modules\Catalog\Models\Category;
 use Modules\Catalog\Models\Brand;
@@ -54,7 +53,7 @@ class AdminPanelServiceProvider extends ModuleServiceProvider
         Gate::policy(Product::class, ProductPolicy::class);
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Brand::class, BrandPolicy::class);
-        Gate::policy(Order::class, OrderPolicy::class);
+        // Order policy is registered by the Orders module (Modules\Orders\Providers\EventServiceProvider).
         Gate::policy(Coupon::class, CouponPolicy::class);
         Gate::policy(Banner::class, BannerPolicy::class);
         Gate::policy(Review::class, ReviewPolicy::class);

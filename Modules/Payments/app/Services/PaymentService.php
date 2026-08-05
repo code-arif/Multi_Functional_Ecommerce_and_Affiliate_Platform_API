@@ -7,7 +7,7 @@ use Modules\Payments\Models\Transaction;
 use Modules\Payments\Models\Refund;
 use Modules\Payments\Models\PaymentMethod;
 use Modules\Orders\Models\Order;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

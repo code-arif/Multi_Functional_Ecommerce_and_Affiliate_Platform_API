@@ -3,7 +3,7 @@
 namespace Modules\Auth\Services;
 
 use Modules\Auth\Models\OtpCode;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 

@@ -6,7 +6,7 @@ use Modules\Vendor\Models\VendorStaff;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Services\VendorService;
 use Modules\Vendor\Http\Resources\VendorStaffResource;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

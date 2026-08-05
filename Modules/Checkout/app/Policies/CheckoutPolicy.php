@@ -2,7 +2,7 @@
 
 namespace Modules\Checkout\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 
 class CheckoutPolicy
 {

@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('affiliate_products', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('category_id')
-                ->nullable()
-                ->constrained('categories')
-                ->nullOnDelete();
+            // category_id has no FK constraint (categories table is created later in the migration chain)
+            $table->unsignedBigInteger('category_id')->nullable()->index();
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description')->nullable();

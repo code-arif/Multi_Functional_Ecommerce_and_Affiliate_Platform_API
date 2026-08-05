@@ -7,7 +7,7 @@ use Modules\Cart\Models\CartItem;
 use Modules\Cart\Events\CartUpdated;
 use Modules\Product\Models\Product;
 use Modules\Product\Models\ProductVariant;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class CartService

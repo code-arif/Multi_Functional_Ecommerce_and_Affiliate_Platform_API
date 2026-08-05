@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
 
 class Address extends Model
 {
+    use HasUuid;
+
     protected $fillable = [
         'user_id',
         'label',

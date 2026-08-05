@@ -1,14 +1,14 @@
 <?php
 
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Modules\Auth\Models\User;
-use Modules\Product\Models\Product;;
-use Modules\Catalog\Models\VendorProductPrice;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\VendorProductPrice;
 use Modules\Inventory\Models\InventoryLog;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Vendor\Models\Vendor;
 
-uses(Tests\TestCase::class)->use(DatabaseTransactions::class);
+uses(Tests\TestCase::class)->use(RefreshDatabase::class);
 
 // ─── Helpers ─────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@
 
 namespace Modules\Payments\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Payments\Models\Payment;
 
 class PaymentPolicy

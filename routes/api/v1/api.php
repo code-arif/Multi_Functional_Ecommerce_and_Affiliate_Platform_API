@@ -8,7 +8,6 @@ use Modules\AdminPanel\Http\Controllers\CmsPageController as AdminCmsPageControl
 use Modules\AdminPanel\Http\Controllers\CouponController as AdminCouponController;
 use Modules\AdminPanel\Http\Controllers\DashboardController as AdminDashboardController;
 use Modules\AdminPanel\Http\Controllers\DisputeController as AdminDisputeController;
-use Modules\AdminPanel\Http\Controllers\OrderController as AdminOrderController;
 use Modules\AdminPanel\Http\Controllers\ProductController as AdminProductController;
 use Modules\AdminPanel\Http\Controllers\ReportController as AdminReportController;
 use Modules\AdminPanel\Http\Controllers\ReviewController as AdminReviewController;
@@ -65,12 +64,6 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
 
         // Dashboard
         Route::get('dashboard',             [AdminDashboardController::class, 'index']);
-
-        // Orders
-        Route::get('orders',[AdminOrderController::class, 'index'])->middleware('permission:orders.view');
-        Route::get('orders/{order}',[AdminOrderController::class, 'show'])->middleware('permission:orders.view');
-        Route::patch('orders/{order}/status',[AdminOrderController::class, 'updateStatus'])->middleware('permission:orders.manage');
-        Route::patch('orders/{order}/note',[AdminOrderController::class, 'updateAdminNote'])->middleware('permission:orders.manage');
 
         // Coupons
         Route::apiResource('coupons',       AdminCouponController::class)

@@ -6,7 +6,7 @@ use Modules\Promotions\Models\Promotion;
 use Modules\Promotions\Models\PromotionUsage;
 use Modules\Product\Models\Product;;
 use Modules\Cart\Models\CartItem;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

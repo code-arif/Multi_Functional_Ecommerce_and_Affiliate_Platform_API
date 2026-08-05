@@ -8,7 +8,7 @@ use Modules\Finance\Models\VendorSettlement;
 use Modules\Orders\Models\Order;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Models\VendorWalletTransaction;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

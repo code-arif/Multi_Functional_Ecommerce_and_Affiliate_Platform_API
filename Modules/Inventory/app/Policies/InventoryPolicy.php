@@ -2,7 +2,7 @@
 
 namespace Modules\Inventory\Policies;
 
-use Modules\Auth\Models\User;
+use App\Models\User;
 
 class InventoryPolicy
 {

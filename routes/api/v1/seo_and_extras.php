@@ -25,10 +25,3 @@ Route::prefix('seo')->group(function () {
 // Sitemap — XML response
 Route::get('sitemap.xml', [SeoController::class, 'sitemap'])
      ->name('sitemap');
-
-// Faceted search filters (for sidebar filter UI)
-Route::get('search/facets', function (\Illuminate\Http\Request $request) {
-    $service = app(\App\Services\SearchService::class);
-    $facets  = $service->getFacets($request->q ?? '');
-    return response()->json(['success' => true, 'data' => $facets]);
-})->middleware('throttle:search');

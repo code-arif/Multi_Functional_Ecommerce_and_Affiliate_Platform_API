@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Auth\Models\OtpCode;
 use Modules\Auth\Models\Device;
 use Spatie\Permission\Models\Role;

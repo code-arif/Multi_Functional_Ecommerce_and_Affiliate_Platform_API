@@ -3,7 +3,7 @@
 namespace Modules\AdminPanel\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Auth\Models\User;
+use App\Models\User;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Finance\Models\Commission;
 use Modules\Orders\Models\Order;
