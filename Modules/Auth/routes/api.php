@@ -47,7 +47,7 @@ Route::group(['prefix' => 'v1'], function () {
         Route::post('password/reset',  [PasswordResetController::class, 'reset']);
 
         // OTP (no auth required for password reset flow)
-        Route::post('otp/send',   [OtpController::class, 'send']);
+        Route::post('otp/send', [OtpController::class, 'send']);
         Route::post('otp/verify', [OtpController::class, 'verify']);
     });
 
