@@ -2,8 +2,9 @@
 
 namespace Modules\Cart\Services;
 
+use \Modules\Product\Models\Product;
+use App\Models\User;
 use Modules\Catalog\Models\Wishlist;
-use Modules\Auth\Models\User;
 
 class WishlistService
 {
@@ -17,7 +18,7 @@ class WishlistService
 
     public function toggle(User $user, string $productUuid): array
     {
-        $productId = \Modules\Product\Models\Product;::findByUuidOrFail($productUuid)->id;
+        $productId = Product::findByUuidOrFail($productUuid)->id;
 
         $existing = Wishlist::where('user_id', $user->id)
             ->where('product_id', $productId)
