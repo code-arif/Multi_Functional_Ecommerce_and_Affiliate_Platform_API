@@ -28,7 +28,7 @@ return new class extends Migration
             // Snapshot data (in case product changes later)
             $table->string('product_name');
             $table->string('product_sku')->nullable();
-            $table->json('variant_attributes')->nullable(); // {"Size":"M","Color":"Red"}
+            $table->json('variant_attributes')->nullable();
             $table->string('product_image')->nullable();
             $table->decimal('unit_price', 12, 2);
             $table->integer('quantity');

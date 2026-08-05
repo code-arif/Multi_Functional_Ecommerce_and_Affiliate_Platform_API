@@ -1,38 +1,43 @@
 <?php
 
-namespace App\Models;
+namespace Modules\Orders\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Core\Traits\HasUuid;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductVariant;
 
 class OrderItem extends Model
 {
+    use HasUuid;
     protected $fillable = [
         'order_id',
         'product_id',
-        'product_variant_id',
+        'variant_id',
         'product_name',
         'product_sku',
-        'variant_attributes',
         'product_image',
-        'unit_price',
         'quantity',
-        'subtotal',
+        'unit_price',
+        'total_price',
+        'vendor_id',
     ];
 
     protected $casts = [
         'variant_attributes' => 'array',
-        'unit_price'         => 'decimal:2',
-        'subtotal'           => 'decimal:2',
-        'quantity'           => 'integer',
+        'unit_price' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'quantity' => 'integer',
+        'total_price' => 'decimal:2',
     ];
 
-    public function order(): BelongsTo
+    public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
-    public function product(): BelongsTo
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }

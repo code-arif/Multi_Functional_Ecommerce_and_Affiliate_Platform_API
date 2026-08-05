@@ -14,19 +14,18 @@ return new class extends Migration
         Schema::create('order_status_histories', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('order_id')
-                  ->constrained('orders')
-                  ->cascadeOnDelete();
-            $table->foreignId('updated_by')
-                  ->nullable()
-                  ->constrained('users')
-                  ->nullOnDelete();
+            $table->foreignId('order_id')->constrained('orders')->cascadeOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->string('old_status');
             $table->string('new_status');
-            $table->text('comment')->nullable();
-            $table->boolean('notify_customer')->default(true);
-            $table->timestamps();
 
+            $table->text('notes')->nullable();
+            $table->boolean('notify_customer')->default(true);
+            $table->foreignId('changed_by')->nullable();
+            $table->string('changed_by_name', 100)->nullable();
+
+            $table->timestamps();
             $table->index('order_id');
         });
     }

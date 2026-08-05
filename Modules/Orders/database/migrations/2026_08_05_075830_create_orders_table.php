@@ -15,26 +15,17 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('order_number')->unique();   // ORD-2024-000001
-            $table->foreignId('user_id')
-                ->nullable()                          // null = guest order
-                ->constrained('users')
-                ->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('vendor_id')->nullable();
 
             // Order status
-            $table->enum('status', [
-                'pending',
-                'confirmed',
-                'processing',
-                'shipped',
-                'delivered',
-                'cancelled',
-                'refunded',
-            ])->default('pending');
+            $table->enum('status', ['pending','confirmed','processing', 'shipped','delivered','cancelled','refunded'])->default('pending');
 
             // Pricing
             $table->decimal('subtotal', 12, 2);
             $table->decimal('shipping_charge', 12, 2)->default(0);
             $table->decimal('discount_amount', 12, 2)->default(0);
+            $table->decimal('coupon_discount', 12, 2)->default(0);
             $table->decimal('tax_amount', 12, 2)->default(0);
             $table->decimal('total_amount', 12, 2);
 
@@ -57,23 +48,19 @@ return new class extends Migration
             $table->string('shipping_country')->default('Bangladesh');
 
             // Payment
-            $table->enum('payment_method', [
-                'cod',
-                'bkash',
-                'nagad',
-                'sslcommerz',
-                'card'
-            ])->default('cod');
-            $table->enum('payment_status', [
-                'pending',
-                'paid',
-                'failed',
-                'refunded'
-            ])->default('pending');
+            $table->enum('payment_method', ['cod', 'bkash', 'nagad', 'sslcommerz', 'card'])->default('cod');
+            $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
+            $table->string('shipping_method', 50)->nullable();
+            $table->text('shipping_address')->nullable();
+            $table->text('billing_address')->nullable();
+            $table->text('notes')->nullable();
+
 
             // Notes
             $table->text('customer_note')->nullable();
             $table->text('admin_note')->nullable();
+            $table->string('tracking_token', 100)->nullable()->unique();
+
 
             // Tracking
             $table->string('tracking_number')->nullable();
@@ -81,6 +68,8 @@ return new class extends Migration
             $table->timestamp('shipped_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
+            $table->text('cancel_reason')->nullable();
+            $table->timestamp('paid_at')->nullable();
 
             // Guest identification
             $table->string('guest_email')->nullable();
@@ -92,6 +81,7 @@ return new class extends Migration
             // Indexes
             $table->index('order_number');
             $table->index('user_id');
+            $table->index('vendor_id');
             $table->index('status');
             $table->index('payment_status');
             $table->index('created_at');
