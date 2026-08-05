@@ -98,11 +98,11 @@ class ProductResource extends JsonResource
                     'image_url'      => $v->image_url,
                 ])
             ),
-            'reviews'    => $this->whenLoaded(
-                'reviews',
-                fn() =>
-                // ReviewResource::collection($this->reviews)
-            ),
+            // 'reviews'    => $this->whenLoaded(
+            //     'reviews',
+            //     fn() =>
+            //     ReviewResource::collection($this->reviews)
+            // ),
         ];
     }
 }
