@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\AdminPassLessAuthController;
+use Modules\Auth\Http\Controllers\VendorPassLessAuthController;
 use Modules\Auth\Http\Controllers\AddressController;
 use Modules\Auth\Http\Controllers\OtpController;
 use Modules\Auth\Http\Controllers\PasswordResetController;
@@ -36,6 +37,10 @@ Route::group(['prefix' => 'v1'], function () {
         // Passwordless admin login (OTP-based)
         Route::post('admin/otp/send', [AdminPassLessAuthController::class, 'adminOtpSend']); // DONE: OTP Send (only for admin)
         Route::post('admin/otp/verify', [AdminPassLessAuthController::class, 'adminOtpVerify']); // DONE: OTP Verify (only for admin)
+
+        // Passwordless vendor login (OTP-based)
+        Route::post('vendor/otp/send', [VendorPassLessAuthController::class, 'vendorOtpSend']);
+        Route::post('vendor/otp/verify', [VendorPassLessAuthController::class, 'vendorOtpVerify']);
 
         // Password Reset
         Route::post('password/forgot', [PasswordResetController::class, 'forgot']);
