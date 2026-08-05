@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Cart\Models\Cart;
-use Modules\Catalog\Models\Wishlist;
+use Modules\Cart\Models\Wishlist;
 use Modules\Core\Traits\HasUuid;
 use Modules\Orders\Models\Order;
 use Modules\Reviews\Models\Review;
@@ -61,10 +61,10 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasOne(Address::class)->where('is_default', true);
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
+    // public function orders(): HasMany
+    // {
+    //     return $this->hasMany(Order::class);
+    // }
 
     public function cart(): HasOne
     {

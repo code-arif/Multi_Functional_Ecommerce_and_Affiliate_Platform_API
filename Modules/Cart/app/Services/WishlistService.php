@@ -2,9 +2,9 @@
 
 namespace Modules\Cart\Services;
 
-use \Modules\Product\Models\Product;
+use Modules\Product\Models\Product;
 use App\Models\User;
-use Modules\Catalog\Models\Wishlist;
+use Modules\Cart\Models\Wishlist;
 
 class WishlistService
 {
