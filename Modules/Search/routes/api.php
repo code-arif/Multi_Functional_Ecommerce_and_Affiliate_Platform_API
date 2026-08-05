@@ -18,17 +18,17 @@ use Modules\Search\Http\Controllers\AdminSearchController;
 |
 */
 
-// ─── Public Search Routes ───────────────────────────────────────────
+// Public Search Routes
 
 Route::prefix('search')->middleware('throttle:search')->group(function () {
-    Route::get('/',               [SearchController::class, 'search'])->name('public.search');
-    Route::get('suggestions',     [SearchController::class, 'suggestions'])->name('public.search.suggestions');
-    Route::get('price-range',     [SearchController::class, 'priceRange'])->name('public.search.price-range');
-    Route::get('facets',          [SearchController::class, 'facets'])->name('public.search.facets');
-    Route::get('popular',         [SearchController::class, 'popularSearches'])->name('public.search.popular');
+    Route::get('/', [SearchController::class, 'search'])->name('public.search');
+    Route::get('suggestions', [SearchController::class, 'suggestions'])->name('public.search.suggestions');
+    Route::get('price-range', [SearchController::class, 'priceRange'])->name('public.search.price-range');
+    Route::get('facets', [SearchController::class, 'facets'])->name('public.search.facets');
+    Route::get('popular', [SearchController::class, 'popularSearches'])->name('public.search.popular');
 });
 
-// ─── Admin Search Routes ────────────────────────────────────────────
+// Admin Search Routes
 
 Route::prefix('admin/search')->middleware(['auth:sanctum', 'permission:search.view'])->group(function () {
     Route::get('analytics', [AdminSearchController::class, 'analytics'])->name('admin.search.analytics');
