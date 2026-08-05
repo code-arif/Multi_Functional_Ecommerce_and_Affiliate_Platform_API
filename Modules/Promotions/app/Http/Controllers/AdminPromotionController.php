@@ -2,12 +2,15 @@
 
 namespace Modules\Promotions\Http\Controllers;
 
-use Modules\Promotions\Services\PromotionService;
-use Modules\Promotions\Models\Promotion;
-use Modules\Promotions\Http\Resources\PromotionResource;
-use Modules\Core\Traits\ApiResponse;
+use \Modules\Catalog\Models\Category;
+use \Modules\Product\Models\Product;
+use \Modules\Vendor\Models\Vendor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Promotions\Http\Resources\PromotionResource;
+use Modules\Promotions\Models\Promotion;
+use Modules\Promotions\Services\PromotionService;
 
 class AdminPromotionController
 {
@@ -147,15 +150,15 @@ class AdminPromotionController
     private function mapUuids(array $data): array
     {
         if (isset($data['product_uuids'])) {
-            $data['product_ids'] = \Modules\Product\Models\Product;::whereIn('uuid', $data['product_uuids'])->pluck('id')->all();
+            $data['product_ids'] = Product::whereIn('uuid', $data['product_uuids'])->pluck('id')->all();
             unset($data['product_uuids']);
         }
         if (isset($data['category_uuids'])) {
-            $data['category_ids'] = \Modules\Catalog\Models\Category::whereIn('uuid', $data['category_uuids'])->pluck('id')->all();
+            $data['category_ids'] = Category::whereIn('uuid', $data['category_uuids'])->pluck('id')->all();
             unset($data['category_uuids']);
         }
         if (isset($data['vendor_uuids'])) {
-            $data['vendor_ids'] = \Modules\Vendor\Models\Vendor::whereIn('uuid', $data['vendor_uuids'])->pluck('id')->all();
+            $data['vendor_ids'] = Vendor::whereIn('uuid', $data['vendor_uuids'])->pluck('id')->all();
             unset($data['vendor_uuids']);
         }
         return $data;

@@ -2,13 +2,13 @@
 
 namespace Modules\Inventory\Models;
 
-use Modules\Auth\Models\User;
-use Modules\Product\Models\Product;;
-use Modules\Product\Models\Product;Variant;
-use Modules\Vendor\Models\Vendor;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Core\Traits\HasUuid;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductVariant;
+use Modules\Vendor\Models\Vendor;
 
 class InventoryLog extends Model
 {

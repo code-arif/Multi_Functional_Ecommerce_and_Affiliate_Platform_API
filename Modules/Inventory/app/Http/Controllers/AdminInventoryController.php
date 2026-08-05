@@ -2,11 +2,12 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
-use Modules\Inventory\Services\InventoryService;
-use Modules\Product\Models\Product;;
-use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Inventory\Services\InventoryService;
+use Modules\Product\Models\Product;;
+use Modules\Vendor\Models\Vendor;
 
 class AdminInventoryController
 {
@@ -43,13 +44,13 @@ class AdminInventoryController
         ]);
 
         if ($request->vendor_uuid) {
-            $query->where('vendor_id', \Modules\Vendor\Models\Vendor::findByUuid($request->vendor_uuid)?->id);
+            $query->where('vendor_id', Vendor::findByUuid($request->vendor_uuid)?->id);
         }
         if ($request->type) {
             $query->where('type', $request->type);
         }
         if ($request->product_uuid) {
-            $query->where('product_id', \Modules\Product\Models\Product;::findByUuid($request->product_uuid)?->id);
+            $query->where('product_id', Product::findByUuid($request->product_uuid)?->id);
         }
 
         $logs = $query->latest()->paginate($request->per_page ?? 20);

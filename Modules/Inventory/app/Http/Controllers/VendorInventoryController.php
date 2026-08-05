@@ -2,14 +2,15 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
-use Modules\Inventory\Services\InventoryService;
-use Modules\Catalog\Models\VendorProductPrice;
-use Modules\Inventory\Http\Requests\StoreInventoryAdjustmentRequest;
-use Modules\Inventory\Http\Resources\InventoryLogResource;
-use Modules\Vendor\Models\Vendor;
-use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Inventory\Http\Requests\StoreInventoryAdjustmentRequest;
+use Modules\Inventory\Http\Resources\InventoryLogResource;
+use Modules\Inventory\Models\InventoryLog;
+use Modules\Inventory\Services\InventoryService;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\VendorProductPrice;
 
 class VendorInventoryController
 {
@@ -130,9 +131,9 @@ class VendorInventoryController
             return $this->errorResponse('You are not a vendor.', null, 403);
         }
 
-        $logs = \Modules\Inventory\Models\InventoryLog::with(['product', 'createdBy', 'warehouse'])
+        $logs = InventoryLog::with(['product', 'createdBy', 'warehouse'])
             ->where('vendor_id', $vendor->id)
-            ->when($request->product_uuid, fn($q, $uuid) => $q->where('product_id', \Modules\Product\Models\Product;::findByUuid($uuid)?->id))
+            ->when($request->product_uuid, fn($q, $uuid) => $q->where('product_id', Product::findByUuid($uuid)?->id))
             ->when($request->type, fn($q, $t) => $q->where('type', $t))
             ->latest()
             ->paginate($request->per_page ?? 20);

@@ -2,11 +2,11 @@
 
 namespace Modules\Inventory\Events;
 
-use Modules\Product\Models\Product;;
-use Modules\Product\Models\Product;Variant;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductVariant;
 
 class StockAdjusted
 {

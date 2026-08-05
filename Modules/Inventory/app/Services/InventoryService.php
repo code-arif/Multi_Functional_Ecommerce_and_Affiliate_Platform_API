@@ -2,15 +2,18 @@
 
 namespace Modules\Inventory\Services;
 
-use Modules\Product\Models\Product;;
-use Modules\Product\Models\Product;Variant;
-use Modules\Catalog\Models\VendorProductPrice;
+use \Illuminate\Support\Facades\Log;
+use \Modules\Notifications\Notifications\LowStockNotification;
+use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Modules\Inventory\Events\StockAdjusted;
 use Modules\Inventory\Models\InventoryLog;
 use Modules\Inventory\Models\Warehouse;
+use Modules\Product\Models\Product;
+use Modules\Product\Models\ProductVariant;
+use Modules\Product\Models\VendorProductPrice;
 use Modules\Vendor\Models\Vendor;
-use Modules\Auth\Models\User;
-use Modules\Inventory\Events\StockAdjusted;
-use Illuminate\Support\Facades\DB;
 
 class InventoryService
 {
@@ -283,10 +286,10 @@ class InventoryService
         if ($vendor && $vendor->user) {
             try {
                 $vendor->user->notify(
-                    new \Modules\Notifications\Notifications\LowStockNotification($product)
+                    new LowStockNotification($product)
                 );
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::warning("Low stock notification failed: {$e->getMessage()}");
+            } catch (Exception $e) {
+                Log::warning("Low stock notification failed: {$e->getMessage()}");
             }
         }
     }
