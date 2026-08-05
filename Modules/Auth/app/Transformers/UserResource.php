@@ -1,7 +1,8 @@
 <?php
 
-namespace Modules\Auth\Http\Resources;
+namespace Modules\Auth\Transformers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource

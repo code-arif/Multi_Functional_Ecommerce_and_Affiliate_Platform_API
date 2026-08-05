@@ -1,9 +1,9 @@
 {
     "name": "Auth",
     "alias": "auth",
-    "description": "Authentication & User Management: registration, login, OTP, password reset, profile management",
-    "keywords": ["auth", "user", "login", "register", "profile"],
-    "priority": 10,
+    "description": "",
+    "keywords": [],
+    "priority": 0,
     "providers": [
         "Modules\\Auth\\Providers\\AuthServiceProvider"
     ],

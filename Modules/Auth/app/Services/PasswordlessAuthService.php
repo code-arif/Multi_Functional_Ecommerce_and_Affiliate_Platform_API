@@ -41,12 +41,12 @@ class PasswordlessAuthService
         $code = (string) random_int(100000, 999999);
 
         $otp = OtpCode::create([
-            'user_id'     => $user->id,
-            'code'        => $code,
-            'type'        => $type,
-            'channel'     => 'email',
+            'user_id' => $user->id,
+            'code' => $code,
+            'type' => $type,
+            'channel' => 'email',
             'destination' => $user->email,
-            'expires_at'  => now()->addMinutes(10),
+            'expires_at' => now()->addMinutes(10),
         ]);
 
         $this->sendEmail($user, $otp);

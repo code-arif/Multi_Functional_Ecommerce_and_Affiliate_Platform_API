@@ -6,8 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Http\Requests\RegisterRequest;
-use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Services\AuthService;
+use Modules\Auth\Transformers\UserResource;
 use Modules\Core\Traits\ApiResponse;
 use Modules\Vendor\Transformers\VendorResource;
 

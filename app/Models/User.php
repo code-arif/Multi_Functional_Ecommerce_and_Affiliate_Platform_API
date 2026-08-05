@@ -92,10 +92,13 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasOne(Vendor::class);
     }
 
+    // Role Helpers (Spatie's HasRoles provides the roles() relation)
     public function vendorStaff(): HasMany
     {
         return $this->hasMany(VendorStaff::class);
-    }    // Role Helpers (Spatie's HasRoles provides the roles() relation)
+    } 
+    
+    // Check user is admin | super-admin
     public function isAdmin(): bool
     {
         return $this->hasRole(['super-admin', 'admin']);

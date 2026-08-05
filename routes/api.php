@@ -9,14 +9,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Auth module routes (auth, profile, addresses, devices, OTP, passwordless login)
-Route::prefix('v1')->group(base_path('Modules/Auth/routes/api.php'));
-
-// Catalog module routes (products, categories)
-Route::prefix('v1')->group(base_path('Modules/Catalog/routes/api.php'));
-
-// Cart module routes
-Route::prefix('v1')->group(base_path('Modules/Cart/routes/api.php'));
 
 // Checkout module routes
 Route::prefix('v1')->group(base_path('Modules/Checkout/routes/api.php'));

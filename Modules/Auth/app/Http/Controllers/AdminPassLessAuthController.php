@@ -6,8 +6,8 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Auth\Http\Resources\UserResource;
 use Modules\Auth\Services\PasswordlessAuthService;
+use Modules\Auth\Transformers\UserResource;
 use Modules\Core\Traits\ApiResponse;
 
 class AdminPassLessAuthController extends Controller
@@ -42,10 +42,10 @@ class AdminPassLessAuthController extends Controller
         }
 
         try {
-            $this->passwordlessAuth->sendOtp($user, 'admin_passwordless');
+            $code = $this->passwordlessAuth->sendOtp($user, 'admin_passwordless');
 
             return $this->successResponse(
-                ['email' => $user->email],
+                ['email' => $user->email, 'code' => $code->code],
                 'Verification code sent to your email.'
             );
         } catch (Exception $e) {
