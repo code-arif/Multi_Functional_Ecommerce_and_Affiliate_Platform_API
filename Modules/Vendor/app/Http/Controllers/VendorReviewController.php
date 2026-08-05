@@ -2,12 +2,13 @@
 
 namespace Modules\Vendor\Http\Controllers;
 
-use Modules\Reviews\Models\Review;
-use Modules\Reviews\Services\ReviewService;
-use Modules\Reviews\Http\Resources\ReviewResource;
-use Modules\Core\Traits\ApiResponse;
+use \Modules\Product\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Reviews\Http\Resources\ReviewResource;
+use Modules\Reviews\Models\Review;
+use Modules\Reviews\Services\ReviewService;
 
 class VendorReviewController
 {
@@ -27,7 +28,7 @@ class VendorReviewController
             ->whereHas('product.vendorProductPrices', fn($q) => $q->where('vendor_id', $vendor->id))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->rating, fn($q) => $q->where('rating', $request->rating))
-            ->when($request->product_uuid, fn($q) => $q->where('product_id', \Modules\Product\Models\Product;::findByUuid($request->product_uuid)?->id))
+            ->when($request->product_uuid, fn($q) => $q->where('product_id', Product::findByUuid($request->product_uuid)?->id))
             ->when($request->search, fn($q) => $q->whereHas('product', fn($q) => $q->where('name', 'like', "%{$request->search}%")))
             ->latest()
             ->paginate($request->per_page ?? 20);

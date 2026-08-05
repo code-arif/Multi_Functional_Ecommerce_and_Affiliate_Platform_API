@@ -2,14 +2,15 @@
 
 namespace Modules\Vendor\Http\Controllers;
 
-use Modules\Product\Models\Product;;
-use Modules\Catalog\Models\VendorProductPrice;
-use Modules\Catalog\Services\ProductService;
-use Modules\Catalog\Http\Resources\ProductResource;
-use Modules\Catalog\Http\Resources\ProductListResource;
-use Modules\Core\Traits\ApiResponse;
+use \Modules\Catalog\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\Product\Models\Product;;
+use Modules\Product\Models\VendorProductPrice;
+use Modules\Product\Services\ProductService;
+use Modules\Product\Transformers\ProductListResource;
+use Modules\Product\Transformers\ProductResource;
 
 class VendorProductController
 {
@@ -36,7 +37,7 @@ class VendorProductController
                   ->orWhere('sku', 'like', "%{$request->search}%");
             }))
             ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->category_uuid, fn($q) => $q->where('category_id', \Modules\Catalog\Models\Category::findByUuid($request->category_uuid)?->id))
+            ->when($request->category_uuid, fn($q) => $q->where('category_id', Category::findByUuid($request->category_uuid)?->id))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 20);
 
@@ -82,13 +83,13 @@ class VendorProductController
 
         // Map uuid references to internal ids
         if (!empty($validated['category_uuid'])) {
-            $validated['category_id'] = \Modules\Catalog\Models\Category::findByUuidOrFail($validated['category_uuid'])->id;
+            $validated['category_id'] = Category::findByUuidOrFail($validated['category_uuid'])->id;
         }
         unset($validated['category_uuid']);
 
         // If linking to an existing product
         if (!empty($validated['product_uuid'])) {
-            $product = \Modules\Product\Models\Product;::findByUuidOrFail($validated['product_uuid']);
+            $product = Product::findByUuidOrFail($validated['product_uuid']);
             unset($validated['product_uuid']);
 
             VendorProductPrice::updateOrCreate(
