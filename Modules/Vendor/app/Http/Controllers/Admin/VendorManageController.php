@@ -1,40 +1,27 @@
 <?php
 
-namespace Modules\AdminPanel\Http\Controllers\Vendor;
+namespace Modules\Vendor\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Models\VendorDocument;
 use Modules\Vendor\Http\Requests\UpdateVendorStatusRequest;
-use Modules\Vendor\Http\Resources\VendorResource;
-use Modules\Vendor\Http\Resources\VendorListResource;
-use Modules\Vendor\Http\Resources\VendorDocumentResource;
-use Modules\AdminPanel\Http\Requests\StoreVendorRequest;
-use Modules\AdminPanel\Services\VendorManageService;
+use Modules\Vendor\Transformers\VendorResource;
+use Modules\Vendor\Transformers\VendorListResource;
+use Modules\Vendor\Transformers\VendorDocumentResource;
+use Modules\Vendor\Http\Requests\Admin\StoreVendorRequest;
+use Modules\Vendor\Services\VendorManageService;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class VendorManageController
+class VendorManageController extends Controller
 {
     use ApiResponse;
 
     public function __construct(
         private VendorManageService $vendorManageService
     ) {}
-
-    /**
-     * POST /api/v1/admin/vendors
-     * Create a vendor (user account + pending vendor record), then email credentials
-     */
-    public function store(StoreVendorRequest $request): JsonResponse
-    {
-        $vendor = $this->vendorManageService->create($request->validated());
-
-        return $this->createdResponse(
-            new VendorResource($vendor->load('user')),
-            'Vendor created. A welcome email has been sent to the vendor.'
-        );
-    }
 
     /**
      * GET /api/v1/admin/vendors
@@ -49,6 +36,20 @@ class VendorManageController
             ->paginate($request->per_page ?? 20);
 
         return $this->paginatedResponse(VendorResource::collection($vendors));
+    }
+
+    /**
+     * POST /api/v1/admin/vendors
+     * Create a vendor (user account + pending vendor record), then email credentials
+     */
+    public function store(StoreVendorRequest $request): JsonResponse
+    {
+        $vendor = $this->vendorManageService->create($request->validated());
+
+        return $this->createdResponse(
+            new VendorResource($vendor->load('user')),
+            'Vendor created. A welcome email has been sent to the vendor.'
+        );
     }
 
     /**

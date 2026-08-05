@@ -1,5 +1,5 @@
 <?php
-namespace Modules\AdminPanel\Services;
+namespace Modules\Vendor\Services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -9,7 +9,7 @@ use App\Models\User;
 use Modules\Vendor\Events\VendorApprovedEvent;
 use Modules\Vendor\Events\VendorRegisteredEvent;
 use Modules\Vendor\Events\VendorRejectedEvent;
-use Modules\Vendor\Mail\VendorWelcomeMail;
+use Modules\Vendor\Emails\VendorWelcomeMail;
 use Modules\Vendor\Models\Vendor;
 
 class VendorManageService
@@ -54,7 +54,7 @@ class VendorManageService
     }
 
     /**
-     * Generate a unique slug for the vendor based on the shop name.
+     * Approve vendor.
      */
     public function approve(Vendor $vendor, User $admin): Vendor
     {

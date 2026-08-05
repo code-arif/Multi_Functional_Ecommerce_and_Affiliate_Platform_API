@@ -2,7 +2,6 @@
 
 namespace Modules\Vendor\Http\Controllers;
 
-use Modules\Vendor\Services\VendorService;
 use Modules\Vendor\Models\Vendor;
 use Modules\Vendor\Http\Requests\StoreVendorRequest;
 use Modules\Vendor\Http\Requests\UpdateVendorRequest;

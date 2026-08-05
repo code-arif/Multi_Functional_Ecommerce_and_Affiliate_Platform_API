@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\AdminPanel\Http\Requests;
+namespace Modules\Vendor\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,7 +18,7 @@ class StoreVendorRequest extends FormRequest
             'name' => ['required', 'string', 'max:200'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
             'phone' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'shop_name' => ['nullable', 'string', 'max:200', Rule::unique('vendors', 'shop_name')],
         ];
     }
