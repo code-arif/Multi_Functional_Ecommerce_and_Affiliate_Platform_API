@@ -2,6 +2,8 @@
 
 namespace Modules\Cart\Models;
 
+use \Modules\Promotions\Models\Coupon;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -39,12 +41,12 @@ class Cart extends Model
 
     public function user()
     {
-        return $this->belongsTo(\Modules\Auth\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function coupon()
     {
-        return $this->belongsTo(\Modules\Promotions\Models\Coupon::class);
+        return $this->belongsTo(Coupon::class);
     }
 
     public function getSubtotalAttribute()

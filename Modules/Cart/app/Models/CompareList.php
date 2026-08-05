@@ -2,10 +2,11 @@
 
 namespace Modules\Cart\Models;
 
-use Modules\Auth\Models\User;
+use \Modules\Product\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Core\Traits\HasUuid;
 
 class CompareList extends Model
@@ -29,7 +30,7 @@ class CompareList extends Model
     public function products()
     {
         return $this->belongsToMany(
-            \Modules\Product\Models\Product::class,
+            Product::class,
             'compare_list_items'
         )->withTimestamps();
     }

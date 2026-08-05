@@ -2,11 +2,11 @@
 
 namespace Modules\Cart\Models;
 
-use Modules\Auth\Models\User;
-use Modules\Product\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Core\Traits\HasUuid;
+use Modules\Product\Models\Product;
 
 class RecentView extends Model
 {

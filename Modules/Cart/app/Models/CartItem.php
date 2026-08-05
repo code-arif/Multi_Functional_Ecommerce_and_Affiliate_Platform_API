@@ -2,6 +2,8 @@
 
 namespace Modules\Cart\Models;
 
+use \Modules\Product\Models\Product;
+use \Modules\Product\Models\ProductVariant;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Core\Traits\HasUuid;
 
@@ -29,12 +31,12 @@ class CartItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(\Modules\Product\Models\Product::class);
+        return $this->belongsTo(Product::class);
     }
 
     public function variant()
     {
-        return $this->belongsTo(\Modules\Product\Models\ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class);
     }
 
     public function getTotalAttribute()
