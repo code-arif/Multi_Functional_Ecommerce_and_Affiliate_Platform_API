@@ -11,16 +11,17 @@ use Modules\Catalog\Http\Controllers\CategoryManageController;
 |--------------------------------------------------------------------------
 */
 
+// V1 block
+Route::prefix('v1')->group(function () {
 
-// Categories
-Route::prefix('categories')->middleware('throttle:api')->group(function () {
-    Route::get('/',             [CategoryController::class, 'index']);
-    Route::get('{slug}',        [CategoryController::class, 'show']);
-});
+    // Categories
+    Route::prefix('categories')->middleware('throttle:api')->group(function () {
+        Route::get('/', [CategoryController::class, 'index']);
+        Route::get('{slug}', [CategoryController::class, 'show']);
+    });
 
 
-Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(function () {
-
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         // Categories Management
         Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view');
         Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.manage');
@@ -33,3 +34,4 @@ Route::middleware(['auth:sanctum', 'admin', 'banned'])->prefix('admin')->group(f
         Route::put('brands/{brand}/update', [BrandManageController::class, 'update'])->middleware('permission:brands.manage');
         Route::delete('brands/{brand}/delete', [BrandManageController::class, 'destroy'])->middleware('permission:brands.manage');
     });
+});

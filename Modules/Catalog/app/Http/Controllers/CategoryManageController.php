@@ -2,13 +2,13 @@
 
 namespace Modules\Catalog\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Modules\Catalog\Http\Requests\StoreCategoryRequest;
 use Modules\Catalog\Http\Requests\UpdateCategoryRequest;
 use Modules\Catalog\Models\Category;
-use Modules\Catalog\Http\Resources\CategoryResource;
+use Modules\Catalog\Transformers\CategoryResource;
 use Modules\Core\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class CategoryManageController
 {
