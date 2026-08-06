@@ -23,8 +23,8 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         // Categories Management
-        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view');
-        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.manage');
+        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view'); // DONE: List Category
+        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.manage'); // DONE: Store Category
         Route::put('categories/{category}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.manage');
         Route::delete('categories/{category}/delete', [CategoryManageController::class, 'destroy'])->middleware('permission:categories.manage');
 
