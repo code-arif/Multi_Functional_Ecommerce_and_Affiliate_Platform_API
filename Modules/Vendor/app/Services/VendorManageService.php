@@ -22,10 +22,10 @@ class VendorManageService
     {
         $vendor = DB::transaction(function () use ($data) {
             $user = User::create([
-                'name'     => $data['name'],
-                'email'    => $data['email'],
-                'phone'    => $data['phone'] ?? null,
-                'password' => $data['password'], // hashed via model cast
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'password' => $data['password'],
             ]);
 
             $user->assignRole('vendor');
@@ -33,12 +33,12 @@ class VendorManageService
             $shopName = $data['shop_name'] ?? $data['name'];
 
             return Vendor::create([
-                'user_id'         => $user->id,
-                'shop_name'       => $shopName,
-                'slug'            => $this->generateUniqueSlug($shopName),
-                'email'           => $data['email'],
-                'phone'           => $data['phone'] ?? null,
-                'status'          => 'pending',
+                'user_id' => $user->id,
+                'shop_name' => $shopName,
+                'slug' => $this->generateUniqueSlug($shopName),
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'status' => 'pending',
                 'commission_rate' => config('ecommerce.vendor.default_commission_rate', 10),
                 'commission_type' => config('ecommerce.vendor.default_commission_type', 'percentage'),
             ]);
@@ -59,7 +59,7 @@ class VendorManageService
     public function approve(Vendor $vendor, User $admin): Vendor
     {
         $vendor->update([
-            'status'      => 'active',
+            'status' => 'active',
             'approved_at' => now(),
             'approved_by' => $admin->id,
         ]);
@@ -77,7 +77,7 @@ class VendorManageService
     public function reject(Vendor $vendor, string $reason): Vendor
     {
         $vendor->update([
-            'status'           => 'rejected',
+            'status' => 'rejected',
             'rejection_reason' => $reason,
         ]);
 

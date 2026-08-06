@@ -53,51 +53,70 @@ class VendorManageController extends Controller
     }
 
     /**
-     * GET /api/v1/admin/vendors/{vendor}
+     * GET /api/v1/admin/vendors/{uuid}
      * Show vendor details with all relations
      */
-    public function show(Vendor $vendor): JsonResponse
+    public function show(string $uuid): JsonResponse
     {
-        $vendor->load(['user', 'profile', 'addresses', 'bankAccounts', 'documents', 'staff.user']);
+        $vendor = Vendor::with(['user', 'profile', 'addresses', 'bankAccounts', 'documents', 'staff.user'])
+        ->where('uuid', $uuid)->firstOrFail();
         return $this->successResponse(new VendorResource($vendor));
     }
 
     /**
-     * POST /api/v1/admin/vendors/{vendor}/approve
+     * POST /api/v1/admin/vendors/{uuid}/approve
      * Approve vendor application
      */
-    public function approve(Vendor $vendor, Request $request): JsonResponse
+    public function approve(string $uuid, Request $request): JsonResponse
     {
+        $vendor = Vendor::where('uuid', $uuid)->first();
+
+        if(!$vendor){
+            return $this->notFoundResponse('Vendor not found.');
+        }
+
         $vendor = $this->vendorManageService->approve($vendor, $request->user());
         return $this->successResponse(
             new VendorResource($vendor->load('profile')),
-            'Vendor approved.'
+            'Vendor approved successfully!'
         );
     }
 
     /**
-     * POST /api/v1/admin/vendors/{vendor}/reject
+     * POST /api/v1/admin/vendors/{uuid}/reject
      * Reject vendor application
      */
-    public function reject(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
+    public function reject(string $uuid, UpdateVendorStatusRequest $request): JsonResponse
     {
+        $vendor = Vendor::where('uuid', $uuid)->first();
+
+        if(!$vendor){
+            return $this->notFoundResponse('Vendor not found.');
+        }
+
         $vendor = $this->vendorManageService->reject($vendor, $request->validated('reason'));
         return $this->successResponse(
             new VendorResource($vendor),
-            'Vendor rejected.'
+            'Vendor rejected successfully!'
         );
     }
 
     /**
-     * POST /api/v1/admin/vendors/{vendor}/suspend
+     * POST /api/v1/admin/vendors/{uuid}/suspend
      * Suspend an active vendor
      */
-    public function suspend(Vendor $vendor, UpdateVendorStatusRequest $request): JsonResponse
+    public function suspend(string $uuid, UpdateVendorStatusRequest $request): JsonResponse
     {
+        $vendor = Vendor::where('uuid', $uuid)->first();
+
+        if(!$vendor){
+            return $this->notFoundResponse('Vendor not found.');
+        }
+
         $vendor = $this->vendorManageService->suspend($vendor, $request->validated('reason'));
         return $this->successResponse(
             new VendorResource($vendor),
-            'Vendor suspended.'
+            'Vendor suspended successfully!'
         );
     }
 
@@ -118,7 +137,7 @@ class VendorManageController extends Controller
     public function verifyDocument(VendorDocument $document): JsonResponse
     {
         $document->update([
-            'status'      => 'verified',
+            'status' => 'verified',
             'verified_at' => now(),
             'verified_by' => request()->user()->id,
         ]);

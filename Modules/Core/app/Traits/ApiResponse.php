@@ -91,4 +91,26 @@ trait ApiResponse
             'message' => $message,
         ], 401);
     }
+
+    // Not found response
+    protected function notFoundResponse(
+        string $message = 'Not found.'
+    ): JsonResponse {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'status_code' => 404,
+        ], 404);
+    }
+
+    // Already exist response
+    protected function alreadyExistResponse(
+        string $message = 'Already exist.'
+    ): JsonResponse {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'status_code' => 409,
+        ], 409);
+    }
 }
