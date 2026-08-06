@@ -13,7 +13,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('v1/admin')->group(function
     Route::prefix('vendors')->middleware('permission:vendors.view')->group(function () {
         Route::get('/', [VendorManageController::class, 'index']); // DONE: Vendor List
         Route::post('/store', [VendorManageController::class, 'store'])->middleware('permission:vendors.create'); // DONE: Vendor Store
-        Route::get('pending', [VendorManageController::class, 'pending']);
+        // Route::get('pending', [VendorManageController::class, 'pending']);
         Route::get('{uuid}', [VendorManageController::class, 'show']); // DONE: Vendor Details
         Route::post('{uuid}/approve', [VendorManageController::class, 'approve'])->middleware('permission:vendors.approve'); // DONE: Vendor Approve
         Route::post('{uuid}/reject', [VendorManageController::class, 'reject'])->middleware('permission:vendors.approve'); // DONE: Vendor Reject
