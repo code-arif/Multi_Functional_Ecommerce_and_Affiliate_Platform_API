@@ -20,7 +20,6 @@ class DatabaseSeeder extends Seeder
             OrdersDatabaseSeeder::class,
             // Other seeders
             // SettingSeeder::class,
-            // CategorySeeder::class,
             // BrandSeeder::class,
             // BannerSeeder::class,
             // AffiliateProductSeeder::class,
