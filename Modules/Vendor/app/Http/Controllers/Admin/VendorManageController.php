@@ -131,6 +131,30 @@ class VendorManageController extends Controller
     }
 
     /**
+     * POST /api/v1/admin/vendors/{uuid}/pending
+     * Transition vendor status back to pending
+     */
+    public function makePending(string $uuid): JsonResponse
+    {
+        $vendor = Vendor::where('uuid', $uuid)->first();
+
+        if(!$vendor){
+            return $this->notFoundResponse('Vendor not found.');
+        }
+
+        $vendor->update([
+            'status' => 'pending',
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
+
+        return $this->successResponse(
+            new VendorResource($vendor),
+            'Vendor status updated to pending successfully!'
+        );
+    }
+
+    /**
      * POST /api/v1/admin/vendors/documents/{document}/verify
      * Verify a vendor document
      */
