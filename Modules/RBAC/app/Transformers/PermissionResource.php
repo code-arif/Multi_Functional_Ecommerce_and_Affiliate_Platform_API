@@ -1,7 +1,8 @@
 <?php
 
-namespace Modules\RBAC\Http\Resources;
+namespace Modules\RBAC\Transformers;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PermissionResource extends JsonResource

@@ -28,9 +28,6 @@ Route::prefix('v1')->group(base_path('Modules/AdminPanel/routes/api.php'));
 // Core module public routes (locations, currencies, languages)
 Route::prefix('v1/core')->middleware('throttle:api')->group(base_path('Modules/Core/routes/api.php'));
 
-// RBAC module routes (roles, permissions, user-role assignments)
-Route::prefix('v1')->group(base_path('Modules/RBAC/routes/api.php'));
-
 // Inventory module routes (vendor + admin)
 Route::prefix('v1')->group(base_path('Modules/Inventory/routes/api.php'));
 

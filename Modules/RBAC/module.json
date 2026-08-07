@@ -1,9 +1,9 @@
 {
     "name": "RBAC",
     "alias": "rbac",
-    "description": "Roles & Permissions: role-based access control with vendor-scoped staff permissions",
-    "keywords": ["roles", "permissions", "rbac", "authorization"],
-    "priority": 20,
+    "description": "",
+    "keywords": [],
+    "priority": 0,
     "providers": [
         "Modules\\RBAC\\Providers\\RBACServiceProvider"
     ],
