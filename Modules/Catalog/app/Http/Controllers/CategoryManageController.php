@@ -25,6 +25,14 @@ class CategoryManageController
         return $this->paginatedResponse(CategoryResource::collection($categories));
     }
 
+    // Show a single category with children, parent, and products
+    public function show(Category $category): JsonResponse
+    {
+        $category->load(['parent', 'creator', 'updater', 'products']);
+        $category->loadCount('products');
+        return $this->successResponse(new CategoryResource($category));
+    }
+
     // Store a new category
     public function store(StoreCategoryRequest $request): JsonResponse
     {

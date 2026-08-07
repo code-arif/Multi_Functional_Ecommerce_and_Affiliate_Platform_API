@@ -42,6 +42,16 @@ class CategoryResource extends JsonResource
                 'id'   => $this->updater->id,
                 'name' => $this->updater->name,
             ]),
+            'products' => $this->whenLoaded('products', fn() => $this->products->map(fn($p) => [
+                'id' => $p->id,
+                'uuid' => $p->uuid,
+                'name' => $p->name,
+                'slug' => $p->slug,
+                'status' => $p->status,
+                'thumbnail_url' => $p->thumbnail_url,
+                'price' => $p->price,
+                'sale_price' => $p->sale_price,
+            ])),
             'children' => $this->whenLoaded('allChildren',
                 fn() => CategoryResource::collection($this->allChildren)
             ),
