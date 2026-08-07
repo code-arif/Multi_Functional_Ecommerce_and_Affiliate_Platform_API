@@ -24,10 +24,10 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         // Categories Management
         Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view,categories.manage');
-        Route::get('categories/{category}', [CategoryManageController::class, 'show'])->middleware('permission:categories.view,categories.manage');
+        Route::get('categories/{category:uuid}', [CategoryManageController::class, 'show'])->middleware('permission:categories.view,categories.manage');
         Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.create,categories.manage');
-        Route::put('categories/{category}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.edit,categories.manage');
-        Route::delete('categories/{category}/delete', [CategoryManageController::class, 'destroy'])->middleware('permission:categories.manage');
+        Route::put('categories/{category:uuid}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.edit,categories.manage');
+        Route::delete('categories/{category:uuid}/delete', [CategoryManageController::class, 'destroy'])->middleware('permission:categories.manage');
 
         // Brands
         Route::get('brands', [BrandManageController::class, 'index'])->middleware('permission:brands.view,brands.manage');
