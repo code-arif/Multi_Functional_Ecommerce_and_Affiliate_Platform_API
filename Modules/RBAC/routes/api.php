@@ -34,7 +34,7 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']]
         Route::get('permissions/grouped', [PermissionController::class, 'grouped'])->middleware('permission:permissions.view'); // DONE: Group wise permission list
         Route::get('permissions/{id}', [PermissionController::class, 'show'])->middleware('permission:permissions.view'); // DONE: Get permission with associated roles
         Route::put('permissions/{id}/update', [PermissionController::class, 'update'])->middleware('permission:permissions.manage'); // DONE: Update permission
-        Route::delete('permissions/{id}/destroy', [PermissionController::class, 'destroy'])->middleware('permission:permissions.manage');
+        Route::delete('permissions/{id}/destroy', [PermissionController::class, 'destroy'])->middleware('permission:permissions.manage'); // DONE: Delete permission
 
         // User-Role Assignments
         Route::get('users', [UserRoleController::class, 'index'])->middleware('permission:users.view');
