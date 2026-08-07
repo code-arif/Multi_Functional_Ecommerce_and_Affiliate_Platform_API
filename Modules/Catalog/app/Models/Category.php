@@ -28,13 +28,55 @@ class Category extends Model
         'sort_order',
         'is_featured',
         'is_active',
+        'status',
+        'commission_rate',
+        'depth',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
         'is_active'   => 'boolean',
         'sort_order'  => 'integer',
+        'commission_rate' => 'decimal:2',
+        'depth'       => 'integer',
+        'created_by'  => 'integer',
+        'updated_by'  => 'integer',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function (Category $category) {
+            if ($category->parent_id) {
+                $parent = self::find($category->parent_id);
+                $category->depth = $parent ? $parent->depth + 1 : 0;
+            } else {
+                $category->depth = 0;
+            }
+
+            // Set created_by if auth user is logged in and not already set
+            if (auth()->check() && !$category->created_by) {
+                $category->created_by = auth()->id();
+            }
+        });
+
+        static::updating(function (Category $category) {
+            if ($category->isDirty('parent_id')) {
+                if ($category->parent_id) {
+                    $parent = self::find($category->parent_id);
+                    $category->depth = $parent ? $parent->depth + 1 : 0;
+                } else {
+                    $category->depth = 0;
+                }
+            }
+
+            // Set updated_by if auth user is logged in
+            if (auth()->check()) {
+                $category->updated_by = auth()->id();
+            }
+        });
+    }
 
     public function parent(): BelongsTo
     {
@@ -54,6 +96,16 @@ class Category extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\User::class, 'updated_by');
     }
 
     public function scopeActive($query)

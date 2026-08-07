@@ -3,7 +3,7 @@
 namespace Modules\Catalog\Http\Controllers;
 
 use Modules\Catalog\Models\Category;
-use Modules\Catalog\Http\Resources\CategoryResource;
+use Modules\Catalog\Transformers\CategoryResource;
 use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 

@@ -16,9 +16,9 @@ class DatabaseSeeder extends Seeder
             // Core module: countries, currencies, languages
             // \Modules\Core\Database\Seeders\CoreDatabaseSeeder::class,
             // RBAC: 39 permissions, 6 roles + admin user
-            // RBACSeeder::class,
+            RBACSeeder::class,
             // Catalog: 10 category seeds
-            CategorySeeder::class,
+            // CategorySeeder::class,
             // Orders: demo orders (requires users + products, otherwise skipped)
             // OrdersDatabaseSeeder::class,
             // Other seeders

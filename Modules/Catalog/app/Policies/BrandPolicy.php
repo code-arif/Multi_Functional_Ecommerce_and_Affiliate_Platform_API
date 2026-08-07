@@ -19,16 +19,16 @@ class BrandPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('brands.manage');
+        return $user->hasPermissionTo('brands.create') || $user->hasPermissionTo('brands.manage');
     }
 
     public function update(User $user, Brand $brand): bool
     {
-        return $user->hasPermission('brands.manage');
+        return $user->hasPermissionTo('brands.edit') || $user->hasPermissionTo('brands.manage');
     }
 
     public function delete(User $user, Brand $brand): bool
     {
-        return $user->hasPermission('brands.manage');
+        return $user->hasPermissionTo('brands.delete') || $user->hasPermissionTo('brands.manage');
     }
 }

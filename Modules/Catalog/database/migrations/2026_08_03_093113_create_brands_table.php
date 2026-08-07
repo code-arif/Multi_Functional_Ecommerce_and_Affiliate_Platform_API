@@ -18,14 +18,23 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('logo')->nullable();
+            $table->string('banner')->nullable();
             $table->string('website')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
+            
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_featured')->default(false);
+            $table->string('status', 20)->default('approved'); // approved, pending, rejected
+            
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->integer('sort_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['slug', 'is_active']);
+            
+            $table->index(['slug', 'is_active', 'status']);
         });
     }
 

@@ -2,7 +2,7 @@
 
 namespace Modules\Catalog\Http\Controllers;
 
-use Modules\Catalog\Http\Resources\BrandResource;
+use Modules\Catalog\Transformers\BrandResource;
 use Modules\Catalog\Http\Requests\StoreBrandRequest;
 use Modules\Catalog\Http\Requests\UpdateBrandRequest;
 use Modules\Catalog\Models\Brand;
@@ -33,6 +33,9 @@ class BrandManageController
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('brands', 'public');
         }
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('brands/banners', 'public');
+        }
 
         $brand = Brand::create($data);
 
@@ -46,6 +49,9 @@ class BrandManageController
 
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('brands', 'public');
+        }
+        if ($request->hasFile('banner')) {
+            $data['banner'] = $request->file('banner')->store('brands/banners', 'public');
         }
 
         $brand->update($data);

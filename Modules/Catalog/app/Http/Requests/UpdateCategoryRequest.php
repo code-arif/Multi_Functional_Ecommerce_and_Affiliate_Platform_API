@@ -13,7 +13,7 @@ class UpdateCategoryRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'parent_uuid' => 'nullable|exists:categories,uuid',
             'name' => 'sometimes|string|max:100',
             'description' => 'nullable|string|max:1000',
@@ -27,5 +27,12 @@ class UpdateCategoryRequest extends FormRequest
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
         ];
+
+        if ($this->user() && ($this->user()->isAdmin() || $this->user()->isModerator())) {
+            $rules['status'] = 'sometimes|string|in:approved,pending,rejected';
+            $rules['commission_rate'] = 'sometimes|numeric|min:0|max:100';
+        }
+
+        return $rules;
     }
 }

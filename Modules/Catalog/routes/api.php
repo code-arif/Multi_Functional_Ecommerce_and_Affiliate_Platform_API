@@ -23,15 +23,24 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         // Categories Management
-        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view'); // DONE: List Category
-        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.manage'); // DONE: Store Category
-        Route::put('categories/{category}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.manage');
+        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view,categories.manage');
+        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.create,categories.manage');
+        Route::put('categories/{category}/update', [CategoryManageController::class, 'update'])->middleware('permission:categories.edit,categories.manage');
         Route::delete('categories/{category}/delete', [CategoryManageController::class, 'destroy'])->middleware('permission:categories.manage');
 
         // Brands
-        Route::get('brands', [BrandManageController::class, 'index'])->middleware('permission:brands.view');
-        Route::post('brands/store', [BrandManageController::class, 'store'])->middleware('permission:brands.manage');
-        Route::put('brands/{brand}/update', [BrandManageController::class, 'update'])->middleware('permission:brands.manage');
+        Route::get('brands', [BrandManageController::class, 'index'])->middleware('permission:brands.view,brands.manage');
+        Route::post('brands/store', [BrandManageController::class, 'store'])->middleware('permission:brands.create,brands.manage');
+        Route::put('brands/{brand}/update', [BrandManageController::class, 'update'])->middleware('permission:brands.edit,brands.manage');
         Route::delete('brands/{brand}/delete', [BrandManageController::class, 'destroy'])->middleware('permission:brands.manage');
+    });
+
+    // Vendor block (vendors can submit category/brand proposal if they have permission)
+    Route::middleware(['auth:sanctum', 'vendor', 'banned'])->prefix('vendor')->group(function () {
+        Route::get('categories', [CategoryManageController::class, 'index'])->middleware('permission:categories.view,categories.manage');
+        Route::post('categories/store', [CategoryManageController::class, 'store'])->middleware('permission:categories.create,categories.manage');
+        
+        Route::get('brands', [BrandManageController::class, 'index'])->middleware('permission:brands.view,brands.manage');
+        Route::post('brands/store', [BrandManageController::class, 'store'])->middleware('permission:brands.create,brands.manage');
     });
 });

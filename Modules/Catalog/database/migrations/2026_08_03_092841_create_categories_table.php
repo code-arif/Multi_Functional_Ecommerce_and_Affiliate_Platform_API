@@ -25,12 +25,20 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
+            
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_active')->default(true);
+            $table->string('status', 20)->default('approved'); // approved, pending, rejected
+            $table->decimal('commission_rate', 5, 2)->default(0.00);
+            $table->unsignedTinyInteger('depth')->default(0);
+            
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+
             $table->integer('sort_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['slug', 'is_active', 'parent_id', 'sort_order']);
+            $table->index(['slug', 'is_active', 'status', 'parent_id', 'sort_order']);
         });
     }
 

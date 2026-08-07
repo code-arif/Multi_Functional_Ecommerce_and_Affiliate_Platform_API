@@ -19,16 +19,16 @@ class CategoryPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasPermission('categories.manage');
+        return $user->hasPermissionTo('categories.create') || $user->hasPermissionTo('categories.manage');
     }
 
     public function update(User $user, Category $category): bool
     {
-        return $user->hasPermission('categories.manage');
+        return $user->hasPermissionTo('categories.edit') || $user->hasPermissionTo('categories.manage');
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->hasPermission('categories.manage');
+        return $user->hasPermissionTo('categories.delete') || $user->hasPermissionTo('categories.manage');
     }
 }
