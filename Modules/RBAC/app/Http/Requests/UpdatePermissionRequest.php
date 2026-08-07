@@ -15,10 +15,10 @@ class UpdatePermissionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'         => ['sometimes', 'string', 'max:100', Rule::unique('permissions', 'name')->ignore($this->route('permission'))],
+            'name' => ['sometimes', 'string', 'max:100', Rule::unique('permissions', 'name')->ignore($this->route('permission'))],
             'display_name' => 'nullable|string|max:150',
-            'group'        => 'nullable|string|max:50',
-            'guard_name'   => 'nullable|string|max:50|in:web,api',
+            'group' => 'nullable|string|max:50',
+            'guard_name' => 'nullable|string|max:50|in:web,api',
         ];
     }
 

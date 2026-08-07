@@ -2,13 +2,13 @@
 
 namespace Modules\RBAC\Http\Controllers;
 
-use Modules\RBAC\Services\RBACService;
-use Modules\RBAC\Http\Resources\PermissionResource;
-use Modules\RBAC\Http\Requests\StorePermissionRequest;
-use Modules\RBAC\Http\Requests\UpdatePermissionRequest;
-use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\RBAC\Http\Requests\StorePermissionRequest;
+use Modules\RBAC\Http\Requests\UpdatePermissionRequest;
+use Modules\RBAC\Services\RBACService;
+use Modules\RBAC\Transformers\PermissionResource;
 
 class PermissionController
 {
@@ -68,8 +68,14 @@ class PermissionController
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->rbacService->deletePermission($id);
-        return $this->noContentResponse('Permission deleted successfully.');
+        try {
+            $this->rbacService->deletePermission($id);
+            return $this->noContentResponse('Permission deleted successfully.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return $this->notFoundResponse('Permission not found.');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, 422);
+        }
     }
 
     /**
@@ -89,7 +95,7 @@ class PermissionController
         $grouped = $this->rbacService->getPermissionsByGroup();
         $result = $grouped->map(function ($permissions, $group) {
             return [
-                'group'       => $group,
+                'group' => $group,
                 'permissions' => PermissionResource::collection($permissions),
             ];
         })->values();

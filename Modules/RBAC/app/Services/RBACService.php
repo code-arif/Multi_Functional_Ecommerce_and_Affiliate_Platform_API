@@ -2,11 +2,12 @@
 
 namespace Modules\RBAC\Services;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use \Exception;
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RBACService
 {
@@ -105,8 +106,7 @@ class RBACService
         return $role->fresh()->load('permissions');
     }
 
-    // ─── Permissions ─────────────────────────────────────────────
-
+    // Permission List
     public function listPermissions(array $filters = []): LengthAwarePaginator
     {
         return Permission::query()
@@ -122,16 +122,18 @@ class RBACService
             ->paginate($filters['per_page'] ?? 50);
     }
 
+    // Get permission with associated roles
     public function getPermission(int $id): Permission
     {
         return Permission::with('roles')->findOrFail($id);
     }
 
+    // Store Permission
     public function createPermission(array $data): Permission
     {
         $permData = [
-            'name'       => $data['name'],
-            'guard_name' => $data['guard_name'] ?? 'web',
+            'name' => $data['name'],
+            'guard_name' => $data['guard_name'] ?? 'api',
         ];
 
         if (isset($data['display_name'])) {
@@ -144,6 +146,7 @@ class RBACService
         return Permission::create($permData);
     }
 
+    // Update Permission
     public function updatePermission(int $id, array $data): Permission
     {
         $permission = Permission::findOrFail($id);
@@ -169,18 +172,20 @@ class RBACService
         return $permission->fresh();
     }
 
+    // Delete Permission
     public function deletePermission(int $id): bool
     {
         $permission = Permission::findOrFail($id);
 
         // Prevent deletion of permissions that are in use
         if ($permission->roles()->count() > 0) {
-            abort(422, 'This permission is assigned to one or more roles and cannot be deleted. Remove it from all roles first.');
+            throw new Exception('This permission is assigned to one or more roles and cannot be deleted. Remove it from all roles first.');
         }
 
         return $permission->delete();
     }
 
+    // Permission Groups List
     public function getAllPermissionGroups(): Collection
     {
         return Permission::query()
@@ -192,6 +197,7 @@ class RBACService
             ->values();
     }
 
+    //Group wise permission list
     public function getPermissionsByGroup(): Collection
     {
         $permissions = Permission::query()
