@@ -2,15 +2,15 @@
 
 namespace Modules\RBAC\Http\Controllers;
 
-use Modules\RBAC\Services\RBACService;
-use Modules\RBAC\Http\Resources\RoleResource;
-use Modules\RBAC\Http\Resources\RoleListResource;
-use Modules\RBAC\Http\Requests\StoreRoleRequest;
-use Modules\RBAC\Http\Requests\UpdateRoleRequest;
-use Modules\RBAC\Http\Requests\SyncRolePermissionsRequest;
-use Modules\Core\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Core\Traits\ApiResponse;
+use Modules\RBAC\Http\Requests\StoreRoleRequest;
+use Modules\RBAC\Http\Requests\SyncRolePermissionsRequest;
+use Modules\RBAC\Http\Requests\UpdateRoleRequest;
+use Modules\RBAC\Services\RBACService;
+use Modules\RBAC\Transformers\RoleListResource;
+use Modules\RBAC\Transformers\RoleResource;
 
 class RoleController
 {

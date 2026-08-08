@@ -11,14 +11,9 @@ use Spatie\Permission\Models\Role;
 
 class RBACService
 {
-    // ─── Roles ───────────────────────────────────────────────────
-
+    // Roles list
     public function listRoles(array $filters = []): LengthAwarePaginator
     {
-        // Note: 'users' count omitted because Spatie's `morphedByMany` relationship
-        // (Role->users()) fails to resolve in some environments (e.g., MySQL testing with
-        // DatabaseTransactions). Use withCount('users') only when the auth guard's user
-        // model is guaranteed to be resolvable.
         return Role::query()
             ->withCount('permissions')
             ->when($filters['search'] ?? null, fn($q, $s) =>
@@ -32,14 +27,19 @@ class RBACService
 
     public function getRole(int $id): Role
     {
-        return Role::with('permissions')->withCount('users')->findOrFail($id);
+        $role = Role::with('permissions')->withCount('users')->find($id);
+
+        if (!$role) {
+            throw new Exception("Role with ID {$id} not found.");
+        }
+        return $role;
     }
 
     public function createRole(array $data): Role
     {
         $roleData = [
-            'name'         => $data['name'],
-            'guard_name'   => $data['guard_name'] ?? 'web',
+            'name' => $data['name'],
+            'guard_name' => $data['guard_name'] ?? 'api',
         ];
 
         if (isset($data['display_name'])) {
