@@ -42,6 +42,15 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        // API guard used by the Sanctum-driven API and the RBAC module.
+        // Without a resolvable provider model, Spatie's getModelForGuard()
+        // returns null and relationships like Role::users() crash with
+        // "Class name must be a valid object or a string".
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
 
     /*

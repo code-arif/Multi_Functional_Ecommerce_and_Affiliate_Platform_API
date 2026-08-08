@@ -39,7 +39,7 @@ class RBACService
     {
         $roleData = [
             'name' => $data['name'],
-            'guard_name' => $data['guard_name'] ?? 'api',
+            'guard_name' => $data['guard_name'] ?? config('auth.defaults.guard'),
         ];
 
         if (isset($data['display_name'])) {
@@ -133,7 +133,7 @@ class RBACService
     {
         $permData = [
             'name' => $data['name'],
-            'guard_name' => $data['guard_name'] ?? 'api',
+            'guard_name' => $data['guard_name'] ?? config('auth.defaults.guard'),
         ];
 
         if (isset($data['display_name'])) {

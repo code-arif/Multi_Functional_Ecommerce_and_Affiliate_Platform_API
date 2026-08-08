@@ -22,8 +22,8 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']]
         Route::group(['prefix' => 'roles'], function () {
             Route::get('/', [RoleController::class, 'index'])->middleware('permission:roles.view'); // DONE: Role list
             Route::post('/store', [RoleController::class, 'store'])->middleware('permission:roles.manage'); // DONE: Role create
-            Route::get('/{id}/show', [RoleController::class, 'show'])->middleware('permission:roles.view'); // DONE: Get role with associated permissions
-            Route::put('/{id}/update', [RoleController::class, 'update'])->middleware('permission:roles.manage');      // DONE: Update role
+            Route::get('/{id}/show', [RoleController::class, 'show'])->middleware('permission:roles.view'); 
+            Route::put('/{id}/update', [RoleController::class, 'update'])->middleware('permission:roles.manage');  // DONE: Update role
             Route::delete('/{id}/destroy', [RoleController::class, 'destroy'])->middleware('permission:roles.manage'); // DONE: Delete role
             Route::post('/{id}/permissions', [RoleController::class, 'syncPermissions'])->middleware('permission:roles.manage'); // DONE: Sync role permissions
         });
