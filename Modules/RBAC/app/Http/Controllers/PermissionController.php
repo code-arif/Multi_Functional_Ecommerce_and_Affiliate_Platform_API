@@ -2,6 +2,7 @@
 
 namespace Modules\RBAC\Http\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Core\Traits\ApiResponse;
@@ -9,6 +10,7 @@ use Modules\RBAC\Http\Requests\StorePermissionRequest;
 use Modules\RBAC\Http\Requests\UpdatePermissionRequest;
 use Modules\RBAC\Services\RBACService;
 use Modules\RBAC\Transformers\PermissionResource;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PermissionController
 {
@@ -70,12 +72,13 @@ class PermissionController
     {
         try {
             $this->rbacService->deletePermission($id);
-            return $this->noContentResponse('Permission deleted successfully.');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->notFoundResponse('Permission not found.');
-        } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), null, 422);
+        } catch (HttpException $e) {
+            return $this->errorResponse($e->getMessage(), null, $e->getStatusCode());
         }
+
+        return $this->noContentResponse('Permission deleted successfully.');
     }
 
     /**

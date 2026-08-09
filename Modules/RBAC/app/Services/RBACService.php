@@ -2,7 +2,6 @@
 
 namespace Modules\RBAC\Services;
 
-use \Exception;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -211,7 +210,7 @@ class RBACService
 
         // Prevent deletion of permissions that are in use
         if ($permission->roles()->count() > 0) {
-            throw new Exception('This permission is assigned to one or more roles and cannot be deleted. Remove it from all roles first.');
+            abort(422, 'This permission is assigned to one or more roles and cannot be deleted. Remove it from all roles first.');
         }
 
         return $permission->delete();
