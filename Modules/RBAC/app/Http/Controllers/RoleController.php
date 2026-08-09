@@ -2,10 +2,12 @@
 
 namespace Modules\RBAC\Http\Controllers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Core\Traits\ApiResponse;
 use Modules\RBAC\Http\Requests\StoreRoleRequest;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Modules\RBAC\Http\Requests\SyncRolePermissionsRequest;
 use Modules\RBAC\Http\Requests\UpdateRoleRequest;
 use Modules\RBAC\Services\RBACService;
@@ -37,7 +39,12 @@ class RoleController
      */
     public function show(int $id): JsonResponse
     {
-        $role = $this->rbacService->getRole($id);
+        try {
+            $role = $this->rbacService->getRole($id);
+        } catch (ModelNotFoundException $e) {
+            return $this->notFoundResponse($e->getMessage());
+        }
+
         return $this->successResponse(new RoleResource($role));
     }
 
@@ -70,7 +77,14 @@ class RoleController
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->rbacService->deleteRole($id);
+        try {
+            $this->rbacService->deleteRole($id);
+        } catch (ModelNotFoundException $e) {
+            return $this->notFoundResponse($e->getMessage());
+        } catch (HttpException $e) {
+            return $this->errorResponse($e->getMessage(), null, $e->getStatusCode());
+        }
+
         return $this->noContentResponse('Role deleted successfully.');
     }
 

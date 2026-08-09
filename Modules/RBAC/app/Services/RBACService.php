@@ -4,18 +4,39 @@ namespace Modules\RBAC\Services;
 
 use \Exception;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Spatie\Permission\Guard;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RBACService
 {
+    /**
+     * Whether the guard used by spatie's Role::users() resolves to a concrete
+     * model.
+     *
+     * Spatie's Role::users() calls getModelForGuard() and crashes with
+     * "Class name must be a valid object or a string" when the role's guard
+     * has no provider model in config/auth.php. Guard the users count so a
+     * misconfigured guard can never take down the roles list.
+     */
+    private function canCountRoleUsers(): bool
+    {
+        return (bool) getModelForGuard(Guard::getDefaultName(Role::class));
+    }
+
     // Roles list
     public function listRoles(array $filters = []): LengthAwarePaginator
     {
-        return Role::query()
-            ->withCount('permissions')
+        $query = Role::query()->withCount('permissions');
+
+        if ($this->canCountRoleUsers()) {
+            $query->withCount('users');
+        }
+
+        return $query
             ->when($filters['search'] ?? null, fn($q, $s) =>
                 $q->where('name', 'like', "%{$s}%")
                   ->orWhere('display_name', 'like', "%{$s}%")
@@ -27,10 +48,16 @@ class RBACService
 
     public function getRole(int $id): Role
     {
-        $role = Role::with('permissions')->withCount('users')->find($id);
+        $query = Role::with('permissions');
+
+        if ($this->canCountRoleUsers()) {
+            $query->withCount('users');
+        }
+
+        $role = $query->find($id);
 
         if (!$role) {
-            throw new Exception("Role with ID {$id} not found.");
+            throw new ModelNotFoundException("Role with ID {$id} not found.");
         }
         return $role;
     }
@@ -87,9 +114,14 @@ class RBACService
         return $role->fresh()->load('permissions');
     }
 
+    // Delete role
     public function deleteRole(int $id): bool
     {
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
+
+        if (!$role) {
+            throw new ModelNotFoundException("Role with ID {$id} not found.");
+        }
 
         // Prevent deletion of critical system roles
         if (in_array($role->name, ['super-admin', 'admin', 'customer'])) {
