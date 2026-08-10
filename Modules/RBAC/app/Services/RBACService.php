@@ -164,7 +164,7 @@ class RBACService
     {
         $permData = [
             'name' => $data['name'],
-            'guard_name' => $data['guard_name'] ?? config('auth.defaults.guard'),
+            'guard_name' => $data['guard_name'] ?? 'api',
         ];
 
         if (isset($data['display_name'])) {
