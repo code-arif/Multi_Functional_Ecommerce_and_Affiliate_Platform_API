@@ -15,11 +15,11 @@ class UpdateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'         => ['sometimes', 'string', 'max:100', Rule::unique('roles', 'name')->ignore($this->route('role'))],
+            'name' => ['sometimes', 'string', 'max:100', Rule::unique('roles', 'name')->ignore($this->route('id'))],
             'display_name' => 'nullable|string|max:150',
-            'description'  => 'nullable|string|max:500',
-            'guard_name'   => 'nullable|string|max:50|in:web,api',
-            'permissions'  => 'nullable|array',
+            'description' => 'nullable|string|max:500',
+            'guard_name' => 'nullable|string|max:50|in:web,api',
+            'permissions' => 'nullable|array',
             'permissions.*' => 'string|exists:permissions,name',
         ];
     }
@@ -27,7 +27,7 @@ class UpdateRoleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique'         => 'A role with this name already exists.',
+            'name.unique' => 'A role with this name already exists.',
             'permissions.*.exists' => 'One or more selected permissions do not exist.',
         ];
     }
