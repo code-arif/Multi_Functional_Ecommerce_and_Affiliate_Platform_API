@@ -31,12 +31,12 @@ Route::group(['prefix' => 'v1/admin', 'middleware' => ['auth:sanctum', 'admin']]
         // Permissions
         // NOTE: literal routes (groups/grouped) MUST come before parameterized ({id})
         Route::group(['prefix' => 'permissions'], function () {
-            Route::get('/', [PermissionController::class, 'index'])->middleware('permission:permissions.view');                    // DONE: Permission list
-            Route::post('/store', [PermissionController::class, 'store'])->middleware('permission:permissions.manage');            // DONE: Permission create
-            Route::get('/groups', [PermissionController::class, 'groups'])->middleware('permission:permissions.view');             // DONE: Permission groups list
-            Route::get('/grouped', [PermissionController::class, 'grouped'])->middleware('permission:permissions.view');           // DONE: Group wise permission list
-            Route::get('/{id}', [PermissionController::class, 'show'])->middleware('permission:permissions.view');                 // DONE: Get permission with associated roles
-            Route::put('/{id}/update', [PermissionController::class, 'update'])->middleware('permission:permissions.manage');      // DONE: Update permission
+            Route::get('/', [PermissionController::class, 'index'])->middleware('permission:permissions.view'); // DONE: Permission list
+            Route::post('/store', [PermissionController::class, 'store'])->middleware('permission:permissions.manage'); // DONE: Permission create
+            Route::get('/groups', [PermissionController::class, 'groups'])->middleware('permission:permissions.view'); // DONE: Permission groups list
+            Route::get('/grouped', [PermissionController::class, 'grouped'])->middleware('permission:permissions.view'); // DONE: Group wise permission list
+            Route::get('/{id}', [PermissionController::class, 'show'])->middleware('permission:permissions.view'); // DONE: Get permission with associated roles
+            Route::put('/{id}/update', [PermissionController::class, 'update'])->middleware('permission:permissions.manage'); // DONE: Update permission
             Route::delete('/{id}/destroy', [PermissionController::class, 'destroy'])->middleware('permission:permissions.manage'); // DONE: Delete permission
         });
 
